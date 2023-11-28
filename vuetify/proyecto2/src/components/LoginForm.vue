@@ -23,8 +23,8 @@
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
                                 <v-checkbox type="checkbox" label="Soc professor/a"></v-checkbox>
-                                <v-btn type="submit" color="primary"><router-link to="/classes">Inicia
-                                        sessió</router-link></v-btn>
+                                <v-btn type="submit" color="primary" @click="$router.push('/classes')">Inicia sessió</v-btn>
+
                             </v-form>
                         </v-col>
                     </v-row>
@@ -62,10 +62,10 @@ export default {
 </script>
 
 <style scoped>
-
-.imgFondo{
+.imgFondo {
     z-index: 1;
 }
+
 .full-container {
     background-color: lightblue;
     height: 100vh;
@@ -88,13 +88,11 @@ export default {
     z-index: 1;
 }
 
-.imageMultiplication{
+.imageMultiplication {
     right: -600px;
     bottom: 60px;
     z-index: 1;
 }
 
-router-link{
-    text-decoration: none;
-}
+
 </style>
