@@ -129,7 +129,7 @@ app.get("/operacioFacil", (req, res) => {
 
   const operation = num1 + " "+ operator + " " + num2;
 
-  res.send(operation);
+  res.send({operation:operation});
 });
 
 //ruta para generar una operacion de nivel medio
@@ -142,7 +142,7 @@ app.get("/operacioMitg", (req, res) => {
 
   const operation = num1 + " "+ operator + " " + num2;
 
-  res.send(operation);
+  res.send({operation:operation});
 });
 //ruta para generar una operacion de nivel dificil
 app.get("/operacioDificil", (req, res) => {
@@ -159,7 +159,7 @@ app.get("/operacioDificil", (req, res) => {
   }
   const operation = num1 + " "+ operator + " " + num2;
 
-  res.send(operation);
+  res.send({operation:operation});
 });
 
 //ruta para resolver una operacion, le pasaremos los dos numeros y el operador
