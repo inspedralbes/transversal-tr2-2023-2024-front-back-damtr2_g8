@@ -23,9 +23,41 @@ const io = new Server(server, {
   },
 });
 
-io.on('connection', (socket) => {
-	console.log('a user connected');
+let partidas = [
+  partida = {
+    idPartida: 1,
+    vida1: 100,
+    vida2: 100,
+    socket1: 1,
+    socket2: 2,
+  },
+];
+
+// Función para disminuir la vida de un jugador en una partida
+function disminuirVida(idPartida, idJugador, cantidad) {
+  const partida = partidas.find((p) => p.idPartida == idPartida);
+
+  if (partida) {
+    const vidaActual = idJugador == 1 ? partida.vida1 : partida.vida2;
+    const nuevaVida = Math.max(0, vidaActual - cantidad);
+
+    if (idJugador == 1) {
+      partida.vida1 = nuevaVida;
+      io.to(partida.socket1).emit("actualizarVida", { vida: nuevaVida, jugador: 1 });
+      io.to(partida.socket2).emit("actualizarVida", { vida: nuevaVida, jugador: 2 });
+    } else {
+      partida.vida2 = nuevaVida;
+      io.to(partida.socket1).emit("actualizarVida", { vida: nuevaVida, jugador: 1 });
+      io.to(partida.socket2).emit("actualizarVida", { vida: nuevaVida, jugador: 2 });
+    }
+  }
+}
+
+io.on("connection", (socket) => {
+  socket.on("disminuirVida", ({ idPartida, idJugador, cantidad }) => {
+    disminuirVida(idPartida, idJugador, cantidad);
   });
+});
 
   //PARTE DE LA BASE DE DATOS
 var conn = mysql.createPool({
@@ -54,6 +86,8 @@ app.use(
 );
 
 app.use(bodyParser.json());
+
+
 
 //PARTE DE LAS RUTAS
 
@@ -93,13 +127,9 @@ app.get("/operacioFacil", (req, res) => {
   const operators = ["+", "-"];
   const operator = operators[Math.floor(Math.random() * operators.length)];
 
-  const operation = {
-    num1: num1,
-    num2: num2,
-    operator: operator,
-  };
+  const operation = num1 + " "+ operator + " " + num2;
 
-  res.send(JSON.stringify(operation, null, 2));
+  res.send(operation);
 });
 
 //ruta para generar una operacion de nivel medio
@@ -110,13 +140,9 @@ app.get("/operacioMitg", (req, res) => {
   const operators = ["+", "-", "*", "/"];
   const operator = operators[Math.floor(Math.random() * operators.length)];
 
-  const operation = {
-    num1: num1,
-    num2: num2,
-    operator: operator,
-  };
+  const operation = num1 + " "+ operator + " " + num2;
 
-  res.send(JSON.stringify(operation, null, 2));
+  res.send(operation);
 });
 //ruta para generar una operacion de nivel dificil
 app.get("/operacioDificil", (req, res) => {
@@ -131,13 +157,9 @@ app.get("/operacioDificil", (req, res) => {
   } else if (operator == "√") {
     num2 = null;
   }
-  const operation = {
-    num1: num1,
-    num2: num2,
-    operator: operator,
-  };
+  const operation = num1 + " "+ operator + " " + num2;
 
-  res.send(JSON.stringify(operation, null, 2));
+  res.send(operation);
 });
 
 //ruta para resolver una operacion, le pasaremos los dos numeros y el operador
