@@ -34,7 +34,7 @@ export default {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    this.operacion = data;
+                    this.operacion = data.operation;
                     this.seeOperation = true;
                 });
         },
@@ -70,7 +70,7 @@ export default {
             <v-btn @click="getOperation(2)">Dificil</v-btn>
         </div>
         <div v-if="seeOperation">
-            <div>Operacion: {{ operacion.num1 + " " + operacion.operator + " " + operacion.num2 }}</div>
+            <div>Operacion: {{ operacion }}</div>
             <v-text-field label="Resultado" type="number" v-model="result"></v-text-field>
             <v-btn @click="solveOperation()">Resolver</v-btn>
         </div>
