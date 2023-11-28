@@ -17,16 +17,21 @@ const routes = [
     //     component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
     //   },
     // ],
-  },{
+  }, {
     path: '/inici',
-    
+
     name: 'Login',
-    component: () => import('@/views/Login.vue'), 
+    component: () => import('@/views/Login.vue'),
   },
   {
     path: '/classes',
     name: 'Classes',
-    component: () => import('@/views/ChooseClass.vue'), 
+    component: () => import('@/views/ChooseClass.vue'),
+  },
+  {
+    path: '/game',
+    name: 'Game',
+    component: () => import('@/views/GameView.vue'),
   },
 ]
 
