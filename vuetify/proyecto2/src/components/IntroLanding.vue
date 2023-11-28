@@ -2,9 +2,7 @@
   <div class="full-container">
     <div class="center-container">
       <v-img src="../assets/MathBattleLogo.png" alt="Math Battle Logo" width="400" height="300" class="logo" />
-      <v-btn>
-        <router-link to="/inici">COMENÇAR</router-link>
-      </v-btn>
+      <v-btn @click="$router.push('/inici')">COMENÇAR</v-btn>
     </div>
   </div>
 </template>

@@ -28,6 +28,11 @@ const routes = [
     name: 'Classes',
     component: () => import('@/views/ChooseClass.vue'), 
   },
+  {
+    path: '/sala',
+    name: 'Sala',
+    component: () => import('@/views/Sala.vue'), 
+  },
 ]
 
 const router = createRouter({

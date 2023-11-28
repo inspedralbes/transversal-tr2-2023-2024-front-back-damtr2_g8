@@ -1,32 +1,58 @@
 <template>
-    <v-container>
-        <v-card>
-            <v-card-title class="titleCard">Matemàtiques 4t B</v-card-title>
+    <div class="full-container">
+        <v-container>
+        <v-card class="vcard">
+            <v-card-title class="titleCard">Matemàtiques B</v-card-title>
 
             <v-card-text class="txtCard">
-                Usuaris: 0
+                <b>Usuaris: 0</b>
                 <div>
-                    <v-btn class="my-button">
-                        <router-link to="/modoOne">Uneix-te</router-link>
-                    </v-btn>
+                    <v-btn class="my-button" @click="$router.push('/sala')">Uneix-te</v-btn>
+                </div>
+            </v-card-text>
+        </v-card>
+
+        <v-card class="vcard">
+            <v-card-title class="titleCard2">Matemàtiques F</v-card-title>
+
+            <v-card-text class="txtCard">
+                <b>Usuaris: 0</b>
+                <div>
+                    <v-btn class="my-button" @click="$router.push('/')">Uneix-te</v-btn>
                 </div>
             </v-card-text>
         </v-card>
     </v-container>
+    </div>
+    
 </template>
 
 <style>
-.titleCard{
+
+.full-container{
+    background-color: white;
+}
+
+.vcard{
+    margin-top: 20px;
+}
+.titleCard {
     padding: 30px;
     background-image: url("../assets/Background.png");
-
 }
 
-.txtCard{
-    margin-top: 10px;
+.titleCard2{
+    padding: 30px;
+    background-image: url("../assets/BackgroundGreen.png");
 }
+
+.txtCard {
+    padding: 30px;
+    margin-top: 20px;
+}
+
 .my-button {
-    margin: 10px;
+    margin-top: 10px;
     padding: auto;
     border-radius: 2px;
     background-color: #72BAE8;
