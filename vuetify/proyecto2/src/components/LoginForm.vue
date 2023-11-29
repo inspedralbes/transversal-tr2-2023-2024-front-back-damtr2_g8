@@ -11,7 +11,7 @@
                                     required></v-text-field>
                                 <v-text-field v-model="emailRegistration.password" label="Password" type="password"
                                     required></v-text-field>
-                                <v-btn type="submit" color="primary">Registra't</v-btn>
+                                    <v-btn type="submit" color="primary" @click="$router.push('/introCodi')">Registra't</v-btn>
                             </v-form>
                         </v-col>
 

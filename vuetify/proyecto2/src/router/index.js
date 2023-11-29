@@ -38,6 +38,16 @@ const routes = [
     name: 'Sala',
     component: () => import('@/views/Sala.vue'), 
   },
+  {
+    path: '/WaitingRoomStudent',
+    name: 'WaitingRoomStudent',
+    component: () => import('@/views/SalaAlumnes.vue'),
+  },
+  {
+    path: '/introCodi',
+    name: 'introCodi',
+    component: () => import('@/views/Codi.vue'),
+  },
 ]
 
 const router = createRouter({

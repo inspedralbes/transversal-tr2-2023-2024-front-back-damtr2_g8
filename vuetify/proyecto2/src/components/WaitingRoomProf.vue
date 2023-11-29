@@ -4,7 +4,6 @@
         <h1 class="text-h1 font-weight-black">Codi sala: 222</h1>
 
         <v-btn class="my-button" @click="$router.push('/sala')">COMENÇA</v-btn>
-
     </div>
     <div class="footer">
         <div class="user-col">
@@ -80,7 +79,7 @@
 .full-container {
     padding-top: 20px;
     background-color: #add8e6;
-    min-height: 100vh;
+    height: 310px;
     display: flex;
     flex-direction: column;
     text-align: center;
