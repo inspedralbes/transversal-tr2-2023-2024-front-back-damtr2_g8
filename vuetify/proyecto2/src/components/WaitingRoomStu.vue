@@ -2,6 +2,7 @@
     <div class="full-container">
         <h2>Sala d'espera</h2>
         <h2 class="text-h2 font-weight-black">Espera a que el professor comenci la partida</h2>
+        <div class="loader"></div>
     </div>
     <div class="footer">
         <div class="user-col">
@@ -41,8 +42,6 @@
 
 
 <style>
-
-
 .footer {
     height: 300px;
     background-color: #79b6c9;
@@ -69,13 +68,11 @@
 
 .img-avatar {
     display: block;
-    /* Asegura que la imagen se comporte como un bloque */
     margin: 0 auto;
-    /* Centra la imagen horizontalmente y agrega espacio en la parte inferior */
 }
 
 .full-container {
-    padding-top: 20px;
+    padding-top: 70px;
     background-color: #add8e6;
     height: 310px;
     display: flex;
@@ -96,4 +93,37 @@
     background-color: #72BAE8;
     color: white;
 }
+
+.loader {
+    width: 60px;
+    aspect-ratio: 2;
+    --_g: no-repeat radial-gradient(circle closest-side, #000 90%, #0000);
+    background:
+        var(--_g) 0% 50%,
+        var(--_g) 50% 50%,
+        var(--_g) 100% 50%;
+    background-size: calc(100%/3) 50%;
+    animation: l3 1s infinite linear;
+    margin: 0 auto; 
+}
+
+@keyframes l3 {
+    20% {
+        background-position: 0% 0%, 50% 50%, 100% 50%;
+    }
+
+    40% {
+        background-position: 0% 100%, 50% 0%, 100% 50%;
+    }
+
+    60% {
+        background-position: 0% 50%, 50% 100%, 100% 0%;
+    }
+
+    80% {
+        background-position: 0% 50%, 50% 50%, 100% 100%;
+    }
+}
+
+
 </style>
