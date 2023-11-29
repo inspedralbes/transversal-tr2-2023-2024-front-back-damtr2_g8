@@ -36,7 +36,12 @@ const routes = [
   {
     path: '/sala',
     name: 'Sala',
-    component: () => import('@/views/Sala.vue'), 
+    component: () => import('@/views/Sala.vue'),
+  },
+  {
+    path: '/join',
+    name: 'Join',
+    component: () => import('@/views/JoinView.vue'),
   },
 ]
 
