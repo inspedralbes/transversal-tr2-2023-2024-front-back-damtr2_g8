@@ -29,7 +29,7 @@ let partidas = [
     jugador1: {
       idSocket: 1,
       vida: 100,
-      operacion: "√4",
+      operacion: "√12",
     },
     jugador2: {
       idSocket: 2,
@@ -169,7 +169,7 @@ app.get("/operacioMitg/:idPartida/:idJugador", (req, res) => {
   const idPartida = req.params.idPartida;
   const idJugador = req.params.idJugador;
 
-  const num1 = Math.floor(Math.random() * 10) + 1;
+  const num1 = Math.floor(Math.random() * 50) + 1;
   let num2 = Math.floor(Math.random() * (num1 / 2)) + 1;
 
   const operators = ["+", "-", "*", "/"];
@@ -195,7 +195,7 @@ app.get("/operacioDificil/:idPartida/:idJugador", (req, res) => {
   const idPartida = req.params.idPartida;
   const idJugador = req.params.idJugador;
 
-  const num1 = Math.floor(Math.random() * 10) + 1;
+  const num1 = Math.floor(Math.random() * 50) + 1;
   let num2 = Math.floor(Math.random() * (num1 / 2)) + 1;
 
   const operators = ["+", "-", "*", "/", "^", "√"];
@@ -263,6 +263,7 @@ app.get("/resoldre/:idPartida/:idJugador/:resultado", (req, res) => {
     default:
       // Para la raíz cuadrada, se pasa solo el primer número
       result = Math.sqrt(parseInt(num2));
+      result = Math.round(result)
       break;
   }
 
