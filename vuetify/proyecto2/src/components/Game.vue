@@ -63,13 +63,31 @@ export default {
   <v-container>
     <v-sheet>
       <v-row class="px-12 py-5">
-        <v-col class="PS-container">
+        <v-col>
           <h2>{{ user1.name }}</h2>
-          <div class="PS">{{ user1.ps }}</div>
+          <div class="PS-container">
+            <div
+              class="PS"
+              v-bind:style="{
+                width: user1.ps + '%',
+              }"
+            >
+              <p>{{ user1.ps }}</p>
+            </div>
+          </div>
         </v-col>
-        <v-col class="PS-container" align="right">
+        <v-col align="right">
           <h2>{{ user2.name }}</h2>
-          <div class="PS" align="left">{{ user2.ps }}</div>
+          <div class="PS-container" align="left">
+            <div
+              class="PS"
+              v-bind:style="{
+                width: user2.ps + '%',
+              }"
+            >
+              <p>{{ user2.ps }}</p>
+            </div>
+          </div>
         </v-col>
       </v-row>
     </v-sheet>
@@ -105,7 +123,7 @@ export default {
     <div v-if="seeOperation">
       <div>Operacion: {{ operacion }}</div>
       <v-text-field
-        label="Resultado"
+        label="?"
         type="number"
         v-model="result"
       ></v-text-field>
@@ -115,22 +133,20 @@ export default {
 </template>
 
 <style>
+.PS-container {
+  background: rgb(153, 153, 153);
+  width: 60%;
+  display: flex;
+}
+
 .PS {
+  background-color: greenyellow;
+}
+
+.PS p {
   font-weight: 800;
   font-size: 23px;
   padding: 10px;
-  width: 60%;
-  background-color: rgb(153, 153, 153);
-}
-
-.PS::before {
-  width: 10%;
-  height: 100%;
-  border-radius: 2px;
-
-  position: absolute;
-
-  background-color: greenyellow;
 }
 
 .dificulty-option {

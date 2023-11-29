@@ -26,10 +26,16 @@ const io = new Server(server, {
 let partidas = [
   partida = {
     idPartida: 1,
-    vida1: 100,
-    vida2: 100,
-    socket1: 1,
-    socket2: 2,
+    jugador1: {
+      idSocket: 1,
+      vida: 100,
+      operacion: "1+3"
+    },
+    jugador2: {
+      idSocket: 2,
+      vida: 100,
+      operacion: "1+3"
+    },
   },
 ];
 
