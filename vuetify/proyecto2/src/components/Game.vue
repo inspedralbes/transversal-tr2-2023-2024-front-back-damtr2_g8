@@ -1,26 +1,31 @@
+<script setup>
+import { socket, state } from "@/services/socket";
+</script>
+
 <script>
 export default {
   data() {
     return {
-      user1: {
-        name: "Marti",
-        ps: 100,
-      },
-      user2: {
-        name: "Damia",
-        ps: 10,
-      },
       operacion: "",
       seeOperation: true,
       result: null,
+      emptyGameData: true,
+      username: "",
+      otherPlayer: null,
     };
   },
   methods: {
-    getOperation(option) {
-      //SOCKETS
+    getOperation(resta) {
+      socket.emit("restarVida", {
+        idPartida: state.partida.idPartida,
+        idJugador: state.partida.jugadores.findIndex(jugador => jugador.username == this.username) == 0 ? 1 : 0,
+        cantidad: resta
+      });
+    },
+    conectar() {
+      socket.emit("conectarUsuario", {username: this.username});
     },
     solveOperation() {
-      console.log(this.result);
       let url =
         "http://localhost:3751/resoldre/" +
         this.operacion.num1 +
@@ -36,37 +41,47 @@ export default {
         });
     },
   },
-  mounted() {},
+  computed: {
+    setPartida() {
+      this.emptyGameData = false;
+      return state.partida;
+    },
+  },
+  mounted() {
+    this.username = prompt();
+    this.setPartida
+  },
 };
 </script>
 
 <template>
   <div class="game-container">
+    <v-btn @click="conectar()">conectar</v-btn>
     <v-sheet class="content-wrap">
-      <v-row class="px-12 py-5">
+      <v-row class="px-12 py-5" v-if="!emptyGameData">
         <v-col>
-          <h2>{{ user1.name }}</h2>
+          <h2>{{ setPartida.jugadores[0].username }}</h2>
           <div class="PS-container">
             <div
               class="PS"
               v-bind:style="{
-                width: user1.ps + '%',
+                width: setPartida.jugadores[0].vida + '%',
               }"
             >
-              <p>{{ user1.ps }}</p>
+              <p>{{ setPartida.jugadores[0].vida }}</p>
             </div>
           </div>
         </v-col>
         <v-col align="right">
-          <h2>{{ user2.name }}</h2>
+          <h2>{{ setPartida.jugadores[1].username }}</h2>
           <div class="PS-container" align="left">
             <div
               class="PS"
               v-bind:style="{
-                width: user2.ps + '%',
+                width: setPartida.jugadores[1].vida + '%',
               }"
             >
-              <p>{{ user2.ps }}</p>
+              <p>{{ setPartida.jugadores[1].vida }}</p>
             </div>
           </div>
         </v-col>
@@ -81,7 +96,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #7ed776"
-                  @click="getOperation(0)"
+                  @click="getOperation(2)"
                   >Facil</v-btn
                 >
               </v-col>
@@ -89,7 +104,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #768ed7"
-                  @click="getOperation(1)"
+                  @click="getOperation(5)"
                   >Medio</v-btn
                 >
               </v-col>
@@ -97,7 +112,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #d77676"
-                  @click="getOperation(2)"
+                  @click="getOperation(10)"
                   >Dificil</v-btn
                 >
               </v-col>
