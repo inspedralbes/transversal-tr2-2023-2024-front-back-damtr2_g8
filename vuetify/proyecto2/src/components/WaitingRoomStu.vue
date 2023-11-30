@@ -95,42 +95,41 @@
 }
 
 :root {
-    --divide-image: url(@/assets/divide.png);
-    --equal-image: url(@/assets/equal.png);
-    --more-less-image: url(@/assets/moreLess.png);
+    --divide-image: url('../assets/divide.png');
+    --equal-image: url('../assets/equal.png');
+    --more-less-image: url('../assets/moreLess.png');
 }
-
 
 .loader {
     width: 80px;
     aspect-ratio: 2;
-    --_g: no-repeat var(--divide-image), no-repeat var(--equal-image), no-repeat var(--more-less-image);
     background:
-        var(--_g) 0% 50%,
-        var(--_g) 50% 50%,
-        var(--_g) 100% 50%;
-    background-size: calc(100%/3) 50%;
+        var(--divide-image) 0% 50% no-repeat,
+        var(--equal-image) 50% 50% no-repeat,
+        var(--more-less-image) 100% 50% no-repeat;
+    background-size: calc(100% / 3) 50%;
     animation: l3 1s infinite linear;
     margin: 20px auto;
 }
 
 @keyframes l3 {
     20% {
-        background-position: 0% 0%, 50% 50%, 100% 50%
+        background-position: 0% 0%, 50% 50%, 100% 50%;
     }
 
     40% {
-        background-position: 0% 100%, 50% 0%, 100% 50%
+        background-position: 0% 100%, 50% 0%, 100% 50%;
     }
 
     60% {
-        background-position: 0% 50%, 50% 100%, 100% 0%
+        background-position: 0% 50%, 50% 100%, 100% 0%;
     }
 
     80% {
-        background-position: 0% 50%, 50% 50%, 100% 100%
+        background-position: 0% 50%, 50% 50%, 100% 100%;
     }
 }
+
 </style>
 
 <script setup>

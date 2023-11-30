@@ -11,7 +11,7 @@
                                     required></v-text-field>
                                 <v-text-field v-model="emailRegistration.password" label="Password" type="password"
                                     required></v-text-field>
-                                    <v-btn type="submit" color="primary" @click="$router.push('/introCodi')">Registra't</v-btn>
+                                    <v-btn type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
 
@@ -22,7 +22,7 @@
                                     required></v-text-field>
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
-                                <v-checkbox type="checkbox" label="Soc professor/a"></v-checkbox>
+                                <v-checkbox type="checkbox"  id="profe" label="Soc professor/a"></v-checkbox>
                                 <v-btn type="submit" color="primary" @click="$router.push('/classes')">Inicia sessió</v-btn>
 
                             </v-form>
@@ -56,6 +56,15 @@ export default {
         },
         login() {
             console.log('Logging in user:', this.usernameLogin.username, this.usernameLogin.password);
+
+            var element = document.getElementById("profe");
+
+            // Use this.$router instead of $router
+            if (element.checked) {
+                this.$router.push('/classes');
+            } else {
+                this.$router.push('/introCodi');
+            }
         },
     },
 };
