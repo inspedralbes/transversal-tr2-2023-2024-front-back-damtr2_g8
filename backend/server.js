@@ -9,6 +9,7 @@ const { Server } = require("socket.io");
 const http = require("http");
 const { join, parse } = require("path");
 const server = http.createServer(app);
+var CryptoJS = require("crypto-js");
 
 //REDIRECCIONAR AL INDEX.HTML
 app.get("/", (req, res) => {
@@ -135,6 +136,42 @@ app.get("/usuario/:idUsuari", (req, res) => {
     }
   });
 });
+
+//ruta para hacer login
+app.post("/login", async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    res.status(500).send("Both email and password are required");
+  } else {
+    var sql = `SELECT * FROM USUARIS WHERE correu = '${req.body.email}'`;
+
+    conn.query(sql, (err, result) => {
+      if (err) console.error(err);
+      var ciphertext = CryptoJS.MD5(req.body.password).toString();
+      if (result == 0 || result[0].pass != ciphertext) {
+        res.status(500).send("Wrong email or password");
+      } else {
+        //req.session.user = result[0].CorreoElectronico;
+        // res.cookie("user", req.session.user, { signed: true });
+        //res.send({ cookie: req.session, userData: result[0] });
+        res.send({ userData: result[0] });
+      }
+    });
+  }
+});
+
+//ruta para registrar un usuario
+app.post("/register", (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    res.status(500).send("Both email and password are required");
+  }else{
+    var sql = `INSERT INTO USUARIS VALUES (null, '${req.body.nom}', '${CryptoJS.MD5(req.body.password).toString()}', '${req.body.email}', '${req.body.rol}', '${req.body.idClasse}')`;
+    conn.query(sql, (err, result) => {
+      if (err) console.error(err);
+      res.send({ userData: result});
+    });
+  }
+});
+
 
 //ruta para generar una operacion de nivel facil
 app.get("/operacioFacil/:idPartida/:idJugador", (req, res) => {
