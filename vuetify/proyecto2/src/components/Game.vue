@@ -114,7 +114,7 @@ export default {
   </v-container>
 </template>
 
-<style>
+<style scoped>
 .PS {
   font-weight: 800;
   font-size: 23px;

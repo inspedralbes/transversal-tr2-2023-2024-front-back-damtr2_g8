@@ -42,7 +42,7 @@
 </template>
 
 
-<style>
+<style scoped>
 
 
 .footer {

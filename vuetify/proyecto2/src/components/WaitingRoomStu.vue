@@ -41,7 +41,7 @@
 </template>
 
 
-<style>
+<style scoped>
 .footer {
     height: 300px;
     background-color: #79b6c9;

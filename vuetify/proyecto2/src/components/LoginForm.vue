@@ -23,7 +23,7 @@
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
                                 <v-checkbox type="checkbox"  id="profe" label="Soc professor/a"></v-checkbox>
-                                <v-btn type="submit" color="primary" @click="$router.push('/classes')">Inicia sessió</v-btn>
+                                <v-btn type="submit" color="primary">Inicia sessió</v-btn>
 
                             </v-form>
                         </v-col>
