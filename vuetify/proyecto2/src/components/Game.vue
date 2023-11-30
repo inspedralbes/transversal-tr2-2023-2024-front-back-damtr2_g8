@@ -8,35 +8,16 @@ export default {
       },
       user2: {
         name: "Damia",
-        ps: 100,
+        ps: 10,
       },
       operacion: "",
-      seeOperation: false,
+      seeOperation: true,
       result: null,
     };
   },
   methods: {
     getOperation(option) {
-      let url = "http://localhost:3751/";
-
-      switch (option) {
-        case 0:
-          url += "operacioFacil";
-          break;
-        case 1:
-          url += "operacioMitg";
-          break;
-        case 2:
-          url += "operacioDificil";
-          break;
-      }
-
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          this.operacion = data.operation;
-          this.seeOperation = true;
-        });
+      //SOCKETS
     },
     solveOperation() {
       console.log(this.result);
@@ -60,59 +41,85 @@ export default {
 </script>
 
 <template>
-  <v-container>
-    <v-sheet>
+  <div class="game-container">
+    <v-sheet class="content-wrap">
       <v-row class="px-12 py-5">
-        <v-col class="PS-container">
+        <v-col>
           <h2>{{ user1.name }}</h2>
-          <div class="PS">{{ user1.ps }}</div>
+          <div class="PS-container">
+            <div
+              class="PS"
+              v-bind:style="{
+                width: user1.ps + '%',
+              }"
+            >
+              <p>{{ user1.ps }}</p>
+            </div>
+          </div>
         </v-col>
-        <v-col class="PS-container" align="right">
+        <v-col align="right">
           <h2>{{ user2.name }}</h2>
-          <div class="PS" align="left">{{ user2.ps }}</div>
+          <div class="PS-container" align="left">
+            <div
+              class="PS"
+              v-bind:style="{
+                width: user2.ps + '%',
+              }"
+            >
+              <p>{{ user2.ps }}</p>
+            </div>
+          </div>
         </v-col>
       </v-row>
     </v-sheet>
-
-    <v-sheet align="center">
-      <v-row class="py-16 dificulty-container">
-        <v-col align="center">
-          <v-btn
-            class="dificulty-option rounded-lg"
-            style="background-color: #7ed776"
-            @click="getOperation(0)"
-            >Facil</v-btn
-          >
+    <div class="game-bar">
+      <v-row class="mx-8">
+        <v-col sm="6" lg="4" cols="2">
+          <v-sheet align="center">
+            <v-row class="py-16 dificulty-container">
+              <v-col align="center">
+                <v-btn
+                  class="dificulty-option rounded-lg"
+                  style="background-color: #7ed776"
+                  @click="getOperation(0)"
+                  >Facil</v-btn
+                >
+              </v-col>
+              <v-col align="center">
+                <v-btn
+                  class="dificulty-option rounded-lg"
+                  style="background-color: #768ed7"
+                  @click="getOperation(1)"
+                  >Medio</v-btn
+                >
+              </v-col>
+              <v-col align="center">
+                <v-btn
+                  class="dificulty-option rounded-lg"
+                  style="background-color: #d77676"
+                  @click="getOperation(2)"
+                  >Dificil</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-sheet>
         </v-col>
-        <v-col align="center">
-          <v-btn
-            class="dificulty-option rounded-lg"
-            style="background-color: #768ed7"
-            @click="getOperation(1)"
-            >Medio</v-btn
-          >
-        </v-col>
-        <v-col align="center">
-          <v-btn
-            class="dificulty-option rounded-lg"
-            style="background-color: #d77676"
-            @click="getOperation(2)"
-            >Dificil</v-btn
-          >
+        <v-col>
+          <div v-if="seeOperation">
+            <div>Operacion: {{ operacion }}</div>
+            <v-text-field
+              label="?"
+              type="number"
+              v-model="result"
+            ></v-text-field>
+            <v-btn @click="solveOperation()">Resolver</v-btn>
+          </div>
         </v-col>
       </v-row>
-    </v-sheet>
-    <div v-if="seeOperation">
-      <div>Operacion: {{ operacion }}</div>
-      <v-text-field
-        label="Resultado"
-        type="number"
-        v-model="result"
-      ></v-text-field>
-      <v-btn @click="solveOperation()">Resolver</v-btn>
     </div>
-  </v-container>
+  </div>
 </template>
+
 
 <style scoped>
 .PS {
@@ -120,27 +127,50 @@ export default {
   font-size: 23px;
   padding: 10px;
   width: 60%;
-  background-color: rgb(153, 153, 153);
+  background-color: rgb(153, 153, 153);}
+
+
+.game-container {
+  position: relative;
+  min-height: 100vh;
+
 }
 
-.PS::before {
-  width: 10%;
-  height: 100%;
-  border-radius: 2px;
+.content-wrap {
+  padding-bottom: 2.5rem;
+}
 
-  position: absolute;
+.PS-container {
+  background: rgb(153, 153, 153);
+  width: 60%;
+  display: flex;
+}
 
+.PS {
   background-color: greenyellow;
 }
 
+.PS p {
+  font-weight: 800;
+  font-size: 23px;
+  padding: 10px;
+}
+
 .dificulty-option {
-  font-size: 30px !important;
+  font-size: 25px !important;
   font-weight: 800 !important;
-  height: 300px !important;
-  width: 60%;
+  height: 200px !important;
+  width: 100%;
 }
 
 .dificulty-container {
-  width: 80%;
+  width: 100%;
+}
+
+.game-bar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 18.5rem;
 }
 </style>

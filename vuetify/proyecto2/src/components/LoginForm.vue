@@ -18,7 +18,7 @@
                         <v-col cols="6" class="container-right pr-10 py-10">
                             <h2 class="my-2 ml-6 text-center">Inicia sessió</h2>
                             <v-form @submit.prevent="login" class="ml-6">
-                                <v-text-field v-model="emailRegistration.email" label="Email" type="email"
+                                <v-text-field v-model="usernameLogin.email" label="Email" type="email"
                                     required></v-text-field>
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
@@ -45,7 +45,7 @@ export default {
                 password: '',
             },
             usernameLogin: {
-                username: '',
+                email: '',
                 password: '',
             },
         };
@@ -54,17 +54,38 @@ export default {
         register() {
             console.log('Registering user:', this.emailRegistration.username, this.emailRegistration.email, this.emailRegistration.password);
         },
-        login() {
-            console.log('Logging in user:', this.usernameLogin.username, this.usernameLogin.password);
+        async login() {
+            console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
 
             var element = document.getElementById("profe");
 
+            const response = await fetch('http://192.168.16.27:3751/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: this.usernameLogin.email,
+                    password: this.usernameLogin.password,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }else{
+                const data = await response.json();
+
+            console.log('Server Response:', data);
+
             // Use this.$router instead of $router
-            if (element.checked) {
+            if (element.checked && data.userData.admin == 1) {
                 this.$router.push('/classes');
             } else {
-                this.$router.push('/introCodi');
+                this.$router.push('/join');
             }
+            }
+
+            
         },
     },
 };
