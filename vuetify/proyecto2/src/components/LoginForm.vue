@@ -40,26 +40,53 @@ export default {
     data() {
         return {
             emailRegistration: {
-                username: '',
+                name: '',
                 email: '',
                 password: '',
+                isAdmin: false,
+                classId: null,
             },
             usernameLogin: {
                 email: '',
                 password: '',
             },
+            clases: [],
         };
     },
     methods: {
-        register() {
+        async register() {
             console.log('Registering user:', this.emailRegistration.username, this.emailRegistration.email, this.emailRegistration.password);
+
+            const response = await fetch('http://localhost:3751/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: this.emailRegistration.name,
+                    email: this.emailRegistration.email,
+                    password: this.emailRegistration.password,
+                    isAdmin: this.emailRegistration.isAdmin,
+                    classId: this.emailRegistration.classId,
+                }),
+            });
+
+            if(!response.ok) {
+                throw new Error('Network response was not ok');
+            }else{
+                const data = await response.json();
+                console.log('Server Response:', data);
+                Window.alert("Usuari registrat correctament");
+
+            }
+
         },
         async login() {
             console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
 
             var element = document.getElementById("profe");
 
-            const response = await fetch('http://192.168.16.27:3751/login', {
+            const response = await fetch('http://localhost:3751/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,6 +114,28 @@ export default {
 
             
         },
+        async recibirClases(){
+            const response = await fetch('http://localhost:3751/clases', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }else{
+                const data = await response.json();
+
+            console.log('Server Response:', data);
+
+            // Use this.$router instead of $router
+            this.clases = data.classes;
+            }
+        }
+    },
+    mounted() {
+            this.recibirClases();
     },
 };
 </script>
