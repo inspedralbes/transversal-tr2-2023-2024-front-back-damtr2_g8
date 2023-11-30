@@ -23,7 +23,7 @@ export default {
       });
     },
     conectar() {
-      socket.emit("conectarUsuario", {username: this.username});
+      socket.emit("conectarUsuario", { username: this.username });
     },
     solveOperation() {
       let url =
@@ -57,17 +57,14 @@ export default {
 <template>
   <div class="game-container">
     <v-btn @click="conectar()">conectar</v-btn>
-    <v-sheet class="content-wrap">
+    <v-sheet class="content-wrap bg-transparent">
       <v-row class="px-12 py-5" v-if="!emptyGameData">
         <v-col>
           <h2>{{ setPartida.jugadores[0].username }}</h2>
           <div class="PS-container">
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[0].vida + '%',
-              }"
-            >
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[0].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[0].vida }}</p>
             </div>
           </div>
@@ -75,12 +72,9 @@ export default {
         <v-col align="right">
           <h2>{{ setPartida.jugadores[1].username }}</h2>
           <div class="PS-container" align="left">
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[1].vida + '%',
-              }"
-            >
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[1].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[1].vida }}</p>
             </div>
           </div>
@@ -90,31 +84,19 @@ export default {
     <div class="game-bar">
       <v-row class="mx-8">
         <v-col sm="6" lg="4" cols="2">
-          <v-sheet align="center">
+          <v-sheet align="center" class="bg-transparent">
             <v-row class="py-16 dificulty-container">
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #7ed776"
-                  @click="getOperation(2)"
-                  >Facil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #7ed776"
+                  @click="getOperation(2)">Facil</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #768ed7"
-                  @click="getOperation(5)"
-                  >Medio</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #768ed7"
+                  @click="getOperation(5)">Medio</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #d77676"
-                  @click="getOperation(10)"
-                  >Dificil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #d77676"
+                  @click="getOperation(10)">Dificil</v-btn>
               </v-col>
             </v-row>
           </v-sheet>
@@ -122,11 +104,7 @@ export default {
         <v-col>
           <div v-if="seeOperation">
             <div>Operacion: {{ operacion }}</div>
-            <v-text-field
-              label="?"
-              type="number"
-              v-model="result"
-            ></v-text-field>
+            <v-text-field label="?" type="number" v-model="result"></v-text-field>
             <v-btn @click="solveOperation()">Resolver</v-btn>
           </div>
         </v-col>
@@ -142,10 +120,12 @@ export default {
   font-size: 23px;
   padding: 10px;
   width: 60%;
-  background-color: rgb(153, 153, 153);}
+  background-color: rgb(153, 153, 153);
+}
 
 
 .game-container {
+  background: radial-gradient(lightblue, rgb(81, 180, 213));
   position: relative;
   min-height: 100vh;
 
