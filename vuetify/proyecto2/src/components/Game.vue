@@ -135,10 +135,20 @@ export default {
   </div>
 </template>
 
-<style>
+
+<style scoped>
+.PS {
+  font-weight: 800;
+  font-size: 23px;
+  padding: 10px;
+  width: 60%;
+  background-color: rgb(153, 153, 153);}
+
+
 .game-container {
   position: relative;
   min-height: 100vh;
+
 }
 
 .content-wrap {

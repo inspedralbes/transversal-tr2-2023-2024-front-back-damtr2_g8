@@ -27,7 +27,7 @@
     
 </template>
 
-<style>
+<style scoped>
 
 .full-container{
     background-color: white;

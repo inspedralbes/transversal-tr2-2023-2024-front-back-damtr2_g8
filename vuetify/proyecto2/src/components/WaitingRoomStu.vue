@@ -41,7 +41,7 @@
 </template>
 
 
-<style>
+<style scoped>
 .footer {
     height: 300px;
     background-color: #79b6c9;
@@ -94,17 +94,22 @@
     color: white;
 }
 
+:root {
+    --divide-image: url('../assets/divide.png');
+    --equal-image: url('../assets/equal.png');
+    --more-less-image: url('../assets/moreLess.png');
+}
+
 .loader {
-    width: 60px;
+    width: 80px;
     aspect-ratio: 2;
-    --_g: no-repeat radial-gradient(circle closest-side, #000 90%, #0000);
     background:
-        var(--_g) 0% 50%,
-        var(--_g) 50% 50%,
-        var(--_g) 100% 50%;
-    background-size: calc(100%/3) 50%;
+        var(--divide-image) 0% 50% no-repeat,
+        var(--equal-image) 50% 50% no-repeat,
+        var(--more-less-image) 100% 50% no-repeat;
+    background-size: calc(100% / 3) 50%;
     animation: l3 1s infinite linear;
-    margin: 0 auto; 
+    margin: 20px auto;
 }
 
 @keyframes l3 {
@@ -125,5 +130,10 @@
     }
 }
 
-
 </style>
+
+<script setup>
+import divideImage from '@/assets/divide.png';
+import equalImage from '@/assets/equal.png';
+import moreLessImage from '@/assets/moreLess.png';
+</script>

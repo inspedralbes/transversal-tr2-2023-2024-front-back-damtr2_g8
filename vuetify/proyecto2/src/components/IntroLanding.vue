@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .full-container {
   background-color: lightblue;
   height: 100vh;

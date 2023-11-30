@@ -11,19 +11,19 @@
                                     required></v-text-field>
                                 <v-text-field v-model="emailRegistration.password" label="Password" type="password"
                                     required></v-text-field>
-                                    <v-btn type="submit" color="primary" @click="$router.push('/introCodi')">Registra't</v-btn>
+                                    <v-btn type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
 
                         <v-col cols="6" class="container-right pr-10 py-10">
                             <h2 class="my-2 ml-6 text-center">Inicia sessió</h2>
                             <v-form @submit.prevent="login" class="ml-6">
-                                <v-text-field v-model="emailRegistration.email" label="Email" type="email"
+                                <v-text-field v-model="usernameLogin.email" label="Email" type="email"
                                     required></v-text-field>
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
-                                <v-checkbox type="checkbox" label="Soc professor/a"></v-checkbox>
-                                <v-btn type="submit" color="primary" @click="$router.push('/classes')">Inicia sessió</v-btn>
+                                <v-checkbox type="checkbox"  id="profe" label="Soc professor/a"></v-checkbox>
+                                <v-btn type="submit" color="primary">Inicia sessió</v-btn>
 
                             </v-form>
                         </v-col>
@@ -40,23 +40,102 @@ export default {
     data() {
         return {
             emailRegistration: {
-                username: '',
+                name: '',
+                email: '',
+                password: '',
+                isAdmin: false,
+                classId: null,
+            },
+            usernameLogin: {
                 email: '',
                 password: '',
             },
-            usernameLogin: {
-                username: '',
-                password: '',
-            },
+            clases: [],
         };
     },
     methods: {
-        register() {
+        async register() {
             console.log('Registering user:', this.emailRegistration.username, this.emailRegistration.email, this.emailRegistration.password);
+
+            const response = await fetch('http://localhost:3751/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: this.emailRegistration.name,
+                    email: this.emailRegistration.email,
+                    password: this.emailRegistration.password,
+                    isAdmin: this.emailRegistration.isAdmin,
+                    classId: this.emailRegistration.classId,
+                }),
+            });
+
+            if(!response.ok) {
+                throw new Error('Network response was not ok');
+            }else{
+                const data = await response.json();
+                console.log('Server Response:', data);
+                Window.alert("Usuari registrat correctament");
+
+            }
+
         },
-        login() {
-            console.log('Logging in user:', this.usernameLogin.username, this.usernameLogin.password);
+        async login() {
+            console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
+
+            var element = document.getElementById("profe");
+
+            const response = await fetch('http://localhost:3751/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: this.usernameLogin.email,
+                    password: this.usernameLogin.password,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }else{
+                const data = await response.json();
+
+            console.log('Server Response:', data);
+
+            // Use this.$router instead of $router
+            if (element.checked && data.userData.admin == 1) {
+                this.$router.push('/classes');
+            } else {
+                this.$router.push('/join');
+            }
+            }
+
+            
         },
+        async recibirClases(){
+            const response = await fetch('http://localhost:3751/clases', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }else{
+                const data = await response.json();
+
+            console.log('Server Response:', data);
+
+            // Use this.$router instead of $router
+            this.clases = data.classes;
+            }
+        }
+    },
+    mounted() {
+            this.recibirClases();
     },
 };
 </script>
