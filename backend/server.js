@@ -84,7 +84,7 @@ app.get("/usuario/:idUsuari", (req, res) => {
 });
 
 app.get("/clases", (req, res) => {
-  const sql = "SELECT idClasse, nomClase FROM CLASSE"
+  const sql = "SELECT idClasse, nomClasse FROM CLASSE"
   conn.query(sql, (err, result) => {
     if (err) {
       console.error(err);
