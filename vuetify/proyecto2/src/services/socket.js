@@ -30,3 +30,7 @@ socket.on("actualizarVida", (data) => {
   state.partida.jugadores[data.jugador].vida = data.vida;
 });
 
+socket.on("actualizarOperacion", (data) => {
+  state.partida.jugadores[data.jugador].operacion = data.operacion;
+});
+

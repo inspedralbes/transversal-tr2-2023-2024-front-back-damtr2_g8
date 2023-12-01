@@ -6,8 +6,6 @@ import { socket, state } from "@/services/socket";
 export default {
   data() {
     return {
-      operacion: "",
-      seeOperation: true,
       result: null,
       emptyGameData: true,
       username: "",
@@ -15,15 +13,16 @@ export default {
     };
   },
   methods: {
-    getOperation(dificultad) {
+    getOperation() {
+      socket.emit("getOperation", {
+        idPartida: state.partida.idPartida,
+        idJugador: this.idPlayer,
+      });
+    },
+    restarVida(dificultad) {
       socket.emit("restarVida", {
         idPartida: state.partida.idPartida,
-        idJugador:
-          state.partida.jugadores.findIndex(
-            (jugador) => jugador.username == this.username
-          ) == 0
-            ? 1
-            : 0,
+        idJugador: this.idPlayer == 1 ? 0 : 1,
         idCantidad: dificultad,
       });
     },
@@ -31,19 +30,11 @@ export default {
       socket.emit("conectarUsuario", { username: this.username });
     },
     solveOperation() {
-      let url =
-        "http://localhost:3751/resoldre/" +
-        state.partida.idPartida +
-        "/" +
-        state.partida.jugadores[this.idPlayer] +
-        "/" +
-        this.result;
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          this.seeOperation = false;
-        });
+      socket.emit("solveOperation", {
+        idPartida: state.partida.idPartida,
+        idJugador: this.idPlayer,
+        result: this.result,
+      });
     },
   },
   computed: {
@@ -53,15 +44,15 @@ export default {
         state.partida.jugadores.findIndex(
           (jugador) => jugador.username == this.username
         ) == 0
-          ? 1
-          : 0;
-          console.log(state.partida);
+          ? 0
+          : 1;
+      console.log(state.partida);
       return state.partida;
     },
   },
   mounted() {
     this.username = prompt();
-    this.conectar()
+    this.conectar();
     this.setPartida;
   },
 };
@@ -72,22 +63,8 @@ export default {
     <v-sheet class="content-wrap bg-transparent">
       <v-row class="px-12 py-5" v-if="!emptyGameData">
         <v-col>
-          <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container">
-            <div
-              class="PS"
-              v-bind:style="{
-                width:
-                  setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
-              }"
-            >
-              <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
-            </div>
-          </div>
-        </v-col>
-        <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
-          <div class="PS-container" align="left">
+          <div class="PS-container">
             <div
               class="PS"
               v-bind:style="{
@@ -95,6 +72,19 @@ export default {
               }"
             >
               <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
+            </div>
+          </div>
+        </v-col>
+        <v-col align="right">
+          <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
+          <div class="PS-container" align="left">
+            <div
+              class="PS"
+              v-bind:style="{
+                width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
+              }"
+            >
+              <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
             </div>
           </div>
         </v-col>
@@ -133,8 +123,12 @@ export default {
           </v-sheet>
         </v-col>
         <v-col>
-          <div v-if="seeOperation">
-            <div>Operacion: {{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].operacion }}</div>
+          <div>
+            <div>
+              Operacion:
+
+              {{ setPartida.jugadores[idPlayer].operacion }}
+            </div>
             <v-text-field
               label="?"
               type="number"

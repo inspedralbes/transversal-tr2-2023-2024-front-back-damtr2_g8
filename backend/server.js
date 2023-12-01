@@ -12,6 +12,8 @@ var CryptoJS = require("crypto-js");
 const { sockets } = require("./sockets.js");
 const { Server } = require("socket.io");
 
+let partidas = [];
+
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -19,7 +21,7 @@ const io = new Server(server, {
   },
 });
 
-sockets(io);
+sockets(io, partidas);
 //REDIRECCIONAR AL INDEX.HTML
 app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "index.html"));
@@ -122,33 +124,6 @@ app.post("/register", (req, res) => {
   }
 });
 
-//ruta para generar una operacion de nivel facil
-app.get("/operacioFacil/:idPartida/:idJugador", (req, res) => {
-  const idPartida = req.params.idPartida;
-  const idJugador = req.params.idJugador;
-
-  const num1 = Math.floor(Math.random() * 100) + 1;
-  const num2 = Math.floor(Math.random() * 100) + 1;
-
-  const operators = ["+", "-"];
-  const operator = operators[Math.floor(Math.random() * operators.length)];
-
-  const operation = num1 + " " + operator + " " + num2;
-  const operacionGuardar = `${num1} ${operator} ${num2}`;
-  const partidaIndex = partidas.findIndex((p) => p.idPartida == idPartida);
-  const jugadorKey = `jugador${idJugador}`;
-  let partida = partidas.find((p) => p.idPartida == idPartida);
-  if (idJugador == 1) {
-    partida.jugador1.operacion = operacionGuardar;
-    console.log(partida.jugador1.operacion);
-  } else {
-    partida.jugador2.operacion = operacionGuardar;
-    console.log(partida.jugador2.operacion);
-  }
-
-  res.send({ operation: operation });
-});
-
 //ruta para generar una operacion de nivel medio
 app.get("/operacioMitg/:idPartida/:idJugador", (req, res) => {
   const idPartida = req.params.idPartida;
@@ -163,7 +138,6 @@ app.get("/operacioMitg/:idPartida/:idJugador", (req, res) => {
   const operation = num1 + " " + operator + " " + num2;
   const operacionGuardar = `${num1} ${operator} ${num2}`;
   const partidaIndex = partidas.findIndex((p) => p.idPartida == idPartida);
-  const jugadorKey = `jugador${idJugador}`;
   let partida = partidas.find((p) => p.idPartida == idPartida);
   if (idJugador == 1) {
     partida.jugador1.operacion = operacionGuardar;

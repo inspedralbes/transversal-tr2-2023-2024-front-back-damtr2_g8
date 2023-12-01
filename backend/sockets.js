@@ -1,6 +1,4 @@
-function sockets(io) {
-  let partidas = [];
-
+function sockets(io, partidas) {
   io.on("connection", (socket) => {
     socket.on("restarVida", ({ idPartida, idJugador, idCantidad }) => {
       disminuirVida(idPartida, idJugador, idCantidad);
@@ -9,7 +7,47 @@ function sockets(io) {
     socket.on("conectarUsuario", (user) => {
       gestionarPartida(socket, user);
     });
+
+    socket.on("getOperation", ({ idPartida, idJugador }) => {
+      getOperation(idPartida, idJugador);
+    });
+
+    socket.on("solveOperation", ({ idPartida, idJugador, result }) => {
+      solveOperation(idPartida, idJugador, result);
+    });
   });
+
+  function solveOperation(idPartida, idJugador, result) {
+    let correcto = false;
+    const partida = partidas.find((p) => p.idPartida == idPartida);
+    realResult = eval(partida.jugadores[idJugador].operacion);
+    if (realResult == result) {
+      correcto = true;
+      disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
+    }
+
+    io.to(partida.jugadores[idJugador].idSocket).emit("evaluacionResultado", {
+      result: correcto,
+    });
+  }
+
+  function getOperation(idPartida, idJugador) {
+    const num1 = Math.floor(Math.random() * 100) + 1;
+    const num2 = Math.floor(Math.random() * 100) + 1;
+
+    const operators = ["+", "-"];
+    const operator = operators[Math.floor(Math.random() * operators.length)];
+
+    const operacionGuardar = `${num1} ${operator} ${num2}`;
+
+    const partida = partidas.find((p) => p.idPartida == idPartida);
+    partida.jugadores[idJugador].operacion = operacionGuardar;
+
+    io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
+      operacion: operacionGuardar,
+      jugador: idJugador == 1 ? 1 : 0,
+    });
+  }
 
   // Función para disminuir la vida de un jugador en una partida
   function disminuirVida(idPartida, idJugador, idCantidad) {
@@ -50,6 +88,7 @@ function sockets(io) {
       vida: 100,
       operacion: "",
       resultadoJugador: null,
+      dificultad: 1,
     };
 
     if (partidas.length == 0) {
