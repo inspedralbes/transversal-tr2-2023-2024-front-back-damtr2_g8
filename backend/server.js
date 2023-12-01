@@ -5,18 +5,13 @@ const port = 3751;
 const cors = require("cors");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
-const { Server } = require("socket.io");
 const http = require("http");
 const { join, parse } = require("path");
 const server = http.createServer(app);
 var CryptoJS = require("crypto-js");
+const { sockets } = require("./sockets.js");
+const { Server } = require("socket.io");
 
-//REDIRECCIONAR AL INDEX.HTML
-app.get("/", (req, res) => {
-  res.sendFile(join(__dirname, "index.html"));
-});
-
-//PARTE DEL SOCKET.IO
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -24,59 +19,10 @@ const io = new Server(server, {
   },
 });
 
-let partidas = [
-  (partida = {
-    idPartida: 1,
-    jugador1: {
-      idSocket: 1,
-      vida: 100,
-      operacion: "√12",
-    },
-    jugador2: {
-      idSocket: 2,
-      vida: 100,
-      operacion: "1+3",
-    },
-  }),
-];
-
-// Función para disminuir la vida de un jugador en una partida
-function disminuirVida(idPartida, idJugador, cantidad) {
-  const partida = partidas.find((p) => p.idPartida == idPartida);
-
-  if (partida) {
-    const vidaActual =
-      idJugador == 1 ? partida.jugador1.vida : partida.jugador2.vida;
-    const nuevaVida = Math.max(0, vidaActual - cantidad);
-
-    if (idJugador == 1) {
-      partida.jugador1.vida = nuevaVida;
-      io.to(partida.jugador1.idSocket).emit("actualizarVida", {
-        vida: nuevaVida,
-        jugador: 1,
-      });
-      io.to(partida.socket2).emit("actualizarVida", {
-        vida: nuevaVida,
-        jugador: 2,
-      });
-    } else {
-      partida.jugador2.vida = nuevaVida;
-      io.to(partida.socket1).emit("actualizarVida", {
-        vida: nuevaVida,
-        jugador: 1,
-      });
-      io.to(partida.socket2).emit("actualizarVida", {
-        vida: nuevaVida,
-        jugador: 2,
-      });
-    }
-  }
-}
-
-io.on("connection", (socket) => {
-  socket.on("disminuirVida", ({ idPartida, idJugador, cantidad }) => {
-    disminuirVida(idPartida, idJugador, cantidad);
-  });
+sockets(io);
+//REDIRECCIONAR AL INDEX.HTML
+app.get("/", (req, res) => {
+  res.sendFile(join(__dirname, "index.html"));
 });
 
 //PARTE DE LA BASE DE DATOS
@@ -174,21 +120,23 @@ app.post("/login", async (req, res) => {
 app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password || !req.body.nom || !req.body.admin || !req.body.idClasse) {
     res.status(500).send("Both email and password are required");
-  }else{
-    var sql = `INSERT INTO USUARIS VALUES (null, '${req.body.nom}', '${CryptoJS.MD5(req.body.password).toString()}', '${req.body.email}', '${req.body.admin}', '${req.body.idClasse}')`;
+  } else {
+    var sql = `INSERT INTO USUARIS VALUES (null, '${
+      req.body.nom
+    }', '${CryptoJS.MD5(req.body.password).toString()}', '${
+      req.body.email
+    }', '${req.body.admin}', '${req.body.idClasse}')`;
     conn.query(sql, (err, result) => {
       if (err) console.error(err);
-      res.send({ userData: result});
+      res.send({ userData: result });
     });
   }
 });
-
 
 //ruta para generar una operacion de nivel facil
 app.get("/operacioFacil/:idPartida/:idJugador", (req, res) => {
   const idPartida = req.params.idPartida;
   const idJugador = req.params.idJugador;
-
 
   const num1 = Math.floor(Math.random() * 100) + 1;
   const num2 = Math.floor(Math.random() * 100) + 1;
@@ -201,10 +149,10 @@ app.get("/operacioFacil/:idPartida/:idJugador", (req, res) => {
   const partidaIndex = partidas.findIndex((p) => p.idPartida == idPartida);
   const jugadorKey = `jugador${idJugador}`;
   let partida = partidas.find((p) => p.idPartida == idPartida);
-  if(idJugador == 1){
-  partida.jugador1.operacion = operacionGuardar;
-  console.log(partida.jugador1.operacion);
-  }else{
+  if (idJugador == 1) {
+    partida.jugador1.operacion = operacionGuardar;
+    console.log(partida.jugador1.operacion);
+  } else {
     partida.jugador2.operacion = operacionGuardar;
     console.log(partida.jugador2.operacion);
   }
@@ -228,14 +176,14 @@ app.get("/operacioMitg/:idPartida/:idJugador", (req, res) => {
   const partidaIndex = partidas.findIndex((p) => p.idPartida == idPartida);
   const jugadorKey = `jugador${idJugador}`;
   let partida = partidas.find((p) => p.idPartida == idPartida);
-  if(idJugador == 1){
-  partida.jugador1.operacion = operacionGuardar;
-  console.log(partida.jugador1.operacion);
-  }else{
+  if (idJugador == 1) {
+    partida.jugador1.operacion = operacionGuardar;
+    console.log(partida.jugador1.operacion);
+  } else {
     partida.jugador2.operacion = operacionGuardar;
     console.log(partida.jugador2.operacion);
   }
-  
+
   res.send({ operation: operation });
 });
 //ruta para generar una operacion de nivel dificil
@@ -249,24 +197,24 @@ app.get("/operacioDificil/:idPartida/:idJugador", (req, res) => {
   const operators = ["+", "-", "*", "/", "^", "√"];
   const operator = operators[Math.floor(Math.random() * operators.length)];
 
-  const operacion = ""
+  const operacion = "";
 
   if (operator == "^") {
     num2 = 2;
     operation = num1 + " " + operator + " " + num2;
   } else if (operator == "√") {
     num2 = "";
-    operation = operator+""+num1;
+    operation = operator + "" + num1;
   }
 
   const operacionGuardar = operation;
   const partidaIndex = partidas.findIndex((p) => p.idPartida == idPartida);
   const jugadorKey = `jugador${idJugador}`;
   let partida = partidas.find((p) => p.idPartida == idPartida);
-  if(idJugador == 1){
-  partida.jugador1.operacion = operacionGuardar;
-  console.log(partida.jugador1.operacion);
-  }else{
+  if (idJugador == 1) {
+    partida.jugador1.operacion = operacionGuardar;
+    console.log(partida.jugador1.operacion);
+  } else {
     partida.jugador2.operacion = operacionGuardar;
     console.log(partida.jugador2.operacion);
   }
@@ -303,7 +251,7 @@ app.get("/resoldre/:idPartida/:idJugador/:resultado", (req, res) => {
       result = parseInt(num1) * parseInt(num2);
       break;
     case "/":
-      result = parseInt(num1) / (num2);
+      result = parseInt(num1) / num2;
       break;
     case "^":
       result = Math.pow(parseInt(num1), parseInt(num2));
@@ -311,7 +259,7 @@ app.get("/resoldre/:idPartida/:idJugador/:resultado", (req, res) => {
     default:
       // Para la raíz cuadrada, se pasa solo el primer número
       result = Math.sqrt(parseInt(num2));
-      result = Math.round(result)
+      result = Math.round(result);
       break;
   }
 

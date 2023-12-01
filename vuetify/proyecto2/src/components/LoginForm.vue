@@ -11,7 +11,7 @@
                                     required></v-text-field>
                                 <v-text-field v-model="emailRegistration.password" label="Password" type="password"
                                     required></v-text-field>
-                                    <v-btn type="submit" color="primary">Registra't</v-btn>
+                                <v-btn type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
 
@@ -22,7 +22,7 @@
                                     required></v-text-field>
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
-                                <v-checkbox type="checkbox"  id="profe" label="Soc professor/a"></v-checkbox>
+                                <v-checkbox type="checkbox" id="profe" label="Soc professor/a"></v-checkbox>
                                 <v-btn type="submit" color="primary">Inicia sessió</v-btn>
 
                             </v-form>
@@ -71,9 +71,9 @@ export default {
                 }),
             });
 
-            if(!response.ok) {
+            if (!response.ok) {
                 throw new Error('Network response was not ok');
-            }else{
+            } else {
                 const data = await response.json();
                 console.log('Server Response:', data);
                 Window.alert("Usuari registrat correctament");
@@ -99,22 +99,22 @@ export default {
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
-            }else{
+            } else {
                 const data = await response.json();
 
-            console.log('Server Response:', data);
+                console.log('Server Response:', data);
 
-            // Use this.$router instead of $router
-            if (element.checked && data.userData.admin == 1) {
-                this.$router.push('/classes');
-            } else {
-                this.$router.push('/join');
-            }
+                // Use this.$router instead of $router
+                if (element.checked && data.userData.admin == 1) {
+                    this.$router.push('/classes');
+                } else {
+                    this.$router.push('/join');
+                }
             }
 
-            
+
         },
-        async recibirClases(){
+        async recibirClases() {
             const response = await fetch('http://localhost:3751/clases', {
                 method: 'GET',
                 headers: {
@@ -124,18 +124,18 @@ export default {
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
-            }else{
+            } else {
                 const data = await response.json();
 
-            console.log('Server Response:', data);
+                console.log('Server Response:', data);
 
-            // Use this.$router instead of $router
-            this.clases = data.classes;
+                // Use this.$router instead of $router
+                this.clases = data.classes;
             }
         }
     },
     mounted() {
-            this.recibirClases();
+        this.recibirClases();
     },
 };
 </script>
@@ -146,7 +146,7 @@ export default {
 }
 
 .full-container {
-    background-color: lightblue;
+    background: radial-gradient(lightblue, rgb(81, 180, 213));
     height: 100vh;
     margin: 0;
     display: flex;
@@ -172,6 +172,4 @@ export default {
     bottom: 60px;
     z-index: 1;
 }
-
-
 </style>
