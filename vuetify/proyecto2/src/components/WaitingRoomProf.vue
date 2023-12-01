@@ -43,15 +43,13 @@
 
 
 <style scoped>
-
-
-.footer {
-    height: 300px;
-    background-color: #79b6c9;
-    margin-top: auto;
-    padding: 20px;
-    width: auto;
+html,
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
 
 .user-col {
     display: flex;
@@ -71,20 +69,32 @@
 
 .img-avatar {
     display: block;
-    /* Asegura que la imagen se comporte como un bloque */
     margin: 0 auto;
-    /* Centra la imagen horizontalmente y agrega espacio en la parte inferior */
 }
 
 .full-container {
+    height: 100vh;
     padding-top: 20px;
     background-color: #add8e6;
-    height: 310px;
     display: flex;
     flex-direction: column;
     text-align: center;
-    overflow: hidden;
+    align-items: center;
+
 }
+
+.footer {
+
+    background-color: #79b6c9;
+    padding: 20px;
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+}
+
 
 .my-button {
     display: flex;
@@ -92,10 +102,8 @@
     align-items: center;
 
     margin-top: 10px;
-    width: auto;
-    /* padding: auto; */
+    width: fit-content;
     border-radius: 2px;
-    background-color: #72BAE8;
-    color: white;
+    color: #72BAE8;
 }
 </style>

@@ -119,7 +119,7 @@ export default {
 <template>
     <div class="full-container">
         <div class="center-container">
-            <v-card class="pa-10 bg-grey-lighten-5 elevation-5">
+            <v-card class="pa-10 bg-grey-lighten-5 elevation-5 rounded-xl">
                 <h1 class="title">UNEIX-TE</h1>
                 <form @submit.prevent="onSubmit">
                     <div class="d-flex my-3">
@@ -164,13 +164,12 @@ export default {
 .title {
     text-align: center;
     letter-spacing: 2.5px;
-    font-weight: 300;
     margin-bottom: 25px;
     font-size: 42px;
 }
 
 .full-container {
-    background: radial-gradient(lightblue, rgb(81, 180, 213));
+    background-color: lightblue;
     height: 100vh;
     margin: 0;
     display: flex;
@@ -196,7 +195,6 @@ export default {
     text-align: center;
     font-size: 1.25rem;
     min-width: 0;
-    border-radius: 6px;
     border: 1.5px solid lightgrey;
     outline: none;
 }

@@ -43,11 +43,15 @@
 
 <style scoped>
 .footer {
-    height: 300px;
-    background-color: #79b6c9;
-    margin-top: auto;
-    padding: 20px;
-    width: auto;
+
+background-color: #79b6c9;
+padding: 20px;
+box-sizing: border-box;
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+
 }
 
 .user-col {
@@ -72,15 +76,15 @@
 }
 
 .full-container {
-    padding-top: 70px;
+    height: 100vh;
+    padding-top: 50px;
     background-color: #add8e6;
-    height: 310px;
     display: flex;
     flex-direction: column;
     text-align: center;
-    overflow: hidden;
-}
+    align-items: center;
 
+}
 .my-button {
     display: flex;
     justify-content: center;
@@ -101,8 +105,6 @@
 }
 
 .loader {
-    width: 80px;
-    aspect-ratio: 2;
     background:
         var(--divide-image) 0% 50% no-repeat,
         var(--equal-image) 50% 50% no-repeat,
@@ -129,7 +131,6 @@
         background-position: 0% 50%, 50% 50%, 100% 100%;
     }
 }
-
 </style>
 
 <script setup>

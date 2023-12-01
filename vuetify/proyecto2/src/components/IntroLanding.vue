@@ -8,8 +8,10 @@
 </template>
 
 <style scoped>
+*{
+  background-color: lightblue;
+}
 .full-container {
-  background: radial-gradient(lightblue, rgb(81, 180, 213));
   height: 100vh;
   margin: 0;
   display: flex;
@@ -41,7 +43,6 @@
     transform: translateX(-20px) rotate(-5deg);
   }
 }
-
 .button-landing {
   position: relative;
   padding: 14px 28px;
@@ -90,7 +91,7 @@
   border-radius: 40px;
   border-bottom: 3px solid #fff;
   border-right: 3px solid #fff;
-}
+} 
 </style>
 
 <script setup>

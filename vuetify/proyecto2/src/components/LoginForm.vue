@@ -1,16 +1,28 @@
 <template>
     <div class="full-container">
         <v-row class="d-flex justify-center align-center">
-            <v-col cols="12" sm="8" md="6">
+            <v-col cols="12" sm="8">
                 <v-card class="rounded-xl elevation-6">
                     <v-row>
                         <v-col cols="6" class=" pl-10 py-10">
                             <h2 class="my-2 text-center">Registra't</h2>
                             <v-form @submit.prevent="register" class="mr-6">
+                                <div class="name-field">
+                                    <v-text-field v-model="emailRegistration.name" label="Nom" type="name"
+                                        required></v-text-field>
+                                    <v-text-field v-model="emailRegistration.surname" label="Cognom" type="cognom" required
+                                        class="ml-6"></v-text-field>
+                                </div>
                                 <v-text-field v-model="emailRegistration.email" label="Email" type="email"
                                     required></v-text-field>
                                 <v-text-field v-model="emailRegistration.password" label="Password" type="password"
                                     required></v-text-field>
+                                <div class="name-field">
+                                    <v-checkbox type="checkbox" label="Soc professor/a"></v-checkbox>
+                                    <v-autocomplete :items="classes" :custom-filter="filterClass" base-color="white"
+                                        item-title="nomClasse" label="Classe"></v-autocomplete>
+                                </div>
+
                                 <v-btn type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
@@ -50,10 +62,16 @@ export default {
                 email: '',
                 password: '',
             },
-            clases: [],
+            classes: [],
         };
     },
     methods: {
+        filterClass(itemTitle, queryText, item) {
+            const textOne = item.raw.nomClasse.toLowerCase()
+            const searchText = queryText.toLowerCase()
+
+            return textOne.indexOf(searchText) > -1
+        },
         async register() {
             console.log('Registering user:', this.emailRegistration.username, this.emailRegistration.email, this.emailRegistration.password);
 
@@ -130,7 +148,8 @@ export default {
                 console.log('Server Response:', data);
 
                 // Use this.$router instead of $router
-                this.clases = data.classes;
+                this.classes = data;
+                console.log(this.clases);
             }
         }
     },
@@ -141,12 +160,17 @@ export default {
 </script>
 
 <style scoped>
+.name-field {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .imgFondo {
     z-index: 1;
 }
 
 .full-container {
-    background: radial-gradient(lightblue, rgb(81, 180, 213));
+    background-color: lightblue;
     height: 100vh;
     margin: 0;
     display: flex;
@@ -159,17 +183,5 @@ export default {
     width: 100%;
     background-image: url("../assets/Background.png");
 
-}
-
-.image {
-    right: 50px;
-    bottom: -50px;
-    z-index: 1;
-}
-
-.imageMultiplication {
-    right: -600px;
-    bottom: 60px;
-    z-index: 1;
 }
 </style>
