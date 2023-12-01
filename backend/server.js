@@ -224,6 +224,8 @@ app.get("/resoldre/:idPartida/:idJugador/:resultado", (req, res) => {
   const regex = /(\d+)?([+\-*/^√]?)(\d+)?/;
   const matches = operacion.match(regex);
 
+  console.log(matches);
+
   const num1 = matches[1] ? parseInt(matches[1]) : null;
   const operator = matches[2];
   const num2 = matches[3] ? parseInt(matches[3]) : null;

@@ -11,15 +11,20 @@ export default {
       result: null,
       emptyGameData: true,
       username: "",
-      otherPlayer: null,
+      idPlayer: null,
     };
   },
   methods: {
-    getOperation(resta) {
+    getOperation(dificultad) {
       socket.emit("restarVida", {
         idPartida: state.partida.idPartida,
-        idJugador: state.partida.jugadores.findIndex(jugador => jugador.username == this.username) == 0 ? 1 : 0,
-        cantidad: resta
+        idJugador:
+          state.partida.jugadores.findIndex(
+            (jugador) => jugador.username == this.username
+          ) == 0
+            ? 1
+            : 0,
+        idCantidad: dificultad,
       });
     },
     conectar() {
@@ -28,11 +33,11 @@ export default {
     solveOperation() {
       let url =
         "http://localhost:3751/resoldre/" +
-        this.operacion.num1 +
+        state.partida.idPartida +
         "/" +
-        this.operacion.num2 +
+        state.partida.jugadores[this.idPlayer] +
         "/" +
-        this.operacion.operator;
+        this.result;
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
@@ -44,38 +49,52 @@ export default {
   computed: {
     setPartida() {
       this.emptyGameData = false;
+      this.idPlayer =
+        state.partida.jugadores.findIndex(
+          (jugador) => jugador.username == this.username
+        ) == 0
+          ? 1
+          : 0;
+          console.log(state.partida);
       return state.partida;
     },
   },
   mounted() {
     this.username = prompt();
-    this.setPartida
+    this.conectar()
+    this.setPartida;
   },
 };
 </script>
 
 <template>
   <div class="game-container">
-    <v-btn @click="conectar()">conectar</v-btn>
     <v-sheet class="content-wrap bg-transparent">
       <v-row class="px-12 py-5" v-if="!emptyGameData">
         <v-col>
-          <h2>{{ setPartida.jugadores[0].username }}</h2>
+          <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
           <div class="PS-container">
-            <div class="PS" v-bind:style="{
-              width: setPartida.jugadores[0].vida + '%',
-            }">
-              <p>{{ setPartida.jugadores[0].vida }}</p>
+            <div
+              class="PS"
+              v-bind:style="{
+                width:
+                  setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
+              }"
+            >
+              <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
             </div>
           </div>
         </v-col>
         <v-col align="right">
-          <h2>{{ setPartida.jugadores[1].username }}</h2>
+          <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div class="PS-container" align="left">
-            <div class="PS" v-bind:style="{
-              width: setPartida.jugadores[1].vida + '%',
-            }">
-              <p>{{ setPartida.jugadores[1].vida }}</p>
+            <div
+              class="PS"
+              v-bind:style="{
+                width: setPartida.jugadores[idPlayer].vida + '%',
+              }"
+            >
+              <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
             </div>
           </div>
         </v-col>
@@ -87,24 +106,40 @@ export default {
           <v-sheet align="center" class="bg-transparent">
             <v-row class="py-16 dificulty-container">
               <v-col align="center">
-                <v-btn class="dificulty-option rounded-lg" style="background-color: #7ed776"
-                  @click="getOperation(2)">Facil</v-btn>
+                <v-btn
+                  class="dificulty-option rounded-lg"
+                  style="background-color: #7ed776"
+                  @click="getOperation(1)"
+                  >Facil</v-btn
+                >
               </v-col>
               <v-col align="center">
-                <v-btn class="dificulty-option rounded-lg" style="background-color: #768ed7"
-                  @click="getOperation(5)">Medio</v-btn>
+                <v-btn
+                  class="dificulty-option rounded-lg"
+                  style="background-color: #768ed7"
+                  @click="getOperation(2)"
+                  >Medio</v-btn
+                >
               </v-col>
               <v-col align="center">
-                <v-btn class="dificulty-option rounded-lg" style="background-color: #d77676"
-                  @click="getOperation(10)">Dificil</v-btn>
+                <v-btn
+                  class="dificulty-option rounded-lg"
+                  style="background-color: #d77676"
+                  @click="getOperation(3)"
+                  >Dificil</v-btn
+                >
               </v-col>
             </v-row>
           </v-sheet>
         </v-col>
         <v-col>
           <div v-if="seeOperation">
-            <div>Operacion: {{ operacion }}</div>
-            <v-text-field label="?" type="number" v-model="result"></v-text-field>
+            <div>Operacion: {{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].operacion }}</div>
+            <v-text-field
+              label="?"
+              type="number"
+              v-model="result"
+            ></v-text-field>
             <v-btn @click="solveOperation()">Resolver</v-btn>
           </div>
         </v-col>
@@ -113,22 +148,18 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
 .PS {
   font-weight: 800;
   font-size: 23px;
-  padding: 10px;
   width: 60%;
   background-color: rgb(153, 153, 153);
 }
-
 
 .game-container {
   background: radial-gradient(lightblue, rgb(81, 180, 213));
   position: relative;
   min-height: 100vh;
-
 }
 
 .content-wrap {
