@@ -137,6 +137,17 @@ app.get("/usuario/:idUsuari", (req, res) => {
   });
 });
 
+app.get("/clases", (req, res) => {
+  const sql = "SELECT idClasse FROM CLASSE"
+  conn.query(sql, (err, result) => {
+    if (err) {
+      console.error(err);
+    } else {
+      res.json(result);
+    }
+  });
+})
+
 //ruta para hacer login
 app.post("/login", async (req, res) => {
   if (!req.body.email || !req.body.password) {
@@ -161,10 +172,10 @@ app.post("/login", async (req, res) => {
 
 //ruta para registrar un usuario
 app.post("/register", (req, res) => {
-  if (!req.body.email || !req.body.password) {
+  if (!req.body.email || !req.body.password || !req.body.nom || !req.body.admin || !req.body.idClasse) {
     res.status(500).send("Both email and password are required");
   }else{
-    var sql = `INSERT INTO USUARIS VALUES (null, '${req.body.nom}', '${CryptoJS.MD5(req.body.password).toString()}', '${req.body.email}', '${req.body.rol}', '${req.body.idClasse}')`;
+    var sql = `INSERT INTO USUARIS VALUES (null, '${req.body.nom}', '${CryptoJS.MD5(req.body.password).toString()}', '${req.body.email}', '${req.body.admin}', '${req.body.idClasse}')`;
     conn.query(sql, (err, result) => {
       if (err) console.error(err);
       res.send({ userData: result});
