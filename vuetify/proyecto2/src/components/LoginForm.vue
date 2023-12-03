@@ -21,6 +21,7 @@
                                     <v-checkbox type="checkbox" label="Soc professor/a"></v-checkbox>
                                     <v-autocomplete :items="classes" :custom-filter="filterClass" base-color="white"
                                         item-title="nomClasse" label="Classe"></v-autocomplete>
+                                        <small>*indicates required field</small>
                                 </div>
 
                                 <v-btn type="submit" color="primary">Registra't</v-btn>
