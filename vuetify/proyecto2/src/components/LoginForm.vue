@@ -18,10 +18,9 @@
                                 <v-text-field v-model="emailRegistration.password" label="Password" type="password"
                                     required></v-text-field>
                                 <div class="name-field">
-                                    <v-checkbox type="checkbox" label="Soc professor/a"></v-checkbox>
+                                    <v-checkbox id ="profeRegistro" type="checkbox" label="Soc professor/a"></v-checkbox>
                                     <v-autocomplete :items="classes" :custom-filter="filterClass" base-color="white"
-                                        item-title="nomClasse" label="Classe"></v-autocomplete>
-                                        <small>*indicates required field</small>
+                                        item-title="nomClasse" label="Classe" v-model="emailRegistration.selectedClass"></v-autocomplete>
                                 </div>
 
                                 <v-btn type="submit" color="primary">Registra't</v-btn>
@@ -35,7 +34,7 @@
                                     required></v-text-field>
                                 <v-text-field v-model="usernameLogin.password" label="Password" type="password"
                                     required></v-text-field>
-                                <v-checkbox type="checkbox" id="profe" label="Soc professor/a"></v-checkbox>
+                                <v-checkbox type="checkbox" id="profeLogin" label="Soc professor/a"></v-checkbox>
                                 <v-btn type="submit" color="primary">Inicia sessió</v-btn>
 
                             </v-form>
@@ -54,10 +53,12 @@ export default {
         return {
             emailRegistration: {
                 name: '',
+                surname: '',
                 email: '',
                 password: '',
                 isAdmin: false,
-                classId: null,
+                idClasse: null,
+                selectedClass: null,
             },
             usernameLogin: {
                 email: '',
@@ -74,19 +75,29 @@ export default {
             return textOne.indexOf(searchText) > -1
         },
         async register() {
-            console.log('Registering user:', this.emailRegistration.username, this.emailRegistration.email, this.emailRegistration.password);
 
+            let classeEscogida = this.classes.find(classe => classe.nomClasse == this.emailRegistration.selectedClass)
+            this.emailRegistration.idClasse = classeEscogida.idClasse;
+            console.log('Registering user:', this.emailRegistration.idClasse, this.emailRegistration.name,this.emailRegistration.surname, this.emailRegistration.email, this.emailRegistration.password);
+
+            var element = document.getElementById("profeRegistro");
+            if(element.checked){
+                this.emailRegistration.isAdmin = 1;
+            }else{
+                this.emailRegistration.isAdmin = 0;
+            }
             const response = await fetch('http://localhost:3751/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: this.emailRegistration.name,
+                    nom: this.emailRegistration.name,
+                    cognom: this.emailRegistration.surname,
                     email: this.emailRegistration.email,
                     password: this.emailRegistration.password,
-                    isAdmin: this.emailRegistration.isAdmin,
-                    classId: this.emailRegistration.classId,
+                    admin: this.emailRegistration.isAdmin,
+                    idClasse: this.emailRegistration.idClasse,
                 }),
             });
 
@@ -95,15 +106,20 @@ export default {
             } else {
                 const data = await response.json();
                 console.log('Server Response:', data);
-                Window.alert("Usuari registrat correctament");
+                window.alert("Usuari registrat correctament");
 
+                if (element.checked && this.emailRegistration.isAdmin == 1) {
+                    this.$router.push('/classes');
+                } else {
+                    this.$router.push('/join');
+                }
             }
 
         },
         async login() {
             console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
 
-            var element = document.getElementById("profe");
+            var element = document.getElementById("profeLogin");
 
             const response = await fetch('http://localhost:3751/login', {
                 method: 'POST',
