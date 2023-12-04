@@ -137,9 +137,6 @@ export default {
         },
         
     },
-    mounted() {
-        this.recibirClases();
-    },
 };
 </script>
 
