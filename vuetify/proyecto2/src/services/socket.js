@@ -11,16 +11,26 @@ export const state = reactive({
         {
           username: "",
           vida: 100,
+          operacion: "",
         },
         {
             username: "",
             vida: 100,
+            operacion: "",
         },
       ],
     },
 });
 
-socket.on("enviaJson", (...data) => {
-  state.partida = data[0];
+socket.on("enviaJson", (data) => {
+  state.partida = data;
+});
+
+socket.on("actualizarVida", (data) => {
+  state.partida.jugadores[data.jugador].vida = data.vida;
+});
+
+socket.on("actualizarOperacion", (data) => {
+  state.partida.jugadores[data.jugador].operacion = data.operacion;
 });
 
