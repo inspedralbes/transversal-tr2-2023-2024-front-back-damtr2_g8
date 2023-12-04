@@ -75,10 +75,7 @@ export default {
             return textOne.indexOf(searchText) > -1
         },
         async register() {
-
-            let classeEscogida = this.classes.find(classe => classe.nomClasse == this.emailRegistration.selectedClass)
-            this.emailRegistration.idClasse = classeEscogida.idClasse;
-            console.log('Registering user:', this.emailRegistration.idClasse, this.emailRegistration.name,this.emailRegistration.surname, this.emailRegistration.email, this.emailRegistration.password);
+            console.log('Registering user:', this.emailRegistration.name,this.emailRegistration.surname, this.emailRegistration.email, this.emailRegistration.password);
 
             var element = document.getElementById("profeRegistro");
             if(element.checked){
@@ -97,7 +94,6 @@ export default {
                     email: this.emailRegistration.email,
                     password: this.emailRegistration.password,
                     admin: this.emailRegistration.isAdmin,
-                    idClasse: this.emailRegistration.idClasse,
                 }),
             });
 
