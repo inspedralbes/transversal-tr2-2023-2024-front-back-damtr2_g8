@@ -19,8 +19,7 @@
                                     required></v-text-field>
                                 <div class="name-field">
                                     <v-checkbox id ="profeRegistro" type="checkbox" label="Soc professor/a"></v-checkbox>
-                                    <v-autocomplete :items="classes" :custom-filter="filterClass" base-color="white"
-                                        item-title="nomClasse" label="Classe" v-model="emailRegistration.selectedClass"></v-autocomplete>
+        
                                 </div>
 
                                 <v-btn type="submit" color="primary">Registra't</v-btn>
@@ -57,23 +56,14 @@ export default {
                 email: '',
                 password: '',
                 isAdmin: false,
-                idClasse: null,
-                selectedClass: null,
             },
             usernameLogin: {
                 email: '',
                 password: '',
             },
-            classes: [],
         };
     },
     methods: {
-        filterClass(itemTitle, queryText, item) {
-            const textOne = item.raw.nomClasse.toLowerCase()
-            const searchText = queryText.toLowerCase()
-
-            return textOne.indexOf(searchText) > -1
-        },
         async register() {
             console.log('Registering user:', this.emailRegistration.name,this.emailRegistration.surname, this.emailRegistration.email, this.emailRegistration.password);
 
@@ -145,26 +135,7 @@ export default {
 
 
         },
-        async recibirClases() {
-            const response = await fetch('http://localhost:3751/clases', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            } else {
-                const data = await response.json();
-
-                console.log('Server Response:', data);
-
-                // Use this.$router instead of $router
-                this.classes = data;
-                console.log(this.clases);
-            }
-        }
+        
     },
     mounted() {
         this.recibirClases();
