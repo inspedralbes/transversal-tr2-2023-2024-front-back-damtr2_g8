@@ -13,17 +13,17 @@ export default {
     };
   },
   methods: {
-    getOperation() {
+    getOperation(dificultad) {
       socket.emit("getOperation", {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
+        dificultad: dificultad
       });
     },
     restarVida(dificultad) {
       socket.emit("restarVida", {
         idPartida: state.partida.idPartida,
-        idJugador: this.idPlayer == 1 ? 0 : 1,
-        idCantidad: dificultad,
+        idJugador: this.idPlayer,
       });
     },
     conectar() {
@@ -42,7 +42,7 @@ export default {
       this.emptyGameData = false;
       this.idPlayer =
         state.partida.jugadores.findIndex(
-          (jugador) => jugador.username == this.username
+          (jugador) => jugador.idSocket == socket.id
         ) == 0
           ? 0
           : 1;
@@ -61,7 +61,7 @@ export default {
 <template>
   <div class="game-container">
     <v-sheet class="content-wrap bg-transparent">
-      <v-row class="px-12 py-5" v-if="!emptyGameData">
+      <v-row class="px-12 py-5" style="margin: 0;" v-if="!emptyGameData">
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div class="PS-container">
@@ -91,10 +91,10 @@ export default {
       </v-row>
     </v-sheet>
     <div class="game-bar">
-      <v-row class="mx-8">
+      <v-row class="mx-8" style="margin: 0">
         <v-col sm="6" lg="4" cols="2">
           <v-sheet align="center" class="bg-transparent">
-            <v-row class="py-16 dificulty-container">
+            <v-row class=" dificulty-container">
               <v-col align="center">
                 <v-btn
                   class="dificulty-option rounded-lg"
@@ -152,8 +152,7 @@ export default {
 
 .game-container {
   background: radial-gradient(lightblue, rgb(81, 180, 213));
-  position: relative;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .content-wrap {
@@ -191,6 +190,6 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 18.5rem;
+  height: fit-content;
 }
 </style>

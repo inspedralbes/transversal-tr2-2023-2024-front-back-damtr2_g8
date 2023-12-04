@@ -8,8 +8,8 @@ function sockets(io, partidas) {
       gestionarPartida(socket, user);
     });
 
-    socket.on("getOperation", ({ idPartida, idJugador }) => {
-      getOperation(idPartida, idJugador);
+    socket.on("getOperation", ({ idPartida, idJugador, dificultad }) => {
+      getOperation(idPartida, idJugador, dificultad);
     });
 
     socket.on("solveOperation", ({ idPartida, idJugador, result }) => {
@@ -20,7 +20,12 @@ function sockets(io, partidas) {
   function solveOperation(idPartida, idJugador, result) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
-    realResult = eval(partida.jugadores[idJugador].operacion);
+    try {
+      realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
+    }catch(e) {
+      console.log(e);
+    }
+    console.log(realResult);
     if (realResult == result) {
       correcto = true;
       disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
@@ -31,17 +36,31 @@ function sockets(io, partidas) {
     });
   }
 
-  function getOperation(idPartida, idJugador) {
-    const num1 = Math.floor(Math.random() * 100) + 1;
-    const num2 = Math.floor(Math.random() * 100) + 1;
-
-    const operators = ["+", "-"];
-    const operator = operators[Math.floor(Math.random() * operators.length)];
-
-    const operacionGuardar = `${num1} ${operator} ${num2}`;
+  function getOperation(idPartida, idJugador, dificultad) {
 
     const partida = partidas.find((p) => p.idPartida == idPartida);
-    partida.jugadores[idJugador].operacion = operacionGuardar;
+
+    partida.jugadores[idJugador].dificultad = dificultad;
+
+    operator = generarOperatorRandom(dificultad);
+    numeros = generarNumeros(operator); 
+
+    let operacionGuardar = `${numeros[0]}${operator}${numeros[1]}`;
+
+    if(operator == "^") {
+      operator = "**";
+    }
+
+    let operacionEval = `${numeros[0]}${operator}${numeros[1]}`;
+
+    if(operator == "√") {
+      operacionGuardar = `${operator}${numeros[1]}`;
+      operator = "Math.sqrt(";
+      numeros[1] += ")";
+      operacionEval = `${operator}${numeros[1]}`;
+    }
+
+    partida.jugadores[idJugador].operacion = operacionEval;
 
     io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
       operacion: operacionGuardar,
@@ -49,10 +68,46 @@ function sockets(io, partidas) {
     });
   }
 
+  function generarNumeros(operator) {
+    let num1 = 0;
+    let num2 = 0;
+
+    if (operator == "-" || operator == "+") {
+      num1 = Math.floor(Math.random() * 90) + 10;
+      num2 = Math.floor(Math.random() * 90) + 10;
+    }else if (operator == "*" || operator == "/") {
+      num1 = Math.floor(Math.random() * 19) + 5;
+      num2 = Math.floor(Math.random() * (num1 / 2)) + 3;
+    } else if (operator == "^") {
+      num1 = Math.floor(Math.random() * 9) + 2;
+      num2 = Math.floor(Math.random() * 3) + 2;
+    } else if (operator == "√") {
+      num1 = Math.floor(Math.random() * 9) + 8;
+      num2 = num1 * num1;
+    }
+
+    return [num1, num2];
+  }
+
+  function generarOperatorRandom(dificultad) {
+    const operators = ["+", "-", "*", "/", "^", "√"];
+
+    if (dificultad == 1) {
+      return operators[Math.floor(Math.random() * 2)];
+    } else if (dificultad == 2) {
+      return operators[Math.floor(Math.random() * 2)  + 2];
+    }else if (dificultad == 3) {
+      return operators[Math.floor(Math.random() * 2) + 4];
+    }
+
+  }
+
   // Función para disminuir la vida de un jugador en una partida
-  function disminuirVida(idPartida, idJugador, idCantidad) {
-    let cantidad = 0;
-    switch (idCantidad) {
+  function disminuirVida(idPartida, idJugador) {
+    
+    const partida = partidas.find((p) => p.idPartida == idPartida);
+
+    switch (partida.jugadores[idJugador].dificultad) {
       case 1:
         cantidad = 5;
         break;
@@ -63,7 +118,6 @@ function sockets(io, partidas) {
         cantidad = 15;
         break;
     }
-    const partida = partidas.find((p) => p.idPartida == idPartida);
 
     if (partida) {
       const vidaActual =
@@ -75,7 +129,7 @@ function sockets(io, partidas) {
       for (let i = 0; i < partida.jugadores.length; i++) {
         io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
           vida: nuevaVida,
-          jugador: idJugador == 1 ? 1 : 0,
+          jugador: idJugador == 1 ? 0 : 1,
         });
       }
     }
