@@ -40,17 +40,33 @@
                             <v-container>
                                 <v-row>
                                     <v-col cols="12" sm="6" md="12">
-                                        <v-img src="../assets/avatar1.png" width="70" required></v-img>
+                                        <a href="#" @click.prevent="openAvatarModal">Cambiar avatar</a>
+                                    </v-col>
+
+                                    <v-dialog v-model="avatarModal" max-width="600px">
+                                        <v-card>
+                                            <v-card-title class="headline">
+                                                Avatars
+                                                <v-spacer></v-spacer>
+                                                <v-btn icon @click="closeAvatarModal">
+                                                    <v-icon>mdi-close</v-icon>
+                                                </v-btn>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-row>
+                                                    <p>Avatares</p>
+                                                </v-row>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-dialog>
+                                    <v-col cols="12" sm="6">
+                                        <p>Nombre</p>
                                     </v-col>
                                     <v-col cols="12" sm="6">
-                                        <v-text-field label="Nom" required></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="6">
-                                        <v-text-field label="Cognom"
-                                            hint="example of helper text only on focus"></v-text-field>
+                                        <p>Apellido</p>
                                     </v-col>
                                     <v-col cols="12">
-                                        <v-text-field label="Email" required></v-text-field>
+                                        <p>Correo</p>
                                     </v-col>
                                     <v-col cols="12">
                                         <v-text-field label="Contrassenya" type="password" required></v-text-field>
@@ -69,21 +85,27 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-
-
-
-
             </button>
         </div>
     </div>
 </template>
 
 <script>
+
 export default {
     data() {
         return {
             dialog: false,
+            avatarModal: false,
         }
+    },
+    methods: {
+        openAvatarModal() {
+            this.avatarModal = true;
+        },
+        closeAvatarModal() {
+            this.avatarModal = false;
+        },
     },
 }
 </script>
