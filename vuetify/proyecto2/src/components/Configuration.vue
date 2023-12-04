@@ -1,7 +1,8 @@
 <template>
     <div class="div-gear">
         <div class="top-right-svg">
-            <button @click="dialog = !dialog"> <svg fill="#ffffff" height="40px" width="40px" version="1.1" id="Capa_1"
+            <button @click="dialog = !dialog"> 
+                <svg fill="#ffffff" height="40px" width="40px" version="1.1" id="Capa_1"
                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.64 29.64"
                     xml:space="preserve" stroke="#ffffff" stroke-width="0.00029643">
 
