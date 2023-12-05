@@ -49,7 +49,7 @@ export default {
                 this.proveSala = false;
                 state.joinedSala = null;
             } else if (nuevoValor != null && nuevoValor != false) {
-                this.$router.push('/WaitingRoomStudent');
+                this.$router.push('/sala');
             }
         },
     },

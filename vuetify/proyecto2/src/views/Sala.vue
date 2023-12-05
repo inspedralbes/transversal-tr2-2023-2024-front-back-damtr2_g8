@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-import WaitingRoom from '@/components/WaitingRoomProf.vue'
+import WaitingRoom from '@/components/WaitingRoom.vue'
 </script>

@@ -26,12 +26,14 @@ function sockets(io, partidas) {
       joinSala(codi, socket.id);
     });
 
-    io.on("disconnect", () => {
-      for (let i = 0; i < array.length; i++) {
-        const element = array[i];
-        
-      }
+    socket.on("disconnect", () => {
+      const borrarSala = salas.find(sala => sala.owner == socket.id);
       salas = salas.filter(sala => sala.owner != socket.id);
+      if (borrarSala) {
+        for (let i = 0; i < borrarSala.jugadores.length; i++) {
+          io.to(borrarSala.jugadores[i].id_jugador).emit("join", false);
+        }
+      }
     });
   });
 
