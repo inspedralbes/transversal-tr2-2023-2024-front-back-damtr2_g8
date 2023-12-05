@@ -200,7 +200,7 @@ export default {
 }
 
 .full-container {
-    background: radial-gradient(lightblue, rgb(81, 180, 213));
+    background-color: lightblue;
     height: 100vh;
     margin: 0;
     display: flex;
