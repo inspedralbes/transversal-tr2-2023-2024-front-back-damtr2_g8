@@ -137,12 +137,11 @@ app.get("/clases", (req, res) => {
 
 //ruta para hacer login
 app.post("/login", async (req, res) => {
-  res.send(login(req.body.email, req.body.password));
+  res.send(await login(req.body.email, req.body.password));
 });
 
 //ruta para registrar un usuario
 app.post("/register", (req, res) => {
-  console.log(req.body);
   res.send(
     register(req.body.email, req.body.password, req.body.nom, req.body.admin)
   );

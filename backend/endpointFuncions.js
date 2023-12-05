@@ -12,24 +12,26 @@ let conn = mysql.createPool({
 });
 
 function login(email, password) {
-  if (!email || !password) {
-    return { status: "Both email and password are required" };
-  } else {
-    let sql = `SELECT * FROM USUARIS WHERE correu = '${email}'`;
+  return new Promise((resolve, reject) => {
+    if (!email || !password) {
+      reject({ status: "Both email and password are required" });
+    } else {
+      let sql = `SELECT * FROM USUARIS WHERE correu = '${email}'`;
 
-    conn.query(sql, (err, result) => {
-      if (err) console.error(err);
-      let ciphertext = CryptoJS.MD5(password).toString();
-      if (result == 0 || result[0].pass != ciphertext) {
-        return { status: "Wrong email or password" };
-      } else {
-        //req.session.user = result[0].CorreoElectronico;
-        // res.cookie("user", req.session.user, { signed: true });
-        //res.send({ cookie: req.session, userData: result[0] });
-        return { userData: result[0] };
-      }
-    });
-  }
+      conn.query(sql, (err, result) => {
+        if (err) console.error(err);
+        let ciphertext = CryptoJS.MD5(password).toString();
+        if (result == 0 || result[0].pass != ciphertext) {
+          reject({ status: "Wrong email or password" });
+        } else {
+          //req.session.user = result[0].CorreoElectronico;
+          // res.cookie("user", req.session.user, { signed: true });
+          //res.send({ cookie: req.session, userData: result[0] });
+          resolve({ userData: result[0] });
+        }
+      });
+    }
+  });
 }
 
 function register(email, password, nom, admin) {
