@@ -10,7 +10,7 @@ const { join, parse } = require("path");
 const server = http.createServer(app);
 let CryptoJS = require("crypto-js");
 const { sockets } = require("./sockets.js");
-const { register } = require("./endpointFuncions.js");
+const { login, register } = require("./endpointFuncions.js");
 const { Server } = require("socket.io");
 
 let partidas = [];
@@ -95,36 +95,14 @@ app.get("/clases", (req, res) => {
 
 //ruta para hacer login
 app.post("/login", async (req, res) => {
-  if (!req.body.email || !req.body.password) {
-    res.status(500).send("Both email and password are required");
-  } else {
-    let sql = `SELECT * FROM USUARIS WHERE correu = '${req.body.email}'`;
-
-    conn.query(sql, (err, result) => {
-      if (err) console.error(err);
-      let ciphertext = CryptoJS.MD5(req.body.password).toString();
-      if (result == 0 || result[0].pass != ciphertext) {
-        res.status(500).send("Wrong email or password");
-      } else {
-        //req.session.user = result[0].CorreoElectronico;
-        // res.cookie("user", req.session.user, { signed: true });
-        //res.send({ cookie: req.session, userData: result[0] });
-        res.send({ userData: result[0] });
-      }
-    });
-  }
+  res.send(login(req.body.email, req.body.password));
 });
 
 //ruta para registrar un usuario
 app.post("/register", (req, res) => {
+  console.log(req.body);
   res.send(
-    register(
-      req.body.email,
-      req.body.password,
-      req.body.nom,
-      req.body.admin,
-      req.body.idClasse
-    )
+    register(req.body.email, req.body.password, req.body.nom, req.body.admin)
   );
 });
 
