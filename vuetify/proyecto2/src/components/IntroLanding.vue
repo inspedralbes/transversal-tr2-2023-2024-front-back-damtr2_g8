@@ -1,7 +1,7 @@
 <template>
   <div class="full-container">
     <div class="center-container">
-      <v-img src="../assets/MathBattleLogo.png" alt="Math Battle Logo" width="400" height="300" class="logo" />
+      <v-img src="../assets/MathBattleLogo.png" alt="Math Battle Logo" width="600" height="300" class="logo" />
       <button class="button-landing" @click="$router.push('/inici')">COMENÇAR</button>
     </div>
   </div>
@@ -23,6 +23,8 @@
 .center-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 4px;
 }
 
@@ -47,6 +49,7 @@
 
 .button-landing {
   position: relative;
+  width: 300px;
   padding: 14px 28px;
   margin: 10px;
   font-size: 22px;

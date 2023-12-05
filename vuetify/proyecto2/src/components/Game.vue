@@ -85,7 +85,19 @@ export default {
       </v-row>
     </v-sheet>
     <div class="game-bar">
-      <v-row class="mx-8" style="margin: 0">
+      <v-row>
+        <v-col sm="6" lg="6">
+          <div class="input-container">
+            <div class="operation-label">
+              <span><b>Operación:</b></span>
+              {{ setPartida.jugadores[idPlayer].operacion }}
+            </div>
+            <v-text-field label="?" type="number" v-model="result"></v-text-field>
+            <v-btn @click="solveOperation()">Resolver</v-btn>
+          </div>
+        </v-col>
+      </v-row>
+      <v-row class="mx-8" >
         <v-col sm="4" lg="6" md="6" cols="2">
           <v-sheet align="center" class="bg-transparent">
             <v-row class=" dificulty-container">
@@ -104,23 +116,22 @@ export default {
             </v-row>
           </v-sheet>
         </v-col>
-        <v-col sm="6" lg="6">
-          <div>
-            <div>
-              Operacion:
 
-              {{ setPartida.jugadores[idPlayer].operacion }}
-            </div>
-            <v-text-field label="?" type="number" v-model="result"></v-text-field>
-            <v-btn @click="solveOperation()">Resolver</v-btn>
-          </div>
-        </v-col>
       </v-row>
     </div>
   </div>
 </template>
 
 <style scoped>
+.input-container{
+  justify-content: center;
+  align-items: center;
+}
+.operation-label{
+  font-size:xx-large;
+  background-color: white;  
+}
+
 .PS {
   font-weight: 800;
   font-size: 23px;
@@ -171,5 +182,7 @@ export default {
   bottom: 0;
   width: 100%;
   height: fit-content;
+  display: flex;
+  flex-direction: column;
 }
 </style>

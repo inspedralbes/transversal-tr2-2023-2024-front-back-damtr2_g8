@@ -1,25 +1,18 @@
 <template>
   <div class="full-container">
     <div class="btnCrear">
-      <v-btn class="my-button" @click="this.mostrarPopUp = !this.mostrarPopUp"
-        >Crear classe
+      <v-btn class="my-button" @click="this.mostrarPopUp = !this.mostrarPopUp">Crear classe
+
 
         <v-dialog v-model="this.mostrarPopUp" max-width="600">
           <v-card>
             <v-card-title>Crear nueva clase</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="this.crearClase()">
-                <v-text-field
-                  v-model="nombreNuevaClase"
-                  label="Nombre de la clase"
-                ></v-text-field>
+                <v-text-field v-model="nombreNuevaClase" label="Nombre de la clase"></v-text-field>
                 <div class="botonesPopUp">
                   <v-btn type="submit" color="primary">Aceptar</v-btn>
-                  <v-btn
-                    @click="this.mostrarPopUp = !this.mostrarPopUp"
-                    color="error"
-                    >Cancelar</v-btn
-                  >
+                  <v-btn @click="this.mostrarPopUp = !this.mostrarPopUp" color="error">Cancelar</v-btn>
                 </div>
               </v-form>
             </v-card-text>
@@ -30,41 +23,51 @@
     <v-container>
       <v-card v-for="classe in classes" :key="classe.idClasse" class="vcard">
         <div class="classe">
-          <v-card-title class="titleCard">{{ classe.nomClasse }}</v-card-title>
-          <v-btn
-            class="btnEditar"
-            @click="setClasseEditar(classe)"
-            >Editar
-            <v-dialog v-model="this.mostrarPopUpEditar" max-width="600">
-              <v-card>
-                <v-card-title>Edita la teva classe</v-card-title>
-                <v-card-text>
-                  <v-form @submit.prevent="this.editarClasse()">
-                    <v-text-field v-model="classeEditar.nombreNuevaClasse"></v-text-field>
-                    <div class="botonesPopUp">
-                      <v-btn type="submit" color="primary">Aceptar</v-btn>
-                      <v-btn
-                        @click="
-                          this.mostrarPopUpEditar = !this.mostrarPopUpEditar
-                        "
-                        color="error"
-                        >Cancelar</v-btn
-                      >
-                    </div>
-                  </v-form>
-                </v-card-text>
-              </v-card>
-            </v-dialog>
-          </v-btn>
+          <v-card-title class="titleCard">{{ classe.nomClasse }}
+            <v-btn class="editBtn">
+              <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                stroke="#000000">
+
+                <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M12 5H9C7.11438 5 6.17157 5 5.58579 5.58579C5 6.17157 5 7.11438 5 9V15C5 16.8856 5 17.8284 5.58579 18.4142C6.17157 19 7.11438 19 9 19H15C16.8856 19 17.8284 19 18.4142 18.4142C19 17.8284 19 16.8856 19 15V12M9.31899 12.6911L15.2486 6.82803C15.7216 6.36041 16.4744 6.33462 16.9782 6.76876C17.5331 7.24688 17.5723 8.09299 17.064 8.62034L11.2329 14.6702L9 15L9.31899 12.6911Z"
+                    stroke="#000000" stroke-linecap="round" stroke-linejoin="round" />
+                </g>
+
+              </svg>
+            </v-btn>
+          </v-card-title>
+
         </div>
 
         <v-card-text class="txtCard">
           <b>Usuaris: {{ classe.numeroUsuarios }}</b>
           <div>
-            <v-btn class="my-button" @click="$router.push('/sala')"
-              >Uneix-te</v-btn
-            >
+            <v-btn class="my-button" @click="$router.push('/sala')">Uneix-te</v-btn>
+            <v-btn class="my-button" @click="setClasseEditar(classe)">Editar
+              <v-dialog v-model="this.mostrarPopUpEditar" max-width="600">
+                <v-card>
+                  <v-card-title>Edita la teva classe</v-card-title>
+                  <v-card-text>
+                    <v-form @submit.prevent="this.editarClasse()">
+                      <v-text-field v-model="classeEditar.nombreNuevaClasse"></v-text-field>
+                      <div class="botonesPopUp">
+                        <v-btn type="submit" color="primary">Aceptar</v-btn>
+                        <v-btn @click="
+                          this.mostrarPopUpEditar = !this.mostrarPopUpEditar
+                          " color="error">Cancelar</v-btn>
+                      </div>
+                    </v-form>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </v-btn>
           </div>
+
         </v-card-text>
       </v-card>
     </v-container>
@@ -122,7 +125,7 @@ export default {
         this.mostrarPopUp = false;
         this.getClasses();
       }
-    },async editarClasse(){
+    }, async editarClasse() {
       console.log(this.classeEditar);
       const response = await fetch(`http://localhost:3751/editarClasse/`, {
         method: "POST",
@@ -141,7 +144,7 @@ export default {
         this.mostrarPopUpEditar = false;
         this.getClasses();
       }
-    }, setClasseEditar(classe){
+    }, setClasseEditar(classe) {
       this.classeEditar = classe;
       this.nombreNuevaClasse = classe.nomClasse;
       this.mostrarPopUpEditar = true;
@@ -156,32 +159,35 @@ export default {
 </script>
 
 <style scoped>
-.btnEditar {
-  border: 2px solid black;
+.editBtn{
+  right: 0;
+  border-radius: 100%;
 }
 .classe {
   display: flex;
   justify-content: space-between;
   background-image: url("../assets/Background.png");
 }
+
 .btnCrear {
   display: flex;
   justify-content: flex-start;
   padding: 15px;
 }
+
 .botonesPopUp {
   display: flex;
   justify-content: space-between;
 }
 
-.full-container{
-   
-    background-color: lightblue;
+.full-container {
+  background-color: lightblue;
 }
 
-.vcard{
-    margin-top: 70px;
+.vcard {
+  margin-bottom: 70px;
 }
+
 .titleCard {
   padding: 30px;
   background-image: url("../assets/Background.png");
@@ -193,15 +199,15 @@ export default {
 }
 
 .txtCard {
-    padding: 20px;
-    margin-top: 20px;
+  padding: 20px;
+  margin-top: 20px;
 }
 
 .my-button {
   margin-top: 10px;
+  margin-right: 10px;
   padding: auto;
   border-radius: 2px;
   background-color: #72bae8;
   color: white;
-}
-</style>
+}</style>
