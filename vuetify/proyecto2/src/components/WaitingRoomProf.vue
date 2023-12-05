@@ -1,40 +1,44 @@
+<script>
+import { socket, state } from "@/services/socket";
+
+export default {
+    data() {
+        return {
+
+        };
+    },
+    methods: {
+
+    },
+    // watch: {
+    //     'sala': function (nuevoValor, antiguoValor) {
+
+    //     },
+    // },
+    computed: {
+        sala() {
+            return state.joinedSala;
+        },
+    },
+    mounted() {
+
+    },
+};
+</script>
+
 <template>
     <div class="full-container">
         <h2>Sala d'espera</h2>
-        <h1 class="text-h1 font-weight-black">Codi sala: 222</h1>
+        <h1 class="text-h1 font-weight-black">Codi sala: {{ sala.codi }}</h1>
 
         <v-btn class="my-button" @click="$router.push('/sala')">COMENÇA</v-btn>
     </div>
     <div class="footer">
         <div class="user-col">
             <div class="user-row">
-                <div class="user-item">
+                <div class="user-item" v-for="jugador in sala.jugadores">
                     <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="user-col">
-            <div class="user-row">
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
+                    <h3>{{ jugador.nombre }}</h3>
                 </div>
             </div>
         </div>
