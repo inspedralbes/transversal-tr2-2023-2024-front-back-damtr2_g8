@@ -54,6 +54,31 @@ app.use(bodyParser.json());
 
 //PARTE DE LAS RUTAS
 
+//ruta para crear classes
+app.post("/crearClasse", (req, res) => {
+  const sql = "INSERT INTO CLASSE VALUES (null, ?)";
+  const VALUES = [req.body.nomClasse];
+  let idClasse = 0;
+
+  conn.query(sql, VALUES, (err, result) => {
+    if (err) {
+      console.error(err);
+    } else {
+      idClasse = result.insertId;
+      const sql2 = "INSERT INTO PERTANY VALUES (?, ?)";
+      const VALUES2 = [idClasse, req.body.idUsu];
+
+      conn.query(sql2, VALUES2, (err, result2) => {
+        if (err) {
+          console.error(err);
+        } else {
+          res.send(result2);
+        }
+      });
+    }
+  });
+});
+
 //ruta para obtener todos los usuarios de una clase
 app.get("/classe/:idClasse", (req, res) => {
   const sql = "SELECT * FROM USUARIS WHERE idClasse = ?";
@@ -67,6 +92,23 @@ app.get("/classe/:idClasse", (req, res) => {
     }
   });
 });
+
+//ruta para obtener las classes de un profesor
+app.get("/classeProfe/:idProfe", (req, res) => {
+  const sql =
+    "SELECT CLASSE.idClasse, CLASSE.nomClasse, COUNT(PERTANY.idUsu) AS numeroUsuarios FROM CLASSE LEFT JOIN PERTANY ON CLASSE.idClasse = PERTANY.idClasse WHERE PERTANY.idUsu = ? GROUP BY CLASSE.idClasse, CLASSE.nomClasse;";
+  const VALUES = [req.params.idProfe];
+  const values = [req.params.idProfe];
+  conn.query(sql, VALUES, (err, result) => {
+    if (err) {
+      console.error(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//
 
 //ruta para obtener un usuario en concreto
 app.get("/usuario/:idUsuari", (req, res) => {
