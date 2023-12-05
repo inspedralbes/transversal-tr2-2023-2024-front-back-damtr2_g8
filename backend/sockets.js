@@ -18,12 +18,20 @@ function sockets(io, partidas) {
       solveOperation(idPartida, idJugador, result);
     });
 
-    socket.on("createSala", () => {
-      crearSala();
+    socket.on("createSala", (idClasse) => {
+      crearSala(idClasse, socket.id);
     });
 
     socket.on("joinSala", (codi) => {
       joinSala(codi, socket.id);
+    });
+
+    io.on("disconnect", () => {
+      for (let i = 0; i < array.length; i++) {
+        const element = array[i];
+        
+      }
+      salas = salas.filter(sala => sala.owner != socket.id);
     });
   });
 
@@ -36,23 +44,26 @@ function sockets(io, partidas) {
         id_partida: null,
         winner: false,
       });
+      io.to(salaEncontrada.owner).emit("join", salaEncontrada);
       io.to(id).emit("join", salaEncontrada);
+      console.log(salas);
     } else {
       io.to(id).emit("join", false);
     }
   }
 
-  function crearSala() {
+  function crearSala(idClasse, socketId) {
     let sala = {
+      owner: socketId,
       id_sala: salas.length + 1,
-      id_classe: null,
+      id_classe: idClasse,
       jugadores: [],
       status: "waiting",
       codi: generateCodi(),
     }
 
     salas.push(sala);
-    io.emit("salas", salas);
+    io.to(socketId).emit("join", sala);
   }
 
   function generateCodi() {

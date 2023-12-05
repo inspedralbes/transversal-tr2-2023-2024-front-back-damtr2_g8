@@ -36,6 +36,7 @@ socket.on("actualizarOperacion", (data) => {
 });
 
 socket.on("join", (data) => {
+  console.log(data);
   state.joinedSala = data;
 });
 

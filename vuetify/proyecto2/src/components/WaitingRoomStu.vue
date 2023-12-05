@@ -1,3 +1,31 @@
+<script>
+import { socket, state } from "@/services/socket";
+
+export default {
+    data() {
+        return {
+
+        };
+    },
+    methods: {
+
+    },
+    // watch: {
+    //     'sala': function (nuevoValor, antiguoValor) {
+
+    //     },
+    // },
+    computed: {
+        sala() {
+            return state.joinedSala;
+        },
+    },
+    mounted() {
+
+    },
+};
+</script>
+
 <template>
     <div class="full-container">
         <h2>Sala d'espera</h2>
@@ -7,33 +35,9 @@
     <div class="footer">
         <div class="user-col">
             <div class="user-row">
-                <div class="user-item">
+                <div class="user-item" v-for="jugador in sala.jugadores">
                     <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="user-col">
-            <div class="user-row">
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
-                </div>
-
-                <div class="user-item">
-                    <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                    <h3>ivetetetete</h3>
+                    <h3>{{ jugador.nombre }}</h3>
                 </div>
             </div>
         </div>
@@ -43,14 +47,13 @@
 
 <style scoped>
 .footer {
-
-background-color: #79b6c9;
-padding: 20px;
-box-sizing: border-box;
-position: fixed;
-left: 0;
-bottom: 0;
-width: 100%;
+    background-color: #79b6c9;
+    padding: 20px;
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
 
 }
 
@@ -85,6 +88,7 @@ width: 100%;
     align-items: center;
 
 }
+
 .my-button {
     display: flex;
     justify-content: center;
