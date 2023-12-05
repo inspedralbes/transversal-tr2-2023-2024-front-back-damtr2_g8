@@ -6,11 +6,15 @@ const cors = require("cors");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const http = require("http");
-const { join, parse } = require("path");
 const server = http.createServer(app);
-let CryptoJS = require("crypto-js");
 const { sockets } = require("./sockets.js");
-const { login, register } = require("./endpointFuncions.js");
+const {
+  createClass,
+  getClassByUserId,
+  getUserById,
+  login,
+  register,
+} = require("./endpointFuncions.js");
 const { Server } = require("socket.io");
 
 let partidas = [];
@@ -55,84 +59,23 @@ app.use(bodyParser.json());
 //PARTE DE LAS RUTAS
 
 //ruta para crear classes
-app.post("/crearClasse", (req, res) => {
-  const sql = "INSERT INTO CLASSE VALUES (null, ?)";
-  const VALUES = [req.body.nomClasse];
-  let idClasse = 0;
-
-  conn.query(sql, VALUES, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      idClasse = result.insertId;
-      const sql2 = "INSERT INTO PERTANY VALUES (?, ?)";
-      const VALUES2 = [idClasse, req.body.idUsu];
-
-      conn.query(sql2, VALUES2, (err, result2) => {
-        if (err) {
-          console.error(err);
-        } else {
-          res.send(result2);
-        }
-      });
-    }
-  });
+app.post("/crearClasse", async (req, res) => {
+  res.send(await createClass(req.body.nomClasse, req.body.idUsu));
 });
 
 //ruta para obtener todos los usuarios de una clase
-app.get("/classe/:idClasse", (req, res) => {
-  const sql = "SELECT * FROM USUARIS WHERE idClasse = ?";
-  const VALUES = [req.params.idClasse];
-
-  conn.query(sql, VALUES, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.json(result);
-    }
-  });
+app.get("/classe/:idClasse", async (req, res) => {
+  res.send(await getUserByClassId(req.params.idProfe));
 });
 
 //ruta para obtener las classes de un profesor
-app.get("/classeProfe/:idProfe", (req, res) => {
-  const sql =
-    "SELECT CLASSE.idClasse, CLASSE.nomClasse, COUNT(PERTANY.idUsu) AS numeroUsuarios FROM CLASSE LEFT JOIN PERTANY ON CLASSE.idClasse = PERTANY.idClasse WHERE PERTANY.idUsu = ? GROUP BY CLASSE.idClasse, CLASSE.nomClasse;";
-  const VALUES = [req.params.idProfe];
-  const values = [req.params.idProfe];
-  conn.query(sql, VALUES, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.json(result);
-    }
-  });
+app.get("/classeProfe/:idProfe", async (req, res) => {
+  res.send(await getClassByUserId(req.params.idProfe));
 });
-
-//
 
 //ruta para obtener un usuario en concreto
-app.get("/usuario/:idUsuari", (req, res) => {
-  const sql = "SELECT * FROM USUARIS WHERE idUsu = ?";
-  const VALUES = [req.params.idUsuari];
-
-  conn.query(sql, VALUES, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.json(result);
-    }
-  });
-});
-
-app.get("/clases", (req, res) => {
-  const sql = "SELECT idClasse, nomClasse FROM CLASSE";
-  conn.query(sql, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.json(result);
-    }
-  });
+app.get("/usuario/:idUsuari", async (req, res) => {
+  res.send(await getUserById(req.params.idUsuari));
 });
 
 //ruta para hacer login
@@ -141,9 +84,14 @@ app.post("/login", async (req, res) => {
 });
 
 //ruta para registrar un usuario
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   res.send(
-    register(req.body.email, req.body.password, req.body.nom, req.body.admin)
+    await register(
+      req.body.email,
+      req.body.password,
+      req.body.nom,
+      req.body.admin
+    )
   );
 });
 

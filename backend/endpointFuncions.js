@@ -11,6 +11,62 @@ let conn = mysql.createPool({
   waitForConnections: true,
 });
 
+function createClass(nomClasse, idProfe) {
+  return new Promise((resolve, reject) => {
+    const sql = "INSERT INTO CLASSE SET ?";
+    const VALUES = { nomClasse: nomClasse };
+    let idClasse = 0;
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        idClasse = result.insertId;
+        const sql2 = "INSERT INTO PERTANY VALUES (?, ?)";
+        const VALUES2 = [idClasse, idProfe];
+
+        conn.query(sql2, VALUES2, (err, result2) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result2);
+          }
+        });
+      }
+    });
+  });
+}
+
+function getClassByUserId(id) {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "SELECT CLASSE.idClasse, CLASSE.nomClasse, COUNT(PERTANY.idUsu) AS numeroUsuarios FROM CLASSE LEFT JOIN PERTANY ON CLASSE.idClasse = PERTANY.idClasse WHERE PERTANY.idUsu = ? GROUP BY CLASSE.idClasse, CLASSE.nomClasse;";
+    const VALUES = [id];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ status: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+function getUserById(id) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM USUARIS WHERE idUsu = ?";
+    const VALUES = [id];
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ status: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function login(email, password) {
   return new Promise((resolve, reject) => {
     if (!email || !password) {
@@ -35,22 +91,29 @@ function login(email, password) {
 }
 
 function register(email, password, nom, admin) {
-  console.log(email, password, nom, admin);
-  if (!email || !password || !nom || !admin) {
-    return { status: "Both email and password are required" };
-  } else {
-    const newUser = {
-      nom: nom,
-      pass: CryptoJS.MD5(password).toString(),
-      correu: email,
-      admin: admin,
-    };
-    let sql = `INSERT INTO USUARIS SET ?`;
-    conn.query(sql, newUser, (err, result) => {
-      if (err) console.error(err);
-      return { userData: result };
-    });
-  }
+  return new Promise((resolve, reject) => {
+    if (!email || !password || !nom || !admin) {
+      reject({ status: "Both email and password are required" });
+    } else {
+      const newUser = {
+        nom: nom,
+        pass: CryptoJS.MD5(password).toString(),
+        correu: email,
+        admin: admin,
+      };
+      let sql = `INSERT INTO USUARIS SET ?`;
+      conn.query(sql, newUser, (err, result) => {
+        if (err) console.error(err);
+        resolve({ userData: result });
+      });
+    }
+  });
 }
 
-module.exports = { login, register };
+module.exports = {
+  createClass,
+  getClassByUserId,
+  getUserById,
+  login,
+  register,
+};
