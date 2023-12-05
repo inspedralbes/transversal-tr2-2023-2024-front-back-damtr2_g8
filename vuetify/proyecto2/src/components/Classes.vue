@@ -1,33 +1,178 @@
 <template>
-    <div class="full-container">
-        <v-container>
-        <v-card class="vcard">
-            <v-card-title class="titleCard">Matemàtiques B</v-card-title>
+  <div class="full-container">
+    <div class="btnCrear">
+      <v-btn class="my-button" @click="this.mostrarPopUp = !this.mostrarPopUp"
+        >Crear classe
 
-            <v-card-text class="txtCard">
-                <b>Usuaris: 0</b>
-                <div>
-                    <v-btn class="my-button" @click="$router.push('/sala')">Uneix-te</v-btn>
+        <v-dialog v-model="this.mostrarPopUp" max-width="600">
+          <v-card>
+            <v-card-title>Crear nueva clase</v-card-title>
+            <v-card-text>
+              <v-form @submit.prevent="this.crearClase()">
+                <v-text-field
+                  v-model="nombreNuevaClase"
+                  label="Nombre de la clase"
+                ></v-text-field>
+                <div class="botonesPopUp">
+                  <v-btn type="submit" color="primary">Aceptar</v-btn>
+                  <v-btn
+                    @click="this.mostrarPopUp = !this.mostrarPopUp"
+                    color="error"
+                    >Cancelar</v-btn
+                  >
                 </div>
+              </v-form>
             </v-card-text>
-        </v-card>
-
-        <v-card class="vcard">
-            <v-card-title class="titleCard2">Matemàtiques F</v-card-title>
-
-            <v-card-text class="txtCard">
-                <b>Usuaris: 0</b>
-                <div>
-                    <v-btn class="my-button" @click="$router.push('/')">Uneix-te</v-btn>
-                </div>
-            </v-card-text>
-        </v-card>
-    </v-container>
+          </v-card>
+        </v-dialog>
+      </v-btn>
     </div>
-    
+    <v-container>
+      <v-card v-for="classe in classes" :key="classe.idClasse" class="vcard">
+        <div class="classe">
+          <v-card-title class="titleCard">{{ classe.nomClasse }}</v-card-title>
+          <v-btn
+            class="btnEditar"
+            @click="setClasseEditar(classe)"
+            >Editar
+            <v-dialog v-model="this.mostrarPopUpEditar" max-width="600">
+              <v-card>
+                <v-card-title>Edita la teva classe</v-card-title>
+                <v-card-text>
+                  <v-form @submit.prevent="this.editarClasse()">
+                    <v-text-field v-model="classeEditar.nombreNuevaClasse"></v-text-field>
+                    <div class="botonesPopUp">
+                      <v-btn type="submit" color="primary">Aceptar</v-btn>
+                      <v-btn
+                        @click="
+                          this.mostrarPopUpEditar = !this.mostrarPopUpEditar
+                        "
+                        color="error"
+                        >Cancelar</v-btn
+                      >
+                    </div>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+          </v-btn>
+        </div>
+
+        <v-card-text class="txtCard">
+          <b>Usuaris: {{ classe.numeroUsuarios }}</b>
+          <div>
+            <v-btn class="my-button" @click="$router.push('/sala')"
+              >Uneix-te</v-btn
+            >
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-container>
+  </div>
 </template>
 
+<script>
+import { useAppStore } from "@/store/app";
+export default {
+  data() {
+    return {
+      idProfe: null,
+      classes: [],
+      mostrarPopUp: false,
+      nombreNuevaClase: "",
+      mostrarPopUpEditar: false,
+      classeEditar: null,
+    };
+  },
+  methods: {
+    async getClasses() {
+      const response = await fetch(
+        `http://localhost:3751/classeProfe/${this.idProfe}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        window.alert("Error al carregar les classes");
+      } else {
+        const data = await response.json();
+        this.classes = data;
+        this.mostrarPopup = false;
+      }
+    },
+    async crearClase() {
+      const response = await fetch(`http://localhost:3751/crearClasse/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nomClasse: this.nombreNuevaClase,
+          idUsu: this.idProfe,
+        }),
+      });
+      if (!response.ok) {
+        window.alert("Error al crear la classe");
+      } else {
+        window.alert("Classe creada correctament");
+        this.mostrarPopUp = false;
+        this.getClasses();
+      }
+    },async editarClasse(){
+      console.log(this.classeEditar);
+      const response = await fetch(`http://localhost:3751/editarClasse/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nomClasse: this.classeEditar.nombreNuevaClasse,
+          idClasse: this.classeEditar.idClasse,
+        }),
+      });
+      if (!response.ok) {
+        window.alert("Error al editar la classe");
+      } else {
+        window.alert("Classe editada correctament");
+        this.mostrarPopUpEditar = false;
+        this.getClasses();
+      }
+    }, setClasseEditar(classe){
+      this.classeEditar = classe;
+      this.nombreNuevaClasse = classe.nomClasse;
+      this.mostrarPopUpEditar = true;
+    }
+  },
+  mounted() {
+    const store = useAppStore();
+    this.idProfe = store.getIdProfessor();
+    this.getClasses();
+  },
+};
+</script>
+
 <style scoped>
+.btnEditar {
+  border: 2px solid black;
+}
+.classe {
+  display: flex;
+  justify-content: space-between;
+  background-image: url("../assets/Background.png");
+}
+.btnCrear {
+  display: flex;
+  justify-content: flex-start;
+  padding: 15px;
+}
+.botonesPopUp {
+  display: flex;
+  justify-content: space-between;
+}
 
 .full-container{
    
@@ -38,13 +183,13 @@
     margin-top: 70px;
 }
 .titleCard {
-    padding: 30px;
-    background-image: url("../assets/Background.png");
+  padding: 30px;
+  background-image: url("../assets/Background.png");
 }
 
-.titleCard2{
-    padding: 30px;
-    background-image: url("../assets/BackgroundGreen.png");
+.titleCard2 {
+  padding: 30px;
+  background-image: url("../assets/BackgroundGreen.png");
 }
 
 .txtCard {
@@ -53,10 +198,10 @@
 }
 
 .my-button {
-    margin-top: 10px;
-    padding: auto;
-    border-radius: 2px;
-    background-color: #72BAE8;
-    color: white;
+  margin-top: 10px;
+  padding: auto;
+  border-radius: 2px;
+  background-color: #72bae8;
+  color: white;
 }
 </style>

@@ -57,6 +57,31 @@ app.use(bodyParser.json());
 
 //PARTE DE LAS RUTAS
 
+//ruta para crear classes
+app.post("/crearClasse", (req, res) => {
+  const sql = "INSERT INTO CLASSE VALUES (null, ?)";
+  const VALUES = [req.body.nomClasse];
+  let idClasse = 0;
+
+  conn.query(sql, VALUES, (err, result) => {
+    if (err) {
+      console.error(err);
+    } else {
+      idClasse = result.insertId;
+      const sql2 = "INSERT INTO PERTANY VALUES (?, ?)";
+      const VALUES2 = [idClasse, req.body.idUsu];
+
+      conn.query(sql2, VALUES2, (err, result2) => {
+        if (err) {
+          console.error(err);
+        } else {
+          res.send(result2);
+        }
+      });
+    }
+  });
+});
+
 //ruta para obtener todos los usuarios de una clase
 app.get("/classe/:idClasse", (req, res) => {
   const sql = "SELECT * FROM USUARIS WHERE idClasse = ?";
@@ -70,6 +95,23 @@ app.get("/classe/:idClasse", (req, res) => {
     }
   });
 });
+
+//ruta para obtener las classes de un profesor
+app.get("/classeProfe/:idProfe", (req, res) => {
+  const sql =
+    "SELECT CLASSE.idClasse, CLASSE.nomClasse, COUNT(PERTANY.idUsu) AS numeroUsuarios FROM CLASSE LEFT JOIN PERTANY ON CLASSE.idClasse = PERTANY.idClasse WHERE PERTANY.idUsu = ? GROUP BY CLASSE.idClasse, CLASSE.nomClasse;";
+  const VALUES = [req.params.idProfe];
+  const values = [req.params.idProfe];
+  conn.query(sql, VALUES, (err, result) => {
+    if (err) {
+      console.error(err);
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+//
 
 //ruta para obtener un usuario en concreto
 app.get("/usuario/:idUsuari", (req, res) => {
@@ -86,7 +128,7 @@ app.get("/usuario/:idUsuari", (req, res) => {
 });
 
 app.get("/clases", (req, res) => {
-  const sql = "SELECT idClasse, nomClasse FROM CLASSE"
+  const sql = "SELECT idClasse, nomClasse FROM CLASSE";
   conn.query(sql, (err, result) => {
     if (err) {
       console.error(err);
@@ -94,7 +136,7 @@ app.get("/clases", (req, res) => {
       res.json(result);
     }
   });
-})
+});
 
 //ruta para hacer login
 app.post("/login", async (req, res) => {
@@ -109,9 +151,6 @@ app.post("/login", async (req, res) => {
       if (result == 0 || result[0].pass != ciphertext) {
         res.status(500).send("Wrong email or password");
       } else {
-        //req.session.user = result[0].CorreoElectronico;
-        // res.cookie("user", req.session.user, { signed: true });
-        //res.send({ cookie: req.session, userData: result[0] });
         res.send({ userData: result[0] });
       }
     });
@@ -120,14 +159,14 @@ app.post("/login", async (req, res) => {
 
 //ruta para registrar un usuario
 app.post("/register", (req, res) => {
-  if (!req.body.email || !req.body.password || !req.body.nom || !req.body.admin || !req.body.idClasse) {
+  console.log(req.body);
+  if (!req.body.email || !req.body.password || !req.body.nom) {
     res.status(500).send("Both email and password are required");
   } else {
     var sql = `INSERT INTO USUARIS VALUES (null, '${
       req.body.nom
-    }', '${CryptoJS.MD5(req.body.password).toString()}', '${
-      req.body.email
-    }', '${req.body.admin}', '${req.body.idClasse}')`;
+    }','${CryptoJS.MD5(req.body.password).toString()}', 
+    '${req.body.email}', ${req.body.admin},'${req.body.cognom}')`;
     conn.query(sql, (err, result) => {
       if (err) console.error(err);
       res.send({ userData: result });

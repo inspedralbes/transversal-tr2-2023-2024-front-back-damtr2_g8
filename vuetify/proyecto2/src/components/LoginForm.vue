@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { useAppStore } from '@/store/app';
 export default {
     data() {
         return {
@@ -151,8 +152,8 @@ export default {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            if (!response.ok) {                
+                window.alert("Usuari o contrasenya incorrectes");
             } else {
                 const data = await response.json();
 
@@ -160,6 +161,8 @@ export default {
 
                 // Use this.$router instead of $router
                 if (element.checked && data.userData.admin == 1) {
+                    const store = useAppStore();
+                    store.setIdProfessor(data.userData.idUsu);
                     this.$router.push('/classes');
                 } else {
                     this.$router.push('/join');
