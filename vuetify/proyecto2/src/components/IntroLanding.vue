@@ -11,6 +11,7 @@
 *{
   background-color: lightblue;
 }
+
 .full-container {
   height: 100vh;
   margin: 0;

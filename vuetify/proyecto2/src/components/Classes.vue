@@ -30,11 +30,12 @@
 <style scoped>
 
 .full-container{
-    background-color: white;
+   
+    background-color: lightblue;
 }
 
 .vcard{
-    margin-top: 20px;
+    margin-top: 70px;
 }
 .titleCard {
     padding: 30px;
@@ -47,7 +48,7 @@
 }
 
 .txtCard {
-    padding: 30px;
+    padding: 20px;
     margin-top: 20px;
 }
 
