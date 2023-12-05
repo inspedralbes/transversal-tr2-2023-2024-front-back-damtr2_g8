@@ -115,7 +115,9 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    margin: 30px;
+
+    margin-top: 30px;
+    margin-right: 90px;
 }
 
 .div-gear {
