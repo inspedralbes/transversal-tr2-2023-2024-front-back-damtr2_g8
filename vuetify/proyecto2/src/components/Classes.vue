@@ -29,7 +29,35 @@
     </div>
     <v-container>
       <v-card v-for="classe in classes" :key="classe.idClasse" class="vcard">
-        <v-card-title class="titleCard">{{ classe.nomClasse }}</v-card-title>
+        <div class="classe">
+          <v-card-title class="titleCard">{{ classe.nomClasse }}</v-card-title>
+          <v-btn
+            class="btnEditar"
+            @click="this.mostrarPopUpEditar = !this.mostrarPopUpEditar"
+            >Editar
+            <v-dialog v-model="this.mostrarPopUpEditar" max-width="600">
+              <v-card>
+                <v-card-title>Edita la teva classe</v-card-title>
+                <v-card-text>
+                  <v-form @submit.prevent="this.editarClase(classe)">
+                    <v-text-field v-model="classe.nombreNuevaClase">{{ classe.nomClasse }} {{ classe.idClasse }}</v-text-field>
+                    <div class="botonesPopUp">
+                      <v-btn type="submit" color="primary">Aceptar</v-btn>
+                      <v-btn
+                        @click="
+                          this.mostrarPopUpEditar = !this.mostrarPopUpEditar
+                        "
+                        color="error"
+                        >Cancelar</v-btn
+                      >
+                    </div>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+          </v-btn>
+        </div>
+
         <v-card-text class="txtCard">
           <b>Usuaris: {{ classe.numeroUsuarios }}</b>
           <div>
@@ -52,6 +80,7 @@ export default {
       classes: [],
       mostrarPopUp: false,
       nombreNuevaClase: "",
+      mostrarPopUpEditar: false,
     };
   },
   methods: {
@@ -73,15 +102,16 @@ export default {
         this.classes = data;
         this.mostrarPopup = false;
       }
-    }, async crearClase(){
+    },
+    async crearClase() {
       const response = await fetch(`http://localhost:3751/crearClasse/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          "nomClasse": this.nombreNuevaClase,
-          "idUsu": this.idProfe,
+          nomClasse: this.nombreNuevaClase,
+          idUsu: this.idProfe,
         }),
       });
       if (!response.ok) {
@@ -89,6 +119,24 @@ export default {
       } else {
         window.alert("Classe creada correctament");
         this.mostrarPopUp = false;
+        this.getClasses();
+      }
+    },async editarClasse(){
+      const response = await fetch(`http://localhost:3751/editarClasse/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nomClasse: this.nombreNuevaClase,
+          idClasse: this.classes.idClasse,
+        }),
+      });
+      if (!response.ok) {
+        window.alert("Error al editar la classe");
+      } else {
+        window.alert("Classe editada correctament");
+        this.mostrarPopUpEditar = false;
         this.getClasses();
       }
     }
@@ -102,6 +150,14 @@ export default {
 </script>
 
 <style scoped>
+.btnEditar {
+  border: 2px solid black;
+}
+.classe {
+  display: flex;
+  justify-content: space-between;
+  background-image: url("../assets/Background.png");
+}
 .btnCrear {
   display: flex;
   justify-content: flex-start;
