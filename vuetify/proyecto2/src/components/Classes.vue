@@ -167,12 +167,13 @@ export default {
   justify-content: space-between;
 }
 
-.full-container {
-  background-color: white;
+.full-container{
+   
+    background-color: lightblue;
 }
 
-.vcard {
-  margin-top: 20px;
+.vcard{
+    margin-top: 70px;
 }
 
 .titleCard {
@@ -186,8 +187,8 @@ export default {
 }
 
 .txtCard {
-  padding: 30px;
-  margin-top: 20px;
+    padding: 20px;
+    margin-top: 20px;
 }
 
 .my-button {

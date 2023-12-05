@@ -11,6 +11,7 @@
 *{
   background-color: lightblue;
 }
+
 .full-container {
   height: 100vh;
   margin: 0;
@@ -27,7 +28,7 @@
 
 .logo {
   margin-bottom: 4px;
-  animation: moveAndRotate 12s infinite ease-in-out;
+  animation: moveAndRotate 3s infinite ease-in-out;
 }
 
 @keyframes moveAndRotate {
@@ -43,6 +44,7 @@
     transform: translateX(-20px) rotate(-5deg);
   }
 }
+
 .button-landing {
   position: relative;
   padding: 14px 28px;
