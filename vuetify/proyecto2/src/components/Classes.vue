@@ -33,14 +33,14 @@
           <v-card-title class="titleCard">{{ classe.nomClasse }}</v-card-title>
           <v-btn
             class="btnEditar"
-            @click="this.mostrarPopUpEditar = !this.mostrarPopUpEditar"
+            @click="setClasseEditar(classe)"
             >Editar
             <v-dialog v-model="this.mostrarPopUpEditar" max-width="600">
               <v-card>
                 <v-card-title>Edita la teva classe</v-card-title>
                 <v-card-text>
-                  <v-form @submit.prevent="this.editarClase(classe)">
-                    <v-text-field v-model="classe.nombreNuevaClase">{{ classe.nomClasse }} {{ classe.idClasse }}</v-text-field>
+                  <v-form @submit.prevent="this.editarClasse()">
+                    <v-text-field v-model="classeEditar.nombreNuevaClasse"></v-text-field>
                     <div class="botonesPopUp">
                       <v-btn type="submit" color="primary">Aceptar</v-btn>
                       <v-btn
@@ -81,6 +81,7 @@ export default {
       mostrarPopUp: false,
       nombreNuevaClase: "",
       mostrarPopUpEditar: false,
+      classeEditar: null,
     };
   },
   methods: {
@@ -122,14 +123,15 @@ export default {
         this.getClasses();
       }
     },async editarClasse(){
+      console.log(this.classeEditar);
       const response = await fetch(`http://localhost:3751/editarClasse/`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nomClasse: this.nombreNuevaClase,
-          idClasse: this.classes.idClasse,
+          nomClasse: this.classeEditar.nombreNuevaClasse,
+          idClasse: this.classeEditar.idClasse,
         }),
       });
       if (!response.ok) {
@@ -139,6 +141,10 @@ export default {
         this.mostrarPopUpEditar = false;
         this.getClasses();
       }
+    }, setClasseEditar(classe){
+      this.classeEditar = classe;
+      this.nombreNuevaClasse = classe.nomClasse;
+      this.mostrarPopUpEditar = true;
     }
   },
   mounted() {
