@@ -22,33 +22,67 @@ function sockets(io, partidas) {
       crearSala(idClasse, socket.id);
     });
 
-    socket.on("joinSala", (codi) => {
-      joinSala(codi, socket.id);
+    socket.on("joinSala", (userInfo) => {
+      joinSala(userInfo, socket.id);
+    });
+
+    socket.on("startGame", () => {
+      const sala = salas.find(sala => sala.owner == socket.id);
+      for (let i = 0; i < sala.jugadores.length; i++) {
+        io.to(sala.jugadores[i].id_jugador).emit("startGame");
+      }
     });
 
     socket.on("disconnect", () => {
-      const borrarSala = salas.find(sala => sala.owner == socket.id);
-      salas = salas.filter(sala => sala.owner != socket.id);
-      if (borrarSala) {
-        for (let i = 0; i < borrarSala.jugadores.length; i++) {
-          io.to(borrarSala.jugadores[i].id_jugador).emit("join", false);
-        }
-      }
+      borrarSala(socket.id);
+      desconectarJugador(socket)
     });
   });
 
-  function joinSala(codi, id) {
-    if (salas.some(sala => sala.codi == codi)) {
-      const salaEncontrada = salas.find(sala => sala.codi == codi);
+  function borrarSala(id) {
+    const borrarSala = salas.find(sala => sala.owner == id);
+    salas = salas.filter(sala => sala.owner != id);
+    if (borrarSala) {
+      for (let i = 0; i < borrarSala.jugadores.length; i++) {
+        io.to(borrarSala.jugadores[i].id_jugador).emit("join", false);
+      }
+    }
+  }
+
+  function desconectarJugador(socket) {
+    for (let i = 0; i < salas.length; i++) {
+      const sala = salas[i];
+      const indexJugador = sala.jugadores.findIndex(jugador => jugador.id_jugador == socket.id);
+
+      if (indexJugador !== -1) {
+        sala.jugadores.splice(indexJugador, 1);
+
+        if (sala.jugadores.length === 0) {
+          salas.splice(i, 1);
+        }
+
+        io.to(sala.owner).emit("join", sala);
+        for (let i = 0; i < sala.jugadores.length; i++) {
+          io.to(sala.jugadores[i].id_jugador).emit("join", sala);
+        }
+        return;
+      }
+    }
+  }
+
+  function joinSala(userInfo, id) {
+    if (salas.some(sala => sala.codi == userInfo.codi)) {
+      const salaEncontrada = salas.find(sala => sala.codi == userInfo.codi);
       salaEncontrada.jugadores.push({
         id_jugador: id,
-        nombre: "username",
+        nombre: userInfo.username,
         id_partida: null,
         winner: false,
       });
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
-      io.to(id).emit("join", salaEncontrada);
-      console.log(salas);
+      for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
+        io.to(salaEncontrada.jugadores[i].id_jugador).emit("join", salaEncontrada);
+      }
     } else {
       io.to(id).emit("join", false);
     }
