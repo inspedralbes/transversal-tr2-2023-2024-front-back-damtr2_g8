@@ -26,6 +26,13 @@ function sockets(io, partidas) {
       joinSala(userInfo, socket.id);
     });
 
+    socket.on("startGame", () => {
+      const sala = salas.find(sala => sala.owner == socket.id);
+      for (let i = 0; i < sala.jugadores.length; i++) {
+        io.to(sala.jugadores[i].id_jugador).emit("startGame");
+      }
+    });
+
     socket.on("disconnect", () => {
       borrarSala(socket.id);
       desconectarJugador(socket)

@@ -1,19 +1,30 @@
 <script>
 import { socket, state } from "@/services/socket";
+import { io } from "socket.io-client";
 
 export default {
     data() {
         return {
-            myId: null
+            myId: null,
+            owner: false,
         };
     },
     methods: {
-
+        startGame() {
+            this.owner = true;
+            socket.emit("startGame", {});
+        }
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
             if (nuevoValor == false) {
                 console.log('no hay sala');
+            }
+        },
+        'play': function (nuevoValor, antiguoValor) {
+            console.log("play")
+            if (nuevoValor == true && this.owner == false) {
+                this.$router.push("/game");
             }
         },
     },
@@ -25,6 +36,9 @@ export default {
                 }, 3000)
             }
             return state.joinedSala;
+        },
+        play() {
+            return state.play;
         },
     },
     mounted() {
@@ -39,7 +53,7 @@ export default {
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
 
-        <v-btn class="my-button" @click="$router.push('/')" v-if="myId == sala.owner">COMENÇA</v-btn>
+        <v-btn class="my-button" @click="" v-if="myId == sala.owner">COMENÇA</v-btn>
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
