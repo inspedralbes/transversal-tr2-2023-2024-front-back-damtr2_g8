@@ -19,7 +19,7 @@ function createClass(nomClasse, idProfe) {
 
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
-        reject(err);
+        reject({ err: err });
       } else {
         idClasse = result.insertId;
         const sql2 = "INSERT INTO PERTANY VALUES (?, ?)";
@@ -27,7 +27,7 @@ function createClass(nomClasse, idProfe) {
 
         conn.query(sql2, VALUES2, (err, result2) => {
           if (err) {
-            reject(err);
+            reject({ err: err });
           } else {
             resolve(result2);
           }
@@ -44,7 +44,7 @@ function getClassByUserId(id) {
     const VALUES = [id];
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
-        reject({ status: err });
+        reject({ err: err });
       } else {
         resolve(result);
       }
@@ -59,7 +59,7 @@ function getUserById(id) {
 
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
-        reject({ status: err });
+        reject({ err: err });
       } else {
         resolve(result);
       }
@@ -70,7 +70,7 @@ function getUserById(id) {
 function login(email, password) {
   return new Promise((resolve, reject) => {
     if (!email || !password) {
-      reject({ status: "Both email and password are required" });
+      reject({ err: "Both email and password are required" });
     } else {
       let sql = `SELECT * FROM USUARIS WHERE correu = '${email}'`;
 
@@ -78,7 +78,7 @@ function login(email, password) {
         if (err) console.error(err);
         let ciphertext = CryptoJS.MD5(password).toString();
         if (result == 0 || result[0].pass != ciphertext) {
-          reject({ status: "Wrong email or password" });
+          reject({ err: "Wrong email or password" });
         } else {
           //req.session.user = result[0].CorreoElectronico;
           // res.cookie("user", req.session.user, { signed: true });
@@ -90,20 +90,19 @@ function login(email, password) {
   });
 }
 
-function register(email, password, nom, admin) {
+function register(email, password, nom) {
   return new Promise((resolve, reject) => {
-    if (!email || !password || !nom || !admin) {
-      reject({ status: "Both email and password are required" });
+    if (!email || !password || !nom) {
+      reject({ err: "All elements are required" });
     } else {
       const newUser = {
         nom: nom,
         pass: CryptoJS.MD5(password).toString(),
         correu: email,
-        admin: admin,
       };
       let sql = `INSERT INTO USUARIS SET ?`;
       conn.query(sql, newUser, (err, result) => {
-        if (err) console.error(err);
+        if (err) reject({ err: err.sqlMessage });
         resolve({ userData: result });
       });
     }
