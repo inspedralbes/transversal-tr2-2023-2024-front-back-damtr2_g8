@@ -28,6 +28,7 @@ export default {
         window.alert("Error al carregar les classes");
       } else {
         const data = await response.json();
+        console.log(data);
         this.classes = data;
         this.mostrarPopup = false;
       }

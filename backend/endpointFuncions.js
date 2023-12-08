@@ -14,24 +14,13 @@ let conn = mysql.createPool({
 function createClass(nomClasse, idProfe) {
   return new Promise((resolve, reject) => {
     const sql = "INSERT INTO CLASSE SET ?";
-    const VALUES = { nomClasse: nomClasse };
-    let idClasse = 0;
+    const VALUES = { nomClasse: nomClasse, idUsuari: idProfe };
 
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
         reject({ err: err });
       } else {
-        idClasse = result.insertId;
-        const sql2 = "INSERT INTO PERTANY VALUES (?, ?)";
-        const VALUES2 = [idClasse, idProfe];
-
-        conn.query(sql2, VALUES2, (err, result2) => {
-          if (err) {
-            reject({ err: err });
-          } else {
-            resolve(result2);
-          }
-        });
+        resolve(result);
       }
     });
   });
@@ -40,7 +29,7 @@ function createClass(nomClasse, idProfe) {
 function getClassByUserId(id) {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT CLASSE.idClasse, CLASSE.nomClasse, COUNT(PERTANY.idUsu) AS numeroUsuarios FROM CLASSE LEFT JOIN PERTANY ON CLASSE.idClasse = PERTANY.idClasse WHERE PERTANY.idUsu = ? GROUP BY CLASSE.idClasse, CLASSE.nomClasse;";
+      "SELECT * FROM `CLASSE` WHERE idUsuari = ?";
     const VALUES = [id];
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
