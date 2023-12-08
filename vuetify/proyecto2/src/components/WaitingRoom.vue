@@ -12,6 +12,7 @@ export default {
     methods: {
         startGame() {
             this.owner = true;
+            console.log("aaa");
             socket.emit("startGame", {});
         }
     },
@@ -53,7 +54,7 @@ export default {
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
 
-        <v-btn class="my-button" @click="" v-if="myId == sala.owner">COMENÇA</v-btn>
+        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner">COMENÇA</v-btn>
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
