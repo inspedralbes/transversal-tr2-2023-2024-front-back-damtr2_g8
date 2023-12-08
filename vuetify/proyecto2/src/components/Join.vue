@@ -18,7 +18,7 @@ export default {
             for (let i = 0; i < inputs.length; i++) {
                 codi += (inputs[i].value).toString();
             }
-            socket.emit("joinSala", codi);
+            socket.emit("joinSala", { codi: codi, username: prompt() });
         },
         async pasteCode() {
             try {
