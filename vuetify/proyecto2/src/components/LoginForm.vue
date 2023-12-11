@@ -140,6 +140,8 @@ export default {
         },
         
     },
+    mounted() {
+    },
 };
 </script>
 

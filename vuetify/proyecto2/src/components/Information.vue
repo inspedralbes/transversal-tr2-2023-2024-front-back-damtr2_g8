@@ -32,8 +32,8 @@
                         <v-card-text>
                             <v-container>
                                 <v-carousel hide-delimiters>
-                                    <v-carousel-item v-for="(item, i) in items" :key="i" :src="item.src"
-                                        cover height="400px"></v-carousel-item>
+                                    <v-carousel-item v-for="(item, i) in items" :key="i" :src="item.src" cover
+                                        height="400px"></v-carousel-item>
                                 </v-carousel>
                             </v-container>
                         </v-card-text>
@@ -75,8 +75,8 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    margin-top: 30px;
-    margin-right: 90px;
+    margin: 30px;
+
 }
 
 .div-gear {

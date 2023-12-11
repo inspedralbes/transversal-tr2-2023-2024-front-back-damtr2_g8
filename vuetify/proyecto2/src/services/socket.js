@@ -4,22 +4,23 @@ import { reactive } from "vue";
 export const socket = io("http://localhost:3751");
 
 export const state = reactive({
-  partida: 
-    {
-      idPartida: 0,
-      jugadores: [
-        {
-          username: "",
-          vida: 100,
-          operacion: "",
-        },
-        {
-            username: "",
-            vida: 100,
-            operacion: "",
-        },
-      ],
-    },
+  partida:
+  {
+    idPartida: 0,
+    jugadores: [
+      {
+        username: "",
+        vida: 100,
+        operacion: "",
+      },
+      {
+        username: "",
+        vida: 100,
+        operacion: "",
+      },
+    ],
+  },
+  joinedSala: null,
 });
 
 socket.on("enviaJson", (data) => {
@@ -32,5 +33,9 @@ socket.on("actualizarVida", (data) => {
 
 socket.on("actualizarOperacion", (data) => {
   state.partida.jugadores[data.jugador].operacion = data.operacion;
+});
+
+socket.on("join", (data) => {
+  state.joinedSala = data;
 });
 

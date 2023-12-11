@@ -32,11 +32,6 @@ const routes = [
     name: 'Join',
     component: () => import('@/views/JoinView.vue'),
   },
-  {
-    path: '/WaitingRoomStudent',
-    name: 'WaitingRoomStudent',
-    component: () => import('@/views/SalaAlumnes.vue'),
-  },
 ]
 
 const router = createRouter({

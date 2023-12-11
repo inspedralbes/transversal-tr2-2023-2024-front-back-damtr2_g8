@@ -1,4 +1,6 @@
 function sockets(io, partidas) {
+  let salas = [];
+
   io.on("connection", (socket) => {
     socket.on("restarVida", ({ idPartida, idJugador, idCantidad }) => {
       disminuirVida(idPartida, idJugador, idCantidad);
@@ -15,14 +17,72 @@ function sockets(io, partidas) {
     socket.on("solveOperation", ({ idPartida, idJugador, result }) => {
       solveOperation(idPartida, idJugador, result);
     });
+
+    socket.on("createSala", (idClasse) => {
+      crearSala(idClasse, socket.id);
+    });
+
+    socket.on("joinSala", (codi) => {
+      joinSala(codi, socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      const borrarSala = salas.find(sala => sala.owner == socket.id);
+      salas = salas.filter(sala => sala.owner != socket.id);
+      if (borrarSala) {
+        for (let i = 0; i < borrarSala.jugadores.length; i++) {
+          io.to(borrarSala.jugadores[i].id_jugador).emit("join", false);
+        }
+      }
+    });
   });
+
+  function joinSala(codi, id) {
+    if (salas.some(sala => sala.codi == codi)) {
+      const salaEncontrada = salas.find(sala => sala.codi == codi);
+      salaEncontrada.jugadores.push({
+        id_jugador: id,
+        nombre: "username",
+        id_partida: null,
+        winner: false,
+      });
+      io.to(salaEncontrada.owner).emit("join", salaEncontrada);
+      io.to(id).emit("join", salaEncontrada);
+      console.log(salas);
+    } else {
+      io.to(id).emit("join", false);
+    }
+  }
+
+  function crearSala(idClasse, socketId) {
+    let sala = {
+      owner: socketId,
+      id_sala: salas.length + 1,
+      id_classe: idClasse,
+      jugadores: [],
+      status: "waiting",
+      codi: generateCodi(),
+    }
+
+    salas.push(sala);
+    io.to(socketId).emit("join", sala);
+  }
+
+  function generateCodi() {
+    let codigo;
+    do {
+      codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    } while (salas.some(sala => sala.codi == codigo));
+
+    return codigo;
+  }
 
   function solveOperation(idPartida, idJugador, result) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
     try {
       realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
-    }catch(e) {
+    } catch (e) {
       console.log(e);
     }
     console.log(realResult);
@@ -43,17 +103,17 @@ function sockets(io, partidas) {
     partida.jugadores[idJugador].dificultad = dificultad;
 
     operator = generarOperatorRandom(dificultad);
-    numeros = generarNumeros(operator); 
+    numeros = generarNumeros(operator);
 
     let operacionGuardar = `${numeros[0]}${operator}${numeros[1]}`;
 
-    if(operator == "^") {
+    if (operator == "^") {
       operator = "**";
     }
 
     let operacionEval = `${numeros[0]}${operator}${numeros[1]}`;
 
-    if(operator == "√") {
+    if (operator == "√") {
       operacionGuardar = `${operator}${numeros[1]}`;
       operator = "Math.sqrt(";
       numeros[1] += ")";
@@ -75,7 +135,7 @@ function sockets(io, partidas) {
     if (operator == "-" || operator == "+") {
       num1 = Math.floor(Math.random() * 90) + 10;
       num2 = Math.floor(Math.random() * 90) + 10;
-    }else if (operator == "*" || operator == "/") {
+    } else if (operator == "*" || operator == "/") {
       num1 = Math.floor(Math.random() * 19) + 5;
       num2 = Math.floor(Math.random() * (num1 / 2)) + 3;
     } else if (operator == "^") {
@@ -95,8 +155,8 @@ function sockets(io, partidas) {
     if (dificultad == 1) {
       return operators[Math.floor(Math.random() * 2)];
     } else if (dificultad == 2) {
-      return operators[Math.floor(Math.random() * 2)  + 2];
-    }else if (dificultad == 3) {
+      return operators[Math.floor(Math.random() * 2) + 2];
+    } else if (dificultad == 3) {
       return operators[Math.floor(Math.random() * 2) + 4];
     }
 
@@ -104,7 +164,7 @@ function sockets(io, partidas) {
 
   // Función para disminuir la vida de un jugador en una partida
   function disminuirVida(idPartida, idJugador) {
-    
+
     const partida = partidas.find((p) => p.idPartida == idPartida);
 
     switch (partida.jugadores[idJugador].dificultad) {
