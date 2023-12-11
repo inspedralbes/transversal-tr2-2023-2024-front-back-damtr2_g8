@@ -2,10 +2,6 @@ function sockets(io, partidas) {
   let salas = [];
 
   io.on("connection", (socket) => {
-    socket.on("restarVida", ({ idPartida, idJugador, idCantidad }) => {
-      disminuirVida(idPartida, idJugador, idCantidad);
-    });
-
     socket.on("conectarUsuario", (user) => {
       gestionarPartida(socket, user);
     });
