@@ -151,7 +151,7 @@ export default {
                     console.log(data.err);
                 } else {
                     if (this.usernameLogin.admin) {
-                        const store = useAppStore();
+                        let store = useAppStore();
                         store.setUserId(data.userData.idUsu);
                         this.$router.push('/classes');
                     } else {
