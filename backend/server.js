@@ -68,6 +68,21 @@ app.post("/crearClasse", async (req, res) => {
   });
 });
 
+//ruta para editar clases
+app.post("/editarClasse", (req, res) => {
+  console.log(req.body);
+  const sql = "UPDATE CLASSE SET nomClasse = ? WHERE idClasse = ?";
+  const VALUES = [req.body.nomClasse, req.body.idClasse];
+
+  conn.query(sql, VALUES, (err, result) => {
+    if (err) {
+      console.error(err);
+    } else {
+      res.send(result);
+    }
+  });
+});
+
 //ruta para obtener todos los usuarios de una clase
 app.get("/classe/:idClasse", async (req, res) => {
   await getUserByClassId(req.params.idProfe
