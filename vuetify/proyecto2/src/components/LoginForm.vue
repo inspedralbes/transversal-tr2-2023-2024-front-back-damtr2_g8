@@ -15,8 +15,8 @@
                                 </div>
                                 <v-text-field v-model="emailRegistration.email" :rules="emailRegistration.emailRules"
                                     label="Email" type="email" required></v-text-field>
-                                <v-text-field v-model="emailRegistration.password" :rules="emailRegistration.passwordRules" label="Password" type="password"
-                                    required></v-text-field>
+                                <v-text-field v-model="emailRegistration.password" :rules="emailRegistration.passwordRules"
+                                    label="Password" type="password" required></v-text-field>
                                 <div class="name-field">
                                     <v-checkbox id="profeRegistro" type="checkbox" label="Soc professor/a"></v-checkbox>
 
@@ -29,10 +29,10 @@
                         <v-col cols="6" class="container-right pr-10 py-10">
                             <h2 class="my-2 ml-6 text-center">Inicia sessió</h2>
                             <v-form @submit.prevent="login" class="ml-6">
-                                <v-text-field v-model="usernameLogin.email" :rules="emailRegistration.emailRules" label="Email" type="email"
-                                    required></v-text-field>
-                                <v-text-field v-model="usernameLogin.password" :rules="emailRegistration.passwordRules" label="Password" type="password"
-                                    required></v-text-field>
+                                <v-text-field v-model="usernameLogin.email" :rules="emailRegistration.emailRules"
+                                    label="Email" type="email" required></v-text-field>
+                                <v-text-field v-model="usernameLogin.password" :rules="emailRegistration.passwordRules"
+                                    label="Password" type="password" required></v-text-field>
                                 <v-checkbox type="checkbox" id="profeLogin" label="Soc professor/a"></v-checkbox>
                                 <v-btn type="submit" color="primary">Inicia sessió</v-btn>
 
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { register, login } from '@/services/communicationManager';
 import { useAppStore } from '@/store/app';
 export default {
     data() {
@@ -101,69 +102,43 @@ export default {
         async register() {
             this.emailRegistration.isAdmin = document.getElementById("profeRegistro").checked;
 
-            fetch(import.meta.env.VITE_NODE_ROUTE + '/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nom: this.emailRegistration.name,
-                    cognom: this.emailRegistration.surname,
-                    email: this.emailRegistration.email,
-                    password: this.emailRegistration.password,
-                }),
-            }).then((response) => response.json())
-            .then((data) => {
-                console.log(data.userData.insertId);
-                if(data.err) {
-                    console.log(data.err);
-                } else {
-                    if(this.emailRegistration.isAdmin) {
-                        let store = useAppStore();
-                        store.usuari.nom = this.emailRegistration.name;
-                        store.usuari.cognom = this.emailRegistration.surname;
-                        store.usuari.email = this.emailRegistration.email;
-                        store.usuari.id = data.userData.insertId;
-                        this.$router.push('/classes');
-                    } else {
-                        this.$router.push('/join');
-                    }
-                    
-                }
-            });
+            let data = await register(this.emailRegistration);
 
+            if (data.err) {
+                console.log(data.err);
+            } else {
+                if (this.emailRegistration.isAdmin) {
+                    let store = useAppStore();
+                    store.usuari.nom = this.emailRegistration.name;
+                    store.usuari.cognom = this.emailRegistration.surname;
+                    store.usuari.email = this.emailRegistration.email;
+                    store.usuari.id = data.userData.insertId;
+                    this.$router.push('/classes');
+                } else {
+                    this.$router.push('/join');
+                }
+            }
         },
         async login() {
             this.usernameLogin.admin = document.getElementById("profeLogin").checked;
 
-            fetch(import.meta.env.VITE_NODE_ROUTE + '/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: this.usernameLogin.email,
-                    password: this.usernameLogin.password,
-                }),
-            }).then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                if(data.err) {
-                    console.log(data.err);
+            let data = await login(this.usernameLogin);
+
+            if (data.err) {
+                console.log(data.err);
+            } else {
+                if (this.usernameLogin.admin) {
+                    let store = useAppStore();
+                    store.usuari.nom = data.userData.nom;
+                    store.usuari.cognom = data.userData.cognom;
+                    store.usuari.email = data.userData.correu;
+                    store.usuari.id = data.userData.idUsu;
+                    console.log(store.usuari);
+                    this.$router.push('/classes');
                 } else {
-                    if (this.usernameLogin.admin) {
-                        let store = useAppStore();
-                        store.usuari.nom = data.userData.nom;
-                        store.usuari.cognom = data.userData.cognom;
-                        store.usuari.email = data.userData.correu;
-                        store.usuari.id = data.userData.idUsu;
-                        console.log(store.usuari);
-                        this.$router.push('/classes');
-                    } else {
-                        this.$router.push('/join');
-                    }
+                    this.$router.push('/join');
                 }
-            });
+            }
         },
 
     },
