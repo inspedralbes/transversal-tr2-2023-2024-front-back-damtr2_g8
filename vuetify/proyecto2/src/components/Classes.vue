@@ -15,7 +15,7 @@ export default {
   methods: {
     async getClasses() {
       const response = await fetch(
-        `http://localhost:3751/classeProfe/${this.idProfe}`,
+        import.meta.env.VITE_NODE_ROUTE + `/classeProfe/${this.idProfe}`,
         {
           method: "GET",
           headers: {
@@ -34,7 +34,7 @@ export default {
       }
     },
     async crearClase() {
-      const response = await fetch(`http://localhost:3751/crearClasse/`, {
+      const response = await fetch(import.meta.env.VITE_NODE_ROUTE + `/crearClasse/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export default {
     },
     async editarClasse() {
       console.log(this.classeEditar);
-      const response = await fetch(`http://localhost:3751/editarClasse/`, {
+      const response = await fetch(import.meta.env.VITE_NODE_ROUTE + `/editarClasse/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

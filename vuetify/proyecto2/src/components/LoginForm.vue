@@ -101,7 +101,7 @@ export default {
         async register() {
             this.emailRegistration.isAdmin = document.getElementById("profeRegistro").checked;
 
-            fetch('http://localhost:3751/register', {
+            fetch(import.meta.env.VITE_NODE_ROUTE + '/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default {
 
             this.usernameLogin.admin = document.getElementById("profeLogin").checked;
 
-            fetch('http://localhost:3751/login', {
+            fetch(import.meta.env.VITE_NODE_ROUTE + '/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
