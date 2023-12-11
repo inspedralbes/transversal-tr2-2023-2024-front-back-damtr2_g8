@@ -1,4 +1,5 @@
 <script>
+import { getClasses } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
 export default {
@@ -14,15 +15,7 @@ export default {
   },
   methods: {
     async getClasses() {
-      const response = await fetch(
-        import.meta.env.VITE_NODE_ROUTE + `/classeProfe/${this.idProfe}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await getClasses(this.idProfe);
 
       if (!response.ok) {
         window.alert("Error al carregar les classes");
@@ -164,13 +157,13 @@ export default {
   justify-content: space-between;
 }
 
-.full-container{
-   
-    background-color: lightblue;
+.full-container {
+
+  background-color: lightblue;
 }
 
-.vcard{
-    margin-top: 70px;
+.vcard {
+  margin-top: 70px;
 }
 
 .titleCard {
@@ -184,8 +177,8 @@ export default {
 }
 
 .txtCard {
-    padding: 20px;
-    margin-top: 20px;
+  padding: 20px;
+  margin-top: 20px;
 }
 
 .my-button {
