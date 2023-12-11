@@ -1,12 +1,24 @@
 <script>
+import { socket, state } from '@/services/socket';
+
 export default {
     data() {
         return {
             errorCode: false,
+            errorText: "",
+            proveSala: false
         };
     },
     methods: {
         onSubmit() {
+            this.proveSala = true;
+            let codi = "";
+            const form = document.querySelector('form');
+            const inputs = form.querySelectorAll('input');
+            for (let i = 0; i < inputs.length; i++) {
+                codi += (inputs[i].value).toString();
+            }
+            socket.emit("joinSala", { codi: codi, username: prompt() });
         },
         async pasteCode() {
             try {
@@ -19,13 +31,32 @@ export default {
                         input.value = paste[i];
                     } else {
                         this.errorCode = true;
+                        this.errorText = "Error al copiar el codi";
                     }
                 })
             } catch (error) {
                 console.error(error);
                 this.errorCode = true;
+                this.errorText = "Error al copiar el codi";
             }
         }
+    },
+    watch: {
+        'setSala': function (nuevoValor, antiguoValor) {
+            if (nuevoValor == false) {
+                this.errorCode = true;
+                this.errorText = "El codi de la sala no existeix";
+                this.proveSala = false;
+                state.joinedSala = null;
+            } else if (nuevoValor != null && nuevoValor != false) {
+                this.$router.push('/sala');
+            }
+        },
+    },
+    computed: {
+        setSala() {
+            return state.joinedSala;
+        },
     },
     mounted() {
         const form = document.querySelector('form')
@@ -121,7 +152,7 @@ export default {
         <div class="center-container">
             <v-card class="pa-10 bg-grey-lighten-5 elevation-5 rounded-xl">
                 <h1 class="title">UNEIX-TE</h1>
-                <form @submit.prevent="onSubmit">
+                <form @submit.prevent="">
                     <div class="d-flex my-3">
                         <input type="text" maxlength="1" class="form-control">
                         <input type="text" maxlength="1" class="form-control">
@@ -140,7 +171,7 @@ export default {
                         </div>
                     </div>
                     <v-snackbar v-model="errorCode" :timeout="3000" color="error" class="text-center">
-                        El codi no es valid.
+                        {{ errorText }}
                         <template v-slot:actions>
                             <v-btn color="white" variant="text" @click="errorCode = false">
                                 <svg fill="white" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960"
@@ -152,7 +183,7 @@ export default {
                         </template>
                     </v-snackbar>
                     <div class="btn-container">
-                        <button class="btn">JUGAR</button>
+                        <button class="btn" @click="onSubmit">JUGAR</button>
                     </div>
                 </form>
             </v-card>

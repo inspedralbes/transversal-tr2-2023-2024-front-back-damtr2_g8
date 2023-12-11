@@ -6,7 +6,7 @@
                     <v-row>
                         <v-col cols="6" class=" pl-10 py-10">
                             <h2 class="my-2 text-center">Registra't</h2>
-                            <v-form v-model="valid" @submit.prevent="register" class="mr-6">
+                            <v-form @submit.prevent="register" class="mr-6">
                                 <div class="name-field">
                                     <v-text-field v-model="emailRegistration.name" :rules="emailRegistration.nameRules"
                                         label="Nom" type="name" class="pr-6" required></v-text-field>
@@ -28,7 +28,7 @@
 
                         <v-col cols="6" class="container-right pr-10 py-10">
                             <h2 class="my-2 ml-6 text-center">Inicia sessió</h2>
-                            <v-form v-model="valid" @submit.prevent="login" class="ml-6">
+                            <v-form @submit.prevent="login" class="ml-6">
                                 <v-text-field v-model="usernameLogin.email" :rules="emailRegistration.emailRules" label="Email" type="email"
                                     required></v-text-field>
                                 <v-text-field v-model="usernameLogin.password" :rules="emailRegistration.passwordRules" label="Password" type="password"
@@ -40,7 +40,6 @@
                         </v-col>
                     </v-row>
                 </v-card>
-
             </v-col>
         </v-row>
     </div>
@@ -94,20 +93,15 @@ export default {
             usernameLogin: {
                 email: '',
                 password: '',
+                admin: false,
             },
         };
     },
     methods: {
         async register() {
-            console.log('Registering user:', this.emailRegistration.name, this.emailRegistration.surname, this.emailRegistration.email, this.emailRegistration.password);
+            this.emailRegistration.isAdmin = document.getElementById("profeRegistro").checked;
 
-            var element = document.getElementById("profeRegistro");
-            if (element.checked) {
-                this.emailRegistration.isAdmin = 1;
-            } else {
-                this.emailRegistration.isAdmin = 0;
-            }
-            const response = await fetch('http://localhost:3751/register', {
+            fetch('http://localhost:3751/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,31 +111,31 @@ export default {
                     cognom: this.emailRegistration.surname,
                     email: this.emailRegistration.email,
                     password: this.emailRegistration.password,
-                    admin: this.emailRegistration.isAdmin,
                 }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            } else {
-                const data = await response.json();
-                console.log('Server Response:', data);
-                window.alert("Usuari registrat correctament");
-
-                if (element.checked && this.emailRegistration.isAdmin == 1) {
-                    this.$router.push('/classes');
+            }).then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if(data.err) {
+                    console.log(data.err);
                 } else {
-                    this.$router.push('/join');
+                    if(this.emailRegistration.isAdmin) {
+                        const store = useAppStore();
+                        store.setIdProfessor(data.userData.idUsu);
+                        this.$router.push('/classes');
+                    } else {
+                        this.$router.push('/join');
+                    }
+                    
                 }
-            }
+            });
 
         },
         async login() {
             console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
 
-            var element = document.getElementById("profeLogin");
+            this.usernameLogin.admin = document.getElementById("profeLogin").checked;
 
-            const response = await fetch('http://localhost:3751/login', {
+            fetch('http://localhost:3751/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,26 +144,21 @@ export default {
                     email: this.usernameLogin.email,
                     password: this.usernameLogin.password,
                 }),
-            });
-
-            if (!response.ok) {                
-                window.alert("Usuari o contrasenya incorrectes");
-            } else {
-                const data = await response.json();
-
-                console.log('Server Response:', data);
-
-                // Use this.$router instead of $router
-                if (element.checked && data.userData.admin == 1) {
-                    const store = useAppStore();
-                    store.setIdProfessor(data.userData.idUsu);
-                    this.$router.push('/classes');
+            }).then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if(data.err) {
+                    console.log(data.err);
                 } else {
-                    this.$router.push('/join');
+                    if (this.usernameLogin.admin) {
+                        const store = useAppStore();
+                        store.setIdProfessor(data.userData.idUsu);
+                        this.$router.push('/classes');
+                    } else {
+                        this.$router.push('/join');
+                    }
                 }
-            }
-
-
+            });
         },
 
     },
