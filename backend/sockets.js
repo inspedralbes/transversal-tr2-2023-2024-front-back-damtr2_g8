@@ -29,8 +29,10 @@ function sockets(io, partidas) {
     socket.on("startGame", () => {
       const sala = salas.find(sala => sala.owner == socket.id);
       for (let i = 0; i < sala.jugadores.length; i++) {
-        io.to(sala.jugadores[i].id_jugador).emit("startGame");
+        io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
+      io.to(sala.owner).emit("startGame", sala.id_sala);
+      io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.id_sala == sala.id_sala));
     });
 
     socket.on("disconnect", () => {
@@ -76,7 +78,6 @@ function sockets(io, partidas) {
       salaEncontrada.jugadores.push({
         id_jugador: id,
         nombre: userInfo.username,
-        id_partida: null,
         winner: false,
       });
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
@@ -242,12 +243,14 @@ function sockets(io, partidas) {
     if (partidas.length == 0) {
       partidas.push({
         idPartida: partidas.length + 1,
+        idSala: user.id_sala,
         jugadores: [jugador],
       });
     } else {
       if (partidas.every((partida) => partida.jugadores.length == 2)) {
         partidas.push({
           idPartida: partidas.length + 1,
+          idSala: user.id_sala,
           jugadores: [jugador],
         });
       } else {
@@ -272,6 +275,9 @@ function sockets(io, partidas) {
         );
       }
     }
+
+    const sala = salas.find(sala => sala.id_sala == user.id_sala);
+    io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
   }
 }
 

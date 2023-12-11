@@ -27,7 +27,7 @@ export default {
       });
     },
     conectar() {
-      socket.emit("conectarUsuario", { username: this.username });
+      socket.emit("conectarUsuario", { username: this.username, id_sala: state.sala });
     },
     solveOperation() {
       socket.emit("solveOperation", {

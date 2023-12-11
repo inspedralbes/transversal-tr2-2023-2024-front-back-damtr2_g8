@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    idProfessor:null,
+    idProfessor: null,
+    idSala: null,
   }),
   actions: {
     setIdProfessor(idProfessor) {
