@@ -35,3 +35,15 @@ export function login(usernameLogin) {
             });
     });
 }
+
+export function getClasses(idProfe) {
+    return new Promise((resolve, reject) => {
+        fetch(import.meta.env.VITE_NODE_ROUTE + `/classeProfe/${idProfe}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }).then((response) => resolve(response))
+    });
+}
