@@ -65,7 +65,7 @@ export default {
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div class="PS-container">
-            <div class="PS elevation-3" v-bind:style="{
+            <div class="PS " v-bind:style="{
               width: setPartida.jugadores[idPlayer].vida + '%',
             }">
               <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
@@ -75,7 +75,7 @@ export default {
         <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
           <div class="PS-container" align="left">
-            <div class="PS elevation-3" v-bind:style="{
+            <div class="PS " v-bind:style="{
               width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
             }">
               <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
