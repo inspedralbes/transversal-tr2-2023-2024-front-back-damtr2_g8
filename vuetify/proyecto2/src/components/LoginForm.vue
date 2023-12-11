@@ -119,8 +119,11 @@ export default {
                     console.log(data.err);
                 } else {
                     if(this.emailRegistration.isAdmin) {
-                        const store = useAppStore();
-                        store.setUserId(data.userData.insertId);
+                        let store = useAppStore();
+                        store.usuari.nom = this.emailRegistration.name;
+                        store.usuari.cognom = this.emailRegistration.surname;
+                        store.usuari.email = this.emailRegistration.email;
+                        store.usuari.id = data.userData.insertId;
                         this.$router.push('/classes');
                     } else {
                         this.$router.push('/join');
@@ -131,8 +134,6 @@ export default {
 
         },
         async login() {
-            console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
-
             this.usernameLogin.admin = document.getElementById("profeLogin").checked;
 
             fetch(import.meta.env.VITE_NODE_ROUTE + '/login', {
@@ -152,7 +153,11 @@ export default {
                 } else {
                     if (this.usernameLogin.admin) {
                         let store = useAppStore();
-                        store.setUserId(data.userData.idUsu);
+                        store.usuari.nom = data.userData.nom;
+                        store.usuari.cognom = data.userData.cognom;
+                        store.usuari.email = data.userData.correu;
+                        store.usuari.id = data.userData.idUsu;
+                        console.log(store.usuari);
                         this.$router.push('/classes');
                     } else {
                         this.$router.push('/join');

@@ -79,7 +79,7 @@ export default {
   },
   mounted() {
     const store = useAppStore();
-    console.log(store.getUserId());
+    console.log(store.usuari);
     this.idProfe = store.getUserId();
     this.getClasses();
   },
