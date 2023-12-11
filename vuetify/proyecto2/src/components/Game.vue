@@ -62,6 +62,7 @@ export default {
   <div class="game-container">
     <v-sheet class="content-wrap bg-transparent">
       <v-row class="px-12 py-5" style="margin: 0;" v-if="!emptyGameData">
+
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div class="PS-container">
@@ -86,19 +87,20 @@ export default {
     </v-sheet>
     <div class="game-bar">
       <v-row>
-        <v-col sm="6" lg="6">
+        <v-col sm="4" lg="12" md="6" cols="2">
           <div class="input-container">
             <div class="operation-label">
               <span><b>Operación:</b></span>
               {{ setPartida.jugadores[idPlayer].operacion }}
             </div>
-            <v-text-field label="?" type="number" v-model="result"></v-text-field>
-            <v-btn @click="solveOperation()">Resolver</v-btn>
+            <div class="input-operation">
+              <v-text-field label="?" type="number" v-model="result"></v-text-field>
+              <v-btn @click="solveOperation()">Resolver</v-btn>
+            </div>
           </div>
         </v-col>
-      </v-row>
-      <v-row class="mx-8" >
-        <v-col sm="4" lg="6" md="6" cols="2">
+
+        <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class=" dificulty-container">
               <v-col align="center">
@@ -116,20 +118,32 @@ export default {
             </v-row>
           </v-sheet>
         </v-col>
-
       </v-row>
     </div>
   </div>
 </template>
 
 <style scoped>
-.input-container{
+.input-operation{
+  margin-top: 20px;
+}
+.bottom-aligned-col {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.operation-label{
-  font-size:xx-large;
-  background-color: white;  
+
+.operation-label {
+  font-size: 50px;
+  background-color: white;
 }
 
 .PS {
@@ -169,20 +183,23 @@ export default {
 .dificulty-option {
   font-size: 25px !important;
   font-weight: 800 !important;
-  height: 200px !important;
-  width: 100%;
+  height: 150px !important;
+  width: 200px;
+
 }
 
 .dificulty-container {
-  width: 100%;
+
+  display: flex;
+  justify-content: center;
+
 }
 
 .game-bar {
-  position: absolute;
-  bottom: 0;
+
   width: 100%;
   height: fit-content;
   display: flex;
-  flex-direction: column;
+  align-items: center;
 }
 </style>

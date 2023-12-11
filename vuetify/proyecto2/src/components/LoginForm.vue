@@ -22,7 +22,7 @@
 
                                 </div>
 
-                                <v-btn type="submit" color="primary">Registra't</v-btn>
+                                <v-btn id="btnSubmit" type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
 
@@ -44,9 +44,12 @@
         </v-row>
     </div>
 </template>
-
 <script>
+
+
 import { useAppStore } from '@/store/app';
+import party from 'party-js';
+
 export default {
     data() {
         return {
@@ -98,6 +101,16 @@ export default {
         };
     },
     methods: {
+        lanzarConfeti() {
+            // Obtén la referencia al elemento con el id "btnSubmit"
+            const btnSubmit = document.getElementById('btnSubmit');
+
+            // Lanza el efecto de confeti
+            party.confetti(btnSubmit);
+
+            // También puedes lanzar chispas
+            party.sparkles(btnSubmit);
+        },
         async register() {
             this.emailRegistration.isAdmin = document.getElementById("profeRegistro").checked;
 
@@ -118,6 +131,7 @@ export default {
                     if (data.err) {
                         console.log(data.err);
                     } else {
+                        this.lanzarConfeti();
                         if (this.emailRegistration.isAdmin) {
                             const store = useAppStore();
                             store.setIdProfessor(data.userData.idUsu);
