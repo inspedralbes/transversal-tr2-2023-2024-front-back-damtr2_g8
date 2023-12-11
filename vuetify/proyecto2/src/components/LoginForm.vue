@@ -114,10 +114,18 @@ export default {
                 }),
             }).then((response) => response.json())
             .then((data) => {
+                console.log(data);
                 if(data.err) {
                     console.log(data.err);
                 } else {
-                    this.$router.push(this.emailRegistration.isAdmin ? '/classes' : '/join');
+                    if(this.emailRegistration.isAdmin) {
+                        const store = useAppStore();
+                        store.setIdProfessor(data.userData.idUsu);
+                        this.$router.push('/classes');
+                    } else {
+                        this.$router.push('/join');
+                    }
+                    
                 }
             });
 
