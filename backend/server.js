@@ -65,7 +65,7 @@ app.post("/crearClasse", async (req, res) => {
     res.send(data);
   }).catch((err) => {
     res.send(err);
-  });;
+  });
 });
 
 //ruta para obtener todos los usuarios de una clase
@@ -75,7 +75,7 @@ app.get("/classe/:idClasse", async (req, res) => {
     res.send(data);
   }).catch((err) => {
     res.send(err);
-  });;
+  });
 });
 
 //ruta para obtener las classes de un profesor
@@ -85,7 +85,7 @@ app.get("/classeProfe/:idProfe", async (req, res) => {
     res.send(data);
   }).catch((err) => {
     res.send(err);
-  });;
+  });
 });
 
 //ruta para obtener un usuario en concreto
@@ -95,7 +95,7 @@ app.get("/usuario/:idUsuari", async (req, res) => {
     res.send(data);
   }).catch((err) => {
     res.send(err);
-  });;
+  });
 });
 
 //ruta para hacer login

@@ -117,11 +117,7 @@ export default {
                 if(data.err) {
                     console.log(data.err);
                 } else {
-                    if (this.emailRegistration.isAdmin) {
-                        this.$router.push('/classes');
-                    } else {
-                        this.$router.push('/join');
-                    }
+                    this.$router.push(this.emailRegistration.isAdmin ? '/classes' : '/join');
                 }
             });
 

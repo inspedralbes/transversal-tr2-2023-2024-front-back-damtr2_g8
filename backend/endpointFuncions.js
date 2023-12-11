@@ -29,7 +29,7 @@ function createClass(nomClasse, idProfe) {
 function getClassByUserId(id) {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT * FROM `CLASSE` WHERE idUsuari = ?";
+      "SELECT * FROM `CLASSE` WHERE idPropietari = ?";
     const VALUES = [id];
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
