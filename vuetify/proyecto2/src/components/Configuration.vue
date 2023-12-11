@@ -1,10 +1,10 @@
 <template>
     <div class="div-gear">
         <div class="top-right-svg">
-            <button @click="dialog = !dialog"> 
-                <svg fill="#ffffff" height="40px" width="40px" version="1.1" id="Capa_1"
-                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.64 29.64"
-                    xml:space="preserve" stroke="#ffffff" stroke-width="0.00029643">
+            <button @click="dialog = !dialog">
+                <svg fill="#ffffff" height="40px" width="40px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.64 29.64" xml:space="preserve"
+                    stroke="#ffffff" stroke-width="0.00029643">
 
                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
 
@@ -43,23 +43,6 @@
                                     <v-col cols="12" sm="6" md="12">
                                         <a href="#" @click.prevent="openAvatarModal">Cambiar avatar</a>
                                     </v-col>
-
-                                    <v-dialog v-model="avatarModal" max-width="600px">
-                                        <v-card>
-                                            <v-card-title class="headline">
-                                                Avatars
-                                                <v-spacer></v-spacer>
-                                                <v-btn icon @click="closeAvatarModal">
-                                                    <v-icon>mdi-close</v-icon>
-                                                </v-btn>
-                                            </v-card-title>
-                                            <v-card-text>
-                                                <v-row>
-                                                    <p>Avatares</p>
-                                                </v-row>
-                                            </v-card-text>
-                                        </v-card>
-                                    </v-dialog>
                                     <v-col cols="12" sm="6">
                                         <p>Nombre</p>
                                     </v-col>
@@ -77,13 +60,31 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                                Close
-                            </v-btn>
-                            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                                Save
-                            </v-btn>
+                            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Close</v-btn>
+                            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Save</v-btn>
                         </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
+                <v-dialog v-model="avatarModal" max-width="600px">
+                    <v-card>
+                        <v-card-title class="headline">
+                            Avatars
+                            <v-spacer></v-spacer>
+                            <v-btn icon @click="closeAvatarModal">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-row justify="center">
+                                <v-col v-for="avatarId in avatarIds" :key="avatarId" cols="12" sm="6" md="4" lg="3">
+                                    <v-avatar class="mx-auto" size="120" @click="handleAvatarClick(avatarId)"
+                                        @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+                                        <img :src="getAvatarUrl(avatarId)" alt="Avatar" style="width: 100%; height: 100%;">
+                                    </v-avatar>
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
                     </v-card>
                 </v-dialog>
             </button>
@@ -98,14 +99,33 @@ export default {
         return {
             dialog: false,
             avatarModal: false,
+            avatarIds: Array.from({ length: 40 }, (_, i) => i),
         }
     },
     methods: {
         openAvatarModal() {
             this.avatarModal = true;
         },
+        getAvatarUrl(avatarId) {
+            return `https://api.dicebear.com/7.x/big-smile/svg?seed=${avatarId}&scale=80`;
+
+        },
         closeAvatarModal() {
             this.avatarModal = false;
+        },
+        handleAvatarClick(avatarId) {
+            //Aqui haremos para guardar el avatar en bd
+            console.log(`Avatar ${avatarId} clicado`);
+        },
+        handleMouseEnter(event) {
+            event.target.style.transform = 'scale(1.1)';
+            event.target.style.transition = 'transform 0.3s ease';
+            event.target.style.cursor = 'pointer';
+        },
+        handleMouseLeave(event) {
+            event.target.style.transform = 'scale(1)';
+            event.target.style.transition = 'transform 0.3s ease';
+            event.target.style.cursor = 'default';
         },
     },
 }
