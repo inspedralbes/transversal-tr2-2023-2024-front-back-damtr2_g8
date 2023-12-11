@@ -21,6 +21,8 @@ export const state = reactive({
   },
   joinedSala: null,
   play: false,
+  sala: null,
+  partidas: null,
 });
 
 socket.on("enviaJson", (data) => {
@@ -39,6 +41,12 @@ socket.on("join", (data) => {
   state.joinedSala = data;
 });
 
-socket.on("startGame", () => {
+socket.on("startGame", (idSala) => {
   state.play = true;
+  state.sala = idSala;
+});
+
+socket.on("getPartidas", (data) => {
+  console.log(data);
+  state.partidas = data;
 });

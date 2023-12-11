@@ -1,6 +1,5 @@
 <script>
 import { socket, state } from "@/services/socket";
-import { io } from "socket.io-client";
 
 export default {
     data() {
@@ -12,7 +11,6 @@ export default {
     methods: {
         startGame() {
             this.owner = true;
-            console.log("aaa");
             socket.emit("startGame", {});
         }
     },
@@ -23,10 +21,12 @@ export default {
             }
         },
         'play': function (nuevoValor, antiguoValor) {
-            console.log("play")
             if (nuevoValor == true && this.owner == false) {
                 this.$router.push("/game");
             }
+        },
+        'partidas': function (nuevoValor, antiguoValor) {
+            console.log(nuevoValor);
         },
     },
     computed: {
@@ -41,6 +41,9 @@ export default {
         play() {
             return state.play;
         },
+        partidas() {
+            return state.partidas;
+        },
     },
     mounted() {
         this.myId = socket.id;
@@ -54,7 +57,8 @@ export default {
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
 
-        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner">COMENÇA</v-btn>
+        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && play == false">COMENÇA</v-btn>
+        <div v-else-if="myId == sala.owner && play == true">S'estan jugant les partides</div>
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
@@ -62,6 +66,15 @@ export default {
                     <div class="user-item" v-for="jugador in sala.jugadores">
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
+                    </div>
+                </div>
+                <div class="user-row">
+                    <div class="user-item" v-for="partida in partidas">
+                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
+                        <h3>{{ partida.jugadores[0].username }}</h3>
+                        <h3>VS</h3>
+                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
+                        <h3>{{ partida.jugadores[1].username }}</h3>
                     </div>
                 </div>
             </div>
