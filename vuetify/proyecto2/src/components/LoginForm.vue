@@ -114,13 +114,13 @@ export default {
                 }),
             }).then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                console.log(data.userData.insertId);
                 if(data.err) {
                     console.log(data.err);
                 } else {
                     if(this.emailRegistration.isAdmin) {
                         const store = useAppStore();
-                        store.setIdProfessor(data.userData.idUsu);
+                        store.setUserId(data.userData.insertId);
                         this.$router.push('/classes');
                     } else {
                         this.$router.push('/join');
@@ -152,7 +152,7 @@ export default {
                 } else {
                     if (this.usernameLogin.admin) {
                         const store = useAppStore();
-                        store.setIdProfessor(data.userData.idUsu);
+                        store.setUserId(data.userData.idUsu);
                         this.$router.push('/classes');
                     } else {
                         this.$router.push('/join');

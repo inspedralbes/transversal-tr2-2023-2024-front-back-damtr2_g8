@@ -45,15 +45,12 @@ export default {
         }),
       });
       if (!response.ok) {
-        window.alert("Error al crear la classe");
       } else {
-        window.alert("Classe creada correctament");
         this.mostrarPopUp = false;
         this.getClasses();
       }
     },
     async editarClasse() {
-      console.log(this.classeEditar);
       const response = await fetch(import.meta.env.VITE_NODE_ROUTE + `/editarClasse/`, {
         method: "POST",
         headers: {
@@ -65,9 +62,7 @@ export default {
         }),
       });
       if (!response.ok) {
-        window.alert("Error al editar la classe");
       } else {
-        window.alert("Classe editada correctament");
         this.mostrarPopUpEditar = false;
         this.getClasses();
       }
@@ -84,8 +79,8 @@ export default {
   },
   mounted() {
     const store = useAppStore();
-    console.log(store.getIdProfessor());
-    this.idProfe = store.getIdProfessor();
+    console.log(store.getUserId());
+    this.idProfe = store.getUserId();
     this.getClasses();
   },
 };

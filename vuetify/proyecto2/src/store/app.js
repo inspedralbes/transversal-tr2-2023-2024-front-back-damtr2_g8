@@ -3,14 +3,19 @@ import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    idProfessor:null,
+    usuari: {
+      nom: "",
+      cognom: "",
+      email: "",
+      id: null,
+    }
   }),
   actions: {
-    setIdProfessor(idProfessor) {
-      this.idProfessor = idProfessor
+    setUserId(id) {
+      this.usuari.id = id;
     },
-    getIdProfessor() {
-      return this.idProfessor
+    getUserId() {
+      return this.usuari.id;
     }
   },
 })
