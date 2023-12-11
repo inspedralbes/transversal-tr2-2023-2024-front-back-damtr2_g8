@@ -84,6 +84,7 @@ export default {
   },
   mounted() {
     const store = useAppStore();
+    console.log(store.getIdProfessor());
     this.idProfe = store.getIdProfessor();
     this.getClasses();
   },

@@ -14,7 +14,7 @@ let conn = mysql.createPool({
 function createClass(nomClasse, idProfe) {
   return new Promise((resolve, reject) => {
     const sql = "INSERT INTO CLASSE SET ?";
-    const VALUES = { nomClasse: nomClasse, idUsuari: idProfe };
+    const VALUES = { nomClasse: nomClasse, idPropietari: idProfe };
 
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
@@ -26,10 +26,24 @@ function createClass(nomClasse, idProfe) {
   });
 }
 
+function editClass(nomClasse, idClasse) {
+  return new Promise((resolve, reject) => {
+    const sql = "UPDATE CLASSE SET nomClasse = ? WHERE idClasse = ?";
+    const VALUES = [nomClasse, idClasse];
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({err: err});
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function getClassByUserId(id) {
   return new Promise((resolve, reject) => {
-    const sql =
-      "SELECT * FROM `CLASSE` WHERE idPropietari = ?";
+    const sql = "SELECT * FROM `CLASSE` WHERE idPropietari = ?";
     const VALUES = [id];
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
@@ -79,15 +93,16 @@ function login(email, password) {
   });
 }
 
-function register(email, password, nom) {
+function register(email, password, nom, cognom) {
   return new Promise((resolve, reject) => {
-    if (!email || !password || !nom) {
+    if (!email || !password || !nom || !cognom) {
       reject({ err: "All elements are required" });
     } else {
       const newUser = {
         nom: nom,
         pass: CryptoJS.MD5(password).toString(),
         correu: email,
+        cognom: cognom,
       };
       let sql = `INSERT INTO USUARIS SET ?`;
       conn.query(sql, newUser, (err, result) => {
@@ -100,6 +115,7 @@ function register(email, password, nom) {
 
 module.exports = {
   createClass,
+  editClass,
   getClassByUserId,
   getUserById,
   login,
