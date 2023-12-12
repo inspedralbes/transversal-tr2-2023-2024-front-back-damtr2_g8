@@ -15,6 +15,7 @@ const {
   getUserById,
   login,
   register,
+  changePassword,
 } = require("./endpointFuncions.js");
 const { Server } = require("socket.io");
 
@@ -128,6 +129,17 @@ app.post("/login", async (req, res) => {
 //ruta para registrar un usuario
 app.post("/register", async (req, res) => {
   await register(req.body.email, req.body.password, req.body.nom, req.body.cognom)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para cambiar la contraseña de un usuario
+app.post("/changePassword", async (req, res) => {
+  await changePassword(req.body.email, req.body.password)
     .then((data) => {
       res.send(data);
     })
