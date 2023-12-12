@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import { getClasses } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
 export default {
@@ -86,15 +87,7 @@ export default {
   },
   methods: {
     async getClasses() {
-      const response = await fetch(
-        `http://localhost:3751/classeProfe/${this.idProfe}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await getClasses(this.idProfe);
 
       if (!response.ok) {
         window.alert("Error al carregar les classes");
@@ -106,7 +99,7 @@ export default {
       }
     },
     async crearClase() {
-      const response = await fetch(`http://localhost:3751/crearClasse/`, {
+      const response = await fetch(import.meta.env.VITE_NODE_ROUTE + `/crearClasse/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,9 +110,7 @@ export default {
         }),
       });
       if (!response.ok) {
-        window.alert("Error al crear la classe");
       } else {
-        window.alert("Classe creada correctament");
         this.mostrarPopUp = false;
         this.nombreNuevaClase = "";
         this.getClasses();
@@ -137,9 +128,7 @@ export default {
         }),
       });
       if (!response.ok) {
-        window.alert("Error al editar la classe");
       } else {
-        window.alert("Classe editada correctament");
         this.mostrarPopUpEditar = false;
         this.getClasses();
       }
@@ -155,8 +144,7 @@ export default {
   },
   mounted() {
     const store = useAppStore();
-    console.log(store.getIdProfessor());
-    this.idProfe = store.getIdProfessor();
+    this.idProfe = store.getUserId();
     this.getClasses();
   },
 };
@@ -196,10 +184,13 @@ export default {
   justify-content: space-between;
 }
 
+.full-container {
 
+  background-color: lightblue;
+}
 
 .vcard {
-  margin-bottom: 70px;
+  margin-top: 70px;
 }
 
 .titleCard {

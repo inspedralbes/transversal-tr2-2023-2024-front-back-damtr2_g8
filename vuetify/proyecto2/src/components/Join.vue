@@ -1,5 +1,6 @@
 <script>
 import { socket, state } from '@/services/socket';
+import { useAppStore } from "@/store/app";
 
 export default {
     data() {
@@ -18,7 +19,8 @@ export default {
             for (let i = 0; i < inputs.length; i++) {
                 codi += (inputs[i].value).toString();
             }
-            socket.emit("joinSala", { codi: codi, username: prompt() });
+            let store = useAppStore();
+            socket.emit("joinSala", { codi: codi, username: store.usuari.nom});
         },
         async pasteCode() {
             try {
@@ -182,6 +184,7 @@ export default {
                             </v-btn>
                         </template>
                     </v-snackbar>
+                    <v-sheet class="text-center mt-7"> <router-link to="/classes">Crea una sala</router-link> </v-sheet>
                     <div class="btn-container">
                         <button class="btn" @click="onSubmit">JUGAR</button>
                     </div>

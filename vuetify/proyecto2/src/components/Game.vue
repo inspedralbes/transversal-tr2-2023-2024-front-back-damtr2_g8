@@ -20,14 +20,8 @@ export default {
         dificultad: dificultad
       });
     },
-    restarVida(dificultad) {
-      socket.emit("restarVida", {
-        idPartida: state.partida.idPartida,
-        idJugador: this.idPlayer,
-      });
-    },
     conectar() {
-      socket.emit("conectarUsuario", { username: this.username });
+      socket.emit("conectarUsuario", { username: this.username, id_sala: state.sala });
     },
     solveOperation() {
       socket.emit("solveOperation", {
