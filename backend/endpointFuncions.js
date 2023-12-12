@@ -113,6 +113,21 @@ function register(email, password, nom, cognom) {
   });
 }
 
+function changePassword(email, password){
+  return new Promise((resolve, reject)=>{
+    if(!email || !password){
+      reject({err: "Both email and password are required"});
+    }else{
+      let sql = "UPDATE USUARIS SET pass = ? WHERE correu = ?";
+      let VALUES = [CryptoJS.MD5(password).toString(), email];
+      conn.query(sql, VALUES, (err, result)=>{
+        if(err) reject({err: err});
+        resolve({userData: result});
+      })
+    }
+  })
+}
+
 module.exports = {
   createClass,
   editClass,
@@ -120,4 +135,5 @@ module.exports = {
   getUserById,
   login,
   register,
+  changePassword,
 };
