@@ -124,6 +124,7 @@ export default {
                     store.usuari.cognom = this.emailRegistration.surname;
                     store.usuari.email = this.emailRegistration.email;
                     store.usuari.id = data.userData.insertId;
+                    store.usuari.contrassenya = this.emailRegistration.password;
                     this.$router.push('/classes');
                 } else {
                     this.$router.push('/join');
@@ -138,13 +139,15 @@ export default {
             if (data.err) {
                 console.log(data.err);
             } else {
+                let store = useAppStore();
+                store.usuari.nom = data.userData.nom;
+                store.usuari.cognom = data.userData.cognom;
+                store.usuari.email = data.userData.correu;
+                store.usuari.id = data.userData.idUsu;
+                store.usuari.contrassenya = data.userData.pass;
+                console.log(store.usuari);
+                console.log(data);
                 if (this.usernameLogin.admin) {
-                    let store = useAppStore();
-                    store.usuari.nom = data.userData.nom;
-                    store.usuari.cognom = data.userData.cognom;
-                    store.usuari.email = data.userData.correu;
-                    store.usuari.id = data.userData.idUsu;
-                    console.log(store.usuari);
                     this.$router.push('/classes');
                 } else {
                     this.$router.push('/join');

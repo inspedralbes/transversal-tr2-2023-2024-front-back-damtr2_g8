@@ -40,20 +40,31 @@
                         <v-card-text>
                             <v-container>
                                 <v-row>
-                                    <v-col cols="12" sm="6" md="12">
-                                        <a href="#" @click.prevent="openAvatarModal">Cambiar avatar</a>
+                                    <v-col cols="12">
+                                        <div class="design-avatar">
+                                            <img :src="getAvatarUrl(this.avatar)" alt="Avatar"
+                                                style="width:70px; height: 70px;">
+                                            <a href="#" @click.prevent="openAvatarModal">Cambiar avatar</a>
+
+                                        </div>
                                     </v-col>
                                     <v-col cols="12" sm="6">
-                                        <p>Nombre</p>
+                                        <p><b>Nom</b></p>
+                                        <p>{{ this.name }}</p>
                                     </v-col>
                                     <v-col cols="12" sm="6">
-                                        <p>Apellido</p>
+                                        <p><b>Cognom</b></p>
+                                        <p>{{ this.surname }}</p>
                                     </v-col>
                                     <v-col cols="12">
-                                        <p>Correo</p>
+                                        <p><b>Correu</b></p>
+                                        <p>{{ this.email }}</p>
                                     </v-col>
                                     <v-col cols="12">
-                                        <v-text-field label="Contrassenya" type="password" required></v-text-field>
+                                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :type="show1 ? 'text' : 'password'" name="input-10-1" label="Contrassenya"
+                                            hint="At least 8 characters" counter
+                                            @click:append="show1 = !show1"></v-text-field>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -69,7 +80,7 @@
                 <v-dialog v-model="avatarModal" max-width="600px">
                     <v-card>
                         <v-card-title class="headline">
-                            Avatars
+                            
                             <v-spacer></v-spacer>
                             <v-btn icon @click="closeAvatarModal">
                                 <v-icon>mdi-close</v-icon>
@@ -93,6 +104,9 @@
 </template>
 
 <script>
+import {
+    useAppStore
+} from "@/store/app";
 
 export default {
     data() {
@@ -100,8 +114,22 @@ export default {
             dialog: false,
             avatarModal: false,
             avatarIds: Array.from({ length: 40 }, (_, i) => i),
-        }
+            name: "",
+            surname: "",
+            email: "",
+            password: "",
+            avatar: null,
+            show1: false,
+            show2: true,
+            password: 'Password',
+            // rules: {
+            //     required: value => !!value || 'Required.',
+            //     min: v => v.length >= 8 || 'Min 8 characters',
+            //     emailMatch: () => (`The email and password you entered don't match`),
+            // }
+        };
     },
+
     methods: {
         openAvatarModal() {
             this.avatarModal = true;
@@ -116,6 +144,11 @@ export default {
         handleAvatarClick(avatarId) {
             //Aqui haremos para guardar el avatar en bd
             console.log(`Avatar ${avatarId} clicado`);
+            this.avatar = avatarId;
+            console.log(this.avatar);
+            let store = useAppStore();
+            store.usuari.avatar = this.avatar;
+
         },
         handleMouseEnter(event) {
             event.target.style.transform = 'scale(1.1)';
@@ -127,11 +160,29 @@ export default {
             event.target.style.transition = 'transform 0.3s ease';
             event.target.style.cursor = 'default';
         },
-    },
+    }, mounted() {
+        let store = useAppStore();
+        this.name = store.usuari.nom;
+        console.log(this.name);
+        this.surname = store.usuari.cognom;
+        console.log(this.surname);
+        this.email = store.usuari.email;
+        console.log(this.email);
+        this.avatar = store.usuari.avatar;
+        console.log(this.avatar);
+        this.password = store.usuari.contrassenya;
+        console.log(this.password);
+
+    }
 }
+
 </script>
 
 <style scoped>
+.design-avatar{
+    display: flex;
+    align-items: center;
+}
 .top-right-svg {
     position: absolute;
     top: 0;
