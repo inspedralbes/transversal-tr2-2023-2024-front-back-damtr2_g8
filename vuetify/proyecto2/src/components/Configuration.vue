@@ -169,8 +169,6 @@ export default {
         console.log(this.email);
         this.avatar = store.usuari.avatar;
         console.log(this.avatar);
-       
-
     }
 }
 
