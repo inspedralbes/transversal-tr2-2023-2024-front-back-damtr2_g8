@@ -18,7 +18,11 @@ export default {
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
             if (nuevoValor == false) {
-                console.log('no hay sala');
+                if (nuevoValor == false) {
+                    setTimeout(() => {
+                        this.$router.push("/join");
+                    }, 3000)
+                }
             }
         },
         'play': function (nuevoValor, antiguoValor) {
@@ -32,12 +36,12 @@ export default {
     },
     computed: {
         sala() {
-            if (state.joinedSala == false) {
-                setTimeout(() => {
-                    this.$router.push("/join");
-                }, 3000)
-            }
             this.myId = socket.id;
+            if (state.joinedSala) {
+                if (socket.id != state.joinedSala.owner) {
+                    state.joinedSala = false;
+                }
+            }
             return state.joinedSala;
         },
         play() {
@@ -50,7 +54,7 @@ export default {
     mounted() {
         this.myId = socket.id;
         const store = useAppStore();
-        if (this.sala == null) {
+        if (this.sala == null || this.sala == false) {
             socket.emit("getSala", store.usuari.id);
         }
     },
