@@ -62,8 +62,7 @@
                                     </v-col>
                                     <v-col cols="12">
                                         <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                                            :type="show1 ? 'text' : 'password'" name="input-10-1" label="Contrassenya"
-                                            hint="At least 8 characters" counter
+                                            :type="show1 ? 'text' : 'password'" name="input-10-1" label="Contrassenya" counter
                                             @click:append="show1 = !show1"></v-text-field>
                                     </v-col>
                                 </v-row>
@@ -121,7 +120,7 @@ export default {
             avatar: null,
             show1: false,
             show2: true,
-            password: 'Password',
+            password: '',
             // rules: {
             //     required: value => !!value || 'Required.',
             //     min: v => v.length >= 8 || 'Min 8 characters',
@@ -170,8 +169,7 @@ export default {
         console.log(this.email);
         this.avatar = store.usuari.avatar;
         console.log(this.avatar);
-        this.password = store.usuari.contrassenya;
-        console.log(this.password);
+       
 
     }
 }

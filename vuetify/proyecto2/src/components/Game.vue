@@ -81,7 +81,12 @@ export default {
     </v-sheet>
     <div class="game-bar">
       <v-row>
-        <v-col sm="4" lg="12" md="6" cols="2">
+        <v-col cols="3">
+          <div>
+            <img src="../assets/equal.png" width="100" alt="">
+          </div>
+        </v-col>
+        <v-col cols="6">
           <div class="input-container">
             <div class="operation-label">
               <span><b></b></span>
@@ -93,7 +98,11 @@ export default {
             </div>
           </div>
         </v-col>
-
+        <v-col cols="3">
+          <div>
+            <img src="../assets/divide.png" width="100" alt="">
+          </div>
+        </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class=" dificulty-container">
@@ -201,5 +210,4 @@ export default {
   display: flex;
   align-items: center;
 }
-
 </style>

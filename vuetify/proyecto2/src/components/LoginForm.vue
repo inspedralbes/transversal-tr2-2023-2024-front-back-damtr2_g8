@@ -19,9 +19,7 @@
                                     label="Password" type="password" required></v-text-field>
                                 <div class="name-field">
                                     <v-checkbox id="profeRegistro" type="checkbox" label="Soc professor/a"></v-checkbox>
-
                                 </div>
-
                                 <v-btn id="btnSubmit" type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
