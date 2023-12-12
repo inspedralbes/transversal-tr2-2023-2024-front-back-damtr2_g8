@@ -115,7 +115,7 @@ function sockets(io, partidas) {
       io.to(sala.owner).emit("join", sala);
       io.to(previusOwner).emit("join", sala);
 
-      const partidasSala = partidas.filter(partida => partida.id_sala == sala.id_sala);
+      const partidasSala = partidas.filter(partida => partida.idSala == sala.id_sala);
       if (partidasSala) {
         io.to(sala.owner).emit("getPartidas", partidasSala);
       }
