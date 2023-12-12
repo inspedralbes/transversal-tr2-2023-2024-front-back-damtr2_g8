@@ -1,5 +1,6 @@
 <script setup>
 import { socket, state } from "@/services/socket";
+import { useAppStore } from "@/store/app";
 </script>
 
 <script>
@@ -45,7 +46,8 @@ export default {
     },
   },
   mounted() {
-    this.username = prompt();
+    const store = useAppStore();
+    this.username = store.usuari.nom;
     this.conectar();
     this.setPartida;
   },
@@ -84,12 +86,12 @@ export default {
         <v-col sm="4" lg="12" md="6" cols="2">
           <div class="input-container">
             <div class="operation-label">
-              <span><b>Operación:</b></span>
+              <span><b></b></span>
               {{ setPartida.jugadores[idPlayer].operacion }}
             </div>
             <div class="input-operation">
-              <v-text-field label="?" type="number" v-model="result"></v-text-field>
-              <v-btn @click="solveOperation()">Resolver</v-btn>
+              <v-text-field label="?" variant="outlined" type="number" v-model="result"></v-text-field>
+              <v-btn class="btnSolve" @click="solveOperation()">Resolver</v-btn>
             </div>
           </div>
         </v-col>
@@ -118,9 +120,12 @@ export default {
 </template>
 
 <style scoped>
-.input-operation{
+.input-operation {
+  width: 500px;
   margin-top: 20px;
+  align-items: center;
 }
+
 .bottom-aligned-col {
   position: fixed;
   bottom: 20px;
@@ -133,11 +138,17 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .operation-label {
-  font-size: 50px;
+  text-align: center;
+  font-size: 60px;
+  width: 700px;
   background-color: white;
+  padding: 14px;
+  border-radius: 5px;
+  font-weight: bold;
 }
 
 .PS {
@@ -153,11 +164,11 @@ export default {
 }
 
 .content-wrap {
-  padding-bottom: 2.5rem;
+  padding-bottom: 10px;
 }
 
 .PS-container {
-  background: rgb(153, 153, 153);
+  background: rgb(255, 92, 92);
   width: 60%;
   display: flex;
 }
@@ -179,18 +190,14 @@ export default {
   font-weight: 800 !important;
   height: 150px !important;
   width: 200px;
-
 }
 
 .dificulty-container {
-
   display: flex;
   justify-content: center;
-
 }
 
 .game-bar {
-
   width: 100%;
   height: fit-content;
   display: flex;

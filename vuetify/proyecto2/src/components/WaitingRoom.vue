@@ -1,5 +1,6 @@
 <script>
 import { socket, state } from "@/services/socket";
+import { useAppStore } from "@/store/app";
 
 export default {
     data() {
@@ -36,6 +37,7 @@ export default {
                     this.$router.push("/join");
                 }, 3000)
             }
+            this.myId = socket.id;
             return state.joinedSala;
         },
         play() {
@@ -47,6 +49,10 @@ export default {
     },
     mounted() {
         this.myId = socket.id;
+        const store = useAppStore();
+        if (this.sala == null) {
+            socket.emit("getSala", store.usuari.id);
+        }
     },
 };
 </script>
@@ -62,13 +68,13 @@ export default {
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
-                <div class="user-row">
+                <div class="user-row" v-if="partidas == null">
                     <div class="user-item" v-for="jugador in sala.jugadores">
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>
-                <div class="user-row">
+                <div class="user-row" v-else>
                     <div class="user-item" v-for="partida in partidas">
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ partida.jugadores[0].username }}</h3>
