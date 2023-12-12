@@ -1,11 +1,10 @@
 import io from "socket.io-client";
 import { reactive } from "vue";
 
-export const socket = io("http://localhost:3751");
+export const socket = io(import.meta.env.VITE_NODE_ROUTE);
 
 export const state = reactive({
-  partida:
-  {
+  partida: {
     idPartida: 0,
     jugadores: [
       {
@@ -22,6 +21,8 @@ export const state = reactive({
   },
   joinedSala: null,
   play: false,
+  sala: null,
+  partidas: null,
 });
 
 socket.on("enviaJson", (data) => {
@@ -40,7 +41,12 @@ socket.on("join", (data) => {
   state.joinedSala = data;
 });
 
-socket.on("startGame", () => {
+socket.on("startGame", (idSala) => {
   state.play = true;
+  state.sala = idSala;
 });
 
+socket.on("getPartidas", (data) => {
+  console.log(data);
+  state.partidas = data;
+});

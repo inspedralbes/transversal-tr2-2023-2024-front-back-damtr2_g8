@@ -45,8 +45,7 @@
     </div>
 </template>
 <script>
-
-
+import { register, login } from '@/services/communicationManager';
 import { useAppStore } from '@/store/app';
 import party from 'party-js';
 
@@ -114,67 +113,43 @@ export default {
         async register() {
             this.emailRegistration.isAdmin = document.getElementById("profeRegistro").checked;
 
-            fetch('http://localhost:3751/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nom: this.emailRegistration.name,
-                    cognom: this.emailRegistration.surname,
-                    email: this.emailRegistration.email,
-                    password: this.emailRegistration.password,
-                }),
-            }).then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    if (data.err) {
-                        console.log(data.err);
-                    } else {
-                        this.lanzarConfeti();
-                        if (this.emailRegistration.isAdmin) {
-                            const store = useAppStore();
-                            store.setIdProfessor(data.userData.idUsu);
-                            this.$router.push('/classes');
-                        } else {
-                            this.$router.push('/join');
-                        }
+            let data = await register(this.emailRegistration);
 
-                    }
-                });
-
+            if (data.err) {
+                console.log(data.err);
+            } else {
+                if (this.emailRegistration.isAdmin) {
+                    let store = useAppStore();
+                    store.usuari.nom = this.emailRegistration.name;
+                    store.usuari.cognom = this.emailRegistration.surname;
+                    store.usuari.email = this.emailRegistration.email;
+                    store.usuari.id = data.userData.insertId;
+                    this.$router.push('/classes');
+                } else {
+                    this.$router.push('/join');
+                }
+            }
         },
         async login() {
-            console.log('Logging in user:', this.usernameLogin.email, this.usernameLogin.password);
-
             this.usernameLogin.admin = document.getElementById("profeLogin").checked;
 
-            fetch('http://localhost:3751/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: this.usernameLogin.email,
-                    password: this.usernameLogin.password,
-                }),
-            }).then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
+            let data = await login(this.usernameLogin);
 
-                    if (data.err) {
-                        console.log(data.err);
-                        window.alert("L'email o la contrassenya no són correctes");
-                    } else {
-                        if (this.usernameLogin.admin) {
-                            const store = useAppStore();
-                            store.setIdProfessor(data.userData.idUsu);
-                            this.$router.push('/classes');
-                        } else {
-                            this.$router.push('/join');
-                        }
-                    }
-                });
+            if (data.err) {
+                console.log(data.err);
+            } else {
+                if (this.usernameLogin.admin) {
+                    let store = useAppStore();
+                    store.usuari.nom = data.userData.nom;
+                    store.usuari.cognom = data.userData.cognom;
+                    store.usuari.email = data.userData.correu;
+                    store.usuari.id = data.userData.idUsu;
+                    console.log(store.usuari);
+                    this.$router.push('/classes');
+                } else {
+                    this.$router.push('/join');
+                }
+            }
         },
 
     },
