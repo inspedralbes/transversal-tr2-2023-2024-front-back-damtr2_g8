@@ -109,7 +109,7 @@
         <v-card-text class="txtCard">
           <b>Usuaris: {{ classe.numeroUsuarios }}</b>
           <div>
-            <v-btn class="my-button" @click="$router.push('/sala')">Uneix-te</v-btn>
+            <v-btn class="my-button" @click="createSala(classe.idClasse)">Uneix-te</v-btn>
           </div>
         </v-card-text>
       </v-card>
@@ -146,46 +146,35 @@ export default {
       }
     },
     async crearClase() {
-      const response = await fetch(import.meta.env.VITE_NODE_ROUTE + `/crearClasse/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nomClasse: this.nombreNuevaClase,
-          idUsu: this.idProfe,
-        }),
-      });
-      if (!response.ok) {
-      } else {
-        this.mostrarPopUp = false;
-        this.nombreNuevaClase = "";
-        this.getClasses();
+      if (this.nombreNuevaClase.length > 2) {
+        const response = await createClasse(this.nombreNuevaClase, this.idProfe);
+        
+        if (!response.ok) {
+        } else {
+          this.mostrarPopUp = false;
+          this.nombreNuevaClase = "";
+          this.getClasses();
+        }
       }
     }, async editarClasse() {
-      console.log(this.classeEditar);
-      const response = await fetch(`http://localhost:3751/editarClasse/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nomClasse: this.classeEditar.nombreNuevaClasse,
-          idClasse: this.classeEditar.idClasse,
-        }),
-      });
-      if (!response.ok) {
-      } else {
-        this.mostrarPopUpEditar = false;
-        this.getClasses();
+      if (this.classeEditar.nombreNuevaClasse.length > 2) {
+        const response = await editClasse(this.classeEditar);
+
+        if (!response.ok) {
+        } else {
+          this.mostrarPopUpEditar = false;
+          this.getClasses();
+        }
       }
-    }, setClasseEditar(classe) {
+    },
+    setClasseEditar(classe) {
       this.classeEditar = classe;
       this.nombreNuevaClasse = classe.nomClasse;
       this.mostrarPopUpEditar = true;
     },
     createSala(id) {
-      socket.emit("createSala", id);
+      const store = useAppStore();
+      socket.emit("createSala", id, store.usuari.id);
       this.$router.push('/sala');
     }
   },
