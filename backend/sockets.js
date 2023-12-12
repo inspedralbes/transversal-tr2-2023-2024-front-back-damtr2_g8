@@ -128,7 +128,6 @@ function sockets(io, partidas) {
   }
 
   function getOperation(idPartida, idJugador, dificultad) {
-
     const partida = partidas.find((p) => p.idPartida == idPartida);
 
     partida.jugadores[idJugador].dificultad = dificultad;
@@ -227,7 +226,7 @@ function sockets(io, partidas) {
   }
 
   function gestionarPartida(socket, user) {
-    joinPartida(user);
+    joinPartida(user, socket);
 
     let idPartidaFind = partidas.findIndex((partida) =>
       partida.jugadores.some((jugador) => jugador.idSocket === socket.id)
@@ -246,7 +245,7 @@ function sockets(io, partidas) {
     io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
   }
 
-  function joinPartida(user) {
+  function joinPartida(user, socket) {
     let jugador = {
       idSocket: socket.id,
       username: user.username,

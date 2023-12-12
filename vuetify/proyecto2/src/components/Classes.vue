@@ -61,9 +61,8 @@
         <v-card-text class="txtCard">
           <b>Usuaris: {{ classe.numeroUsuarios }}</b>
           <div>
-            <v-btn class="my-button" @click="$router.push('/sala')">Uneix-te</v-btn>
+            <v-btn class="my-button" @click="createSala(classe.idClasse)">Uneix-te</v-btn>
           </div>
-
         </v-card-text>
       </v-card>
     </v-container>
@@ -71,7 +70,7 @@
 </template>
 
 <script>
-import { getClasses } from "@/services/communicationManager";
+import { getClassesFetch, createClasse, editClasse } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
 
@@ -88,28 +87,19 @@ export default {
   },
   methods: {
     async getClasses() {
-      const response = await getClasses(this.idProfe);
+      const response = await getClassesFetch(this.idProfe);
 
       if (!response.ok) {
         window.alert("Error al carregar les classes");
       } else {
         const data = await response.json();
-        console.log(data);
         this.classes = data;
         this.mostrarPopup = false;
       }
     },
     async crearClase() {
-      const response = await fetch(import.meta.env.VITE_NODE_ROUTE + `/crearClasse/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nomClasse: this.nombreNuevaClase,
-          idUsu: this.idProfe,
-        }),
-      });
+      const response = await createClasse(this.nombreNuevaClase, this.idProfe);
+
       if (!response.ok) {
       } else {
         this.mostrarPopUp = false;
@@ -117,17 +107,8 @@ export default {
         this.getClasses();
       }
     }, async editarClasse() {
-      console.log(this.classeEditar);
-      const response = await fetch(`http://localhost:3751/editarClasse/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nomClasse: this.classeEditar.nombreNuevaClasse,
-          idClasse: this.classeEditar.idClasse,
-        }),
-      });
+      const response = await editClasse(this.classeEditar);
+
       if (!response.ok) {
       } else {
         this.mostrarPopUpEditar = false;
