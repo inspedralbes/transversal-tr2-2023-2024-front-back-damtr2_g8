@@ -61,9 +61,8 @@
         <v-card-text class="txtCard">
           <b>Usuaris: {{ classe.numeroUsuarios }}</b>
           <div>
-            <v-btn class="my-button" @click="$router.push('/sala')">Uneix-te</v-btn>
+            <v-btn class="my-button" @click="createSala(classe.idClasse)">Uneix-te</v-btn>
           </div>
-
         </v-card-text>
       </v-card>
     </v-container>
