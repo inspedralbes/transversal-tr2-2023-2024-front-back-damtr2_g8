@@ -47,5 +47,8 @@ socket.on("startGame", (idSala) => {
 });
 
 socket.on("getPartidas", (data) => {
+  if (data.length != 0) {
+    state.play = true;
+  }
   state.partidas = data;
 });
