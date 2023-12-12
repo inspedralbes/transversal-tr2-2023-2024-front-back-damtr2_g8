@@ -120,7 +120,8 @@ export default {
       this.mostrarPopUpEditar = true;
     },
     createSala(id) {
-      socket.emit("createSala", id);
+      const store = useAppStore();
+      socket.emit("createSala", id, store.usuari.id);
       this.$router.push('/sala');
     }
   },

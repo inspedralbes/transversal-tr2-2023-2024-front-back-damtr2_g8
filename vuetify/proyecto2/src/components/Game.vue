@@ -1,5 +1,6 @@
 <script setup>
 import { socket, state } from "@/services/socket";
+import { useAppStore } from "@/store/app";
 </script>
 
 <script>
@@ -45,7 +46,8 @@ export default {
     },
   },
   mounted() {
-    this.username = prompt();
+    const store = useAppStore();
+    this.username = store.usuari.nom;
     this.conectar();
     this.setPartida;
   },
@@ -201,5 +203,4 @@ export default {
   display: flex;
   align-items: center;
 }
-
 </style>
