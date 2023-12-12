@@ -118,16 +118,12 @@ export default {
             if (data.err) {
                 console.log(data.err);
             } else {
-                if (this.emailRegistration.isAdmin) {
-                    let store = useAppStore();
-                    store.usuari.nom = this.emailRegistration.name;
-                    store.usuari.cognom = this.emailRegistration.surname;
-                    store.usuari.email = this.emailRegistration.email;
-                    store.usuari.id = data.userData.insertId;
-                    this.$router.push('/classes');
-                } else {
-                    this.$router.push('/join');
-                }
+                let store = useAppStore();
+                store.usuari.nom = this.emailRegistration.name;
+                store.usuari.cognom = this.emailRegistration.surname;
+                store.usuari.email = this.emailRegistration.email;
+                store.usuari.id = data.userData.insertId;
+                this.$router.push(this.emailRegistration.isAdmin ? '/classes' : '/join');
             }
         },
         async login() {
@@ -138,17 +134,12 @@ export default {
             if (data.err) {
                 console.log(data.err);
             } else {
-                if (this.usernameLogin.admin) {
-                    let store = useAppStore();
-                    store.usuari.nom = data.userData.nom;
-                    store.usuari.cognom = data.userData.cognom;
-                    store.usuari.email = data.userData.correu;
-                    store.usuari.id = data.userData.idUsu;
-                    console.log(store.usuari);
-                    this.$router.push('/classes');
-                } else {
-                    this.$router.push('/join');
-                }
+                let store = useAppStore();
+                store.usuari.nom = data.userData.nom;
+                store.usuari.cognom = data.userData.cognom;
+                store.usuari.email = data.userData.correu;
+                store.usuari.id = data.userData.idUsu;
+                this.$router.push(this.usernameLogin.admin ? '/classes' : '/join');
             }
         },
 

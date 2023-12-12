@@ -11,6 +11,7 @@ const { sockets } = require("./sockets.js");
 const {
   createClass,
   editClass,
+  deleteClass,
   getClassByUserId,
   getUserById,
   login,
@@ -73,6 +74,17 @@ app.post("/crearClasse", async (req, res) => {
 //ruta para editar clases
 app.post("/editarClasse", async (req, res) => {
   await editClass(req.body.nomClasse, req.body.idClasse)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para eliminar clases
+app.post("/eliminarClasse", async (req, res) => {
+  await deleteClass(req.body.nomClasse, req.body.idClasse)
     .then((data) => {
       res.send(data);
     })

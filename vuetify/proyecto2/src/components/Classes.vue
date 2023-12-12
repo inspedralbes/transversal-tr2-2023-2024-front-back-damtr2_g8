@@ -59,11 +59,11 @@
                 </g>
               </svg>
               <v-dialog v-model="this.mostrarPopUpEditar" max-width="600">
-                <v-card>
+                <v-card class="py-5">
                   <v-card-title class="text-center">
                     <v-row>
                       <v-col cols="10">
-                        <div style="padding-left: 90px; font-size: larger; font-weight: bolder;">Edita la teva classe</div>
+                        <div style="padding-left: 95px; font-size: xx-large; font-weight: bolder;">Edita la teva classe</div>
                       </v-col>
                       <v-col>
                         <v-btn class="mb-5 bg-red-lighten-1"><v-icon icon="mdi-delete" size="x-large"></v-icon></v-btn>
@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { getClassesFetch, createClasse, editClasse } from "@/services/communicationManager";
+import { getClassesFetch, createClasse, editClasse, deleteClasse } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
 
@@ -176,6 +176,16 @@ export default {
       const store = useAppStore();
       socket.emit("createSala", id, store.usuari.id);
       this.$router.push('/sala');
+    },
+    eliminarClasse() {
+      const response = deleteClasse(this.classeEditar);
+        
+        if (!response.ok) {
+        } else {
+          this.mostrarPopUp = false;
+          this.nombreNuevaClase = "";
+          this.getClasses();
+        }
     }
   },
   mounted() {
@@ -193,8 +203,8 @@ export default {
   background-color: lightblue;
 }
 
-.v-dialog {
-  overflow-y: hidden;
+.v-card {
+  overflow-y: hidden !important;
 }
 .editBtn {
   border-radius: 100%;

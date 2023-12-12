@@ -41,6 +41,21 @@ function editClass(nomClasse, idClasse) {
   });
 }
 
+function deleteClass(nomClasse, idClasse) {
+  return new Promise((resolve, reject) => {
+    const sql = "DELETE CLASSE WHERE id = ? WHERE idClasse = ?";
+    const VALUES = [nomClasse, idClasse];
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({err: err});
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function getClassByUserId(id) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM `CLASSE` WHERE idPropietari = ?";
