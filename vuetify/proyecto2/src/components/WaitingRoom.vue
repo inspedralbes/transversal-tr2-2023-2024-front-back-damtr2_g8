@@ -7,21 +7,33 @@ export default {
         return {
             myId: null,
             owner: false,
+            kick: false,
         };
     },
     methods: {
         startGame() {
-            this.owner = true;
             socket.emit("startGame", {});
         }
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
-            console.log(nuevoValor);
             if (nuevoValor == false || nuevoValor == null) {
                 setTimeout(() => {
                     this.$router.push("/join");
                 }, 3000)
+            } else {
+                if (nuevoValor.owner == this.myId) {
+                    this.owner = true;
+                } else {
+                    const store = useAppStore();
+                    if (nuevoValor.owner_id == store.usuari.id) {
+                        this.owner = false;
+                        this.kick = true;
+                        setTimeout(() => {
+                            this.$router.push("/join");
+                        }, 3000)
+                    }
+                }
             }
         },
         'play': function (nuevoValor, antiguoValor) {
@@ -42,7 +54,7 @@ export default {
             return state.play;
         },
         partidas() {
-            console.log(state.partidas);
+            console.log("Partidas: " + state.partidas);
             return state.partidas;
         },
     },
@@ -57,7 +69,7 @@ export default {
 </script>
 
 <template>
-    <div class="full-container" v-if="sala">
+    <div class="full-container" v-if="sala && kick == false">
         <h2 class="pt-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
