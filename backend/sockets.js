@@ -60,10 +60,6 @@ function sockets(io, partidas) {
       if (indexJugador !== -1) {
         sala.jugadores.splice(indexJugador, 1);
 
-        if (sala.jugadores.length === 0) {
-          salas.splice(i, 1);
-        }
-
         io.to(sala.owner).emit("join", sala);
         for (let i = 0; i < sala.jugadores.length; i++) {
           io.to(sala.jugadores[i].id_jugador).emit("join", sala);
@@ -81,6 +77,7 @@ function sockets(io, partidas) {
         nombre: userInfo.username,
         winner: false,
       });
+
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
       for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
         io.to(salaEncontrada.jugadores[i].id_jugador).emit("join", salaEncontrada);

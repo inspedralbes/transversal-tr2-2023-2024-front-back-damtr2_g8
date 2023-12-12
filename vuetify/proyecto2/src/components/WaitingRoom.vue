@@ -17,12 +17,11 @@ export default {
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
-            if (nuevoValor == false) {
-                if (nuevoValor == false) {
-                    setTimeout(() => {
-                        this.$router.push("/join");
-                    }, 3000)
-                }
+            console.log(nuevoValor);
+            if (nuevoValor == false || nuevoValor == null) {
+                setTimeout(() => {
+                    this.$router.push("/join");
+                }, 3000)
             }
         },
         'play': function (nuevoValor, antiguoValor) {
@@ -37,17 +36,13 @@ export default {
     computed: {
         sala() {
             this.myId = socket.id;
-            if (state.joinedSala) {
-                if (socket.id != state.joinedSala.owner) {
-                    state.joinedSala = false;
-                }
-            }
             return state.joinedSala;
         },
         play() {
             return state.play;
         },
         partidas() {
+            console.log(state.partidas);
             return state.partidas;
         },
     },
@@ -72,13 +67,13 @@ export default {
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
-                <div class="user-row" v-if="partidas == null">
+                <div class="user-row">
                     <div class="user-item" v-for="jugador in sala.jugadores">
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>
-                <div class="user-row" v-else>
+                <!-- <div class="user-row" v-else>
                     <div class="user-item" v-for="partida in partidas">
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ partida.jugadores[0].username }}</h3>
@@ -86,7 +81,7 @@ export default {
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ partida.jugadores[1].username }}</h3>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
