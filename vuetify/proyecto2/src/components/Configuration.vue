@@ -71,7 +71,7 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Close</v-btn>
-                            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Save</v-btn>
+                            <v-btn color="blue-darken-1" variant="text" @click="cambiarContraseña()">Save</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -120,7 +120,6 @@ export default {
             avatar: null,
             show1: false,
             show2: true,
-            password: '',
             // rules: {
             //     required: value => !!value || 'Required.',
             //     min: v => v.length >= 8 || 'Min 8 characters',
@@ -159,6 +158,29 @@ export default {
             event.target.style.transition = 'transform 0.3s ease';
             event.target.style.cursor = 'default';
         },
+        async cambiarContraseña(){
+            let store = useAppStore();
+            let email = store.usuari.email;
+            
+            let response = await fetch(import.meta.env.VITE_NODE_ROUTE+"/changePassword",{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: this.password
+                }),
+            });
+            if(!response.ok){
+                window.alert("Error al cambiar la contraseña");
+                this.dialog = false;
+                console.log(response);
+            }else{
+                window.alert("Contraseña cambiada correctamente");
+                this.dialog = false;
+            }
+        }
     }, mounted() {
         let store = useAppStore();
         this.name = store.usuari.nom;
