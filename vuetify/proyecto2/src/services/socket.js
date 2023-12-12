@@ -38,7 +38,6 @@ socket.on("actualizarOperacion", (data) => {
 });
 
 socket.on("join", (data) => {
-  console.log(data);
   state.joinedSala = data;
 });
 
@@ -48,6 +47,5 @@ socket.on("startGame", (idSala) => {
 });
 
 socket.on("getPartidas", (data) => {
-  console.log(data);
   state.partidas = data;
 });
