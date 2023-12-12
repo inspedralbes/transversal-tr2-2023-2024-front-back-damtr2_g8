@@ -84,7 +84,7 @@ app.post("/editarClasse", async (req, res) => {
 
 //ruta para eliminar clases
 app.post("/eliminarClasse", async (req, res) => {
-  await deleteClass(req.body.nomClasse, req.body.idClasse)
+  await deleteClass(req.body.idClasse)
     .then((data) => {
       res.send(data);
     })
