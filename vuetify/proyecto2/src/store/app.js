@@ -10,12 +10,5 @@ export const useAppStore = defineStore('app', {
       id: null,
     }
   }),
-  actions: {
-    setUserId(id) {
-      this.usuari.id = id;
-    },
-    getUserId() {
-      return this.usuari.id;
-    }
-  },
+  persist: true,
 })

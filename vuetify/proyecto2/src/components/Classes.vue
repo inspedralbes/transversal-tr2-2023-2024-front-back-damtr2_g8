@@ -74,6 +74,7 @@
 import { getClasses } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
+
 export default {
   data() {
     return {
@@ -144,7 +145,7 @@ export default {
   },
   mounted() {
     const store = useAppStore();
-    this.idProfe = store.getUserId();
+    this.idProfe = store.usuari.id;
     this.getClasses();
   },
 };
