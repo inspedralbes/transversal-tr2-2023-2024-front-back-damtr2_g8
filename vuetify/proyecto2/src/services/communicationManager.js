@@ -65,13 +65,27 @@ export function createClasse(nombreNuevaClase, idProfe) {
 
 export function editClasse(classeEditar) {
     return new Promise((resolve, reject) => {
-        fetch(`http://localhost:3751/editarClasse/`, {
+        fetch(import.meta.env.VITE_NODE_ROUTE + `/editarClasse/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 nomClasse: classeEditar.nombreNuevaClasse,
+                idClasse: classeEditar.idClasse,
+            }),
+        }).then((response) => resolve(response));
+    });
+}
+
+export function deleteClasse(classeEditar) {
+    return new Promise((resolve, reject) => {
+        fetch(import.meta.env.VITE_NODE_ROUTE + `/eliminarClasse/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
                 idClasse: classeEditar.idClasse,
             }),
         }).then((response) => resolve(response));

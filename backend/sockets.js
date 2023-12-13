@@ -14,8 +14,16 @@ function sockets(io, partidas) {
       solveOperation(idPartida, idJugador, result);
     });
 
-    socket.on("createSala", (idClasse) => {
-      crearSala(idClasse, socket.id);
+    socket.on("createSala", (idClasse, idUser) => {
+      crearSala(idClasse, socket.id, idUser);
+    });
+
+    socket.on("getSala", (idUser) => {
+      getSala(socket.id, idUser);
+    });
+
+    socket.on("changeAvatar", (idSocket, avatar) => {
+      changeAvatar(idSocket, socket.id, avatar);
     });
 
     socket.on("joinSala", (userInfo) => {
@@ -32,19 +40,20 @@ function sockets(io, partidas) {
     });
 
     socket.on("disconnect", () => {
-      borrarSala(socket.id);
+      // borrarSala(socket.id);
       desconectarJugador(socket)
     });
   });
 
   function borrarSala(id) {
-    const borrarSala = salas.find(sala => sala.owner == id);
-    salas = salas.filter(sala => sala.owner != id);
-    if (borrarSala) {
-      for (let i = 0; i < borrarSala.jugadores.length; i++) {
-        io.to(borrarSala.jugadores[i].id_jugador).emit("join", false);
-      }
-    }
+    // let borrarSala = salas.find(sala => sala.owner == id);
+    // if (borrarSala) {
+    //   for (let i = 0; i < borrarSala.jugadores.length; i++) {
+    //     io.to(borrarSala.jugadores[i].id_jugador).emit("join", false);
+    //   }
+    // }
+    // borrarSala.status = "finish";
+    // console.log(salas);
   }
 
   function desconectarJugador(socket) {
@@ -55,16 +64,27 @@ function sockets(io, partidas) {
       if (indexJugador !== -1) {
         sala.jugadores.splice(indexJugador, 1);
 
-        if (sala.jugadores.length === 0) {
-          salas.splice(i, 1);
-        }
-
         io.to(sala.owner).emit("join", sala);
         for (let i = 0; i < sala.jugadores.length; i++) {
           io.to(sala.jugadores[i].id_jugador).emit("join", sala);
         }
         return;
       }
+    }
+  }
+
+
+  function changeAvatar(idSala, idJugador, avatar) {
+    if (salas.some(sala => sala.id_sala == idSala)) {
+      const salaEncontrada = salas.find(sala => sala.id_sala == idSala);
+      salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador).id_avatar = avatar;
+
+      io.to(salaEncontrada.owner).emit("join", salaEncontrada);
+      for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
+        io.to(salaEncontrada.jugadores[i].id_jugador).emit("join", salaEncontrada);
+      }
+    } else {
+      io.to(id).emit("join", false);
     }
   }
 
@@ -75,7 +95,9 @@ function sockets(io, partidas) {
         id_jugador: id,
         nombre: userInfo.username,
         winner: false,
+        id_avatar: userInfo.idAvatar,
       });
+
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
       for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
         io.to(salaEncontrada.jugadores[i].id_jugador).emit("join", salaEncontrada);
@@ -85,18 +107,39 @@ function sockets(io, partidas) {
     }
   }
 
-  function crearSala(idClasse, socketId) {
-    let sala = {
-      owner: socketId,
-      id_sala: salas.length + 1,
-      id_classe: idClasse,
-      jugadores: [],
-      status: "waiting",
-      codi: generateCodi(),
-    }
+  function crearSala(idClasse, socketId, idUser) {
+    let existSala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
 
-    salas.push(sala);
-    io.to(socketId).emit("join", sala);
+    if (!existSala) {
+      let sala = {
+        owner_id: idUser,
+        owner: socketId,
+        id_sala: salas.length + 1,
+        id_classe: idClasse,
+        jugadores: [],
+        status: "waiting",
+        codi: generateCodi(),
+      }
+
+      salas.push(sala);
+      io.to(socketId).emit("join", sala);
+    }
+  }
+
+  function getSala(idSocket, idUser) {
+    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
+
+    if (sala) {
+      let previusOwner = sala.owner;
+      sala.owner = idSocket;
+      io.to(sala.owner).emit("join", sala);
+      io.to(previusOwner).emit("join", sala);
+
+      const partidasSala = partidas.filter(partida => partida.idSala == sala.id_sala);
+      if (partidasSala) {
+        io.to(sala.owner).emit("getPartidas", partidasSala);
+      }
+    }
   }
 
   function generateCodi() {
@@ -111,15 +154,17 @@ function sockets(io, partidas) {
   function solveOperation(idPartida, idJugador, result) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
-    try {
-      realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(realResult);
-    if (realResult == result) {
-      correcto = true;
-      disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
+    let realResult = null;
+
+    if(result != null) {
+      try {
+        realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
+      } catch (e) {}
+      console.log(realResult);
+      if (realResult == result) {
+        correcto = true;
+        disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
+      }
     }
 
     io.to(partida.jugadores[idJugador].idSocket).emit("evaluacionResultado", {
@@ -253,6 +298,7 @@ function sockets(io, partidas) {
       operacion: "",
       resultadoJugador: null,
       dificultad: 1,
+      avatar: user.avatar,
     };
 
     let partida = {

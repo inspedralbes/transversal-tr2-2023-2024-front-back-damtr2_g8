@@ -2,10 +2,21 @@
   <div class="full-container">
     <div class="center-container">
       <v-img src="../assets/MathBattleLogo.png" alt="Math Battle Logo" width="600" height="300" class="logo" />
-      <button class="button-landing" @click="$router.push('/inici')">COMENÇAR</button>
+      <button class="button-landing" @click="$router.push(state.usuari.id == null ? '/inici' : '/join')">COMENÇAR</button>
     </div>
   </div>
 </template>
+
+<script>
+import { useAppStore } from "@/store/app";
+export default {
+  data() {
+    return {
+      state: useAppStore(),
+    };
+  },
+}
+</script>
 
 <style scoped>
 *{

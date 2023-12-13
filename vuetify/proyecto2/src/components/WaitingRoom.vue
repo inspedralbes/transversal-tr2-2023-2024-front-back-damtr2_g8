@@ -1,24 +1,40 @@
 <script>
 import { socket, state } from "@/services/socket";
+import { useAppStore } from "@/store/app";
 
 export default {
     data() {
         return {
             myId: null,
             owner: false,
-            
+            kick: false,
+            store: useAppStore(),
         };
     },
     methods: {
         startGame() {
-            this.owner = true;
             socket.emit("startGame", {});
         }
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
-            if (nuevoValor == false) {
-                console.log('no hay sala');
+            if (nuevoValor == false || nuevoValor == null) {
+                setTimeout(() => {
+                    this.$router.push("/join");
+                }, 3000)
+            } else {
+                if (nuevoValor.owner == this.myId) {
+                    this.owner = true;
+                } else {
+                    if (nuevoValor.owner_id == this.store.usuari.id) {
+                        this.owner = false;
+                        this.kick = true;
+                        setTimeout(() => {
+                            this.$router.push("/join");
+                        }, 3000)
+                    }
+                }
+                console.log(this.sala);
             }
         },
         'play': function (nuevoValor, antiguoValor) {
@@ -29,31 +45,35 @@ export default {
         'partidas': function (nuevoValor, antiguoValor) {
             console.log(nuevoValor);
         },
+        'store.usuari.avatar': function () {
+            console.log(this.store.usuari.avatar);
+            socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
+        }
     },
     computed: {
         sala() {
-            if (state.joinedSala == false) {
-                setTimeout(() => {
-                    this.$router.push("/join");
-                }, 3000)
-            }
+            this.myId = socket.id;
             return state.joinedSala;
         },
         play() {
             return state.play;
         },
         partidas() {
+            console.log("Partidas: " + state.partidas);
             return state.partidas;
         },
     },
     mounted() {
         this.myId = socket.id;
+        if (this.sala == null || this.sala == false) {
+            socket.emit("getSala", this.store.usuari.id);
+        }
     },
 };
 </script>
 
 <template>
-    <div class="full-container" v-if="sala">
+    <div class="full-container" v-if="sala && kick == false">
         <h2 class="pt-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
@@ -65,11 +85,11 @@ export default {
             <div class="user-col">
                 <div class="user-row">
                     <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
+                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>
-                <div class="user-row">
+                <!-- <div class="user-row" v-else>
                     <div class="user-item" v-for="partida in partidas">
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ partida.jugadores[0].username }}</h3>
@@ -77,7 +97,7 @@ export default {
                         <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
                         <h3>{{ partida.jugadores[1].username }}</h3>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

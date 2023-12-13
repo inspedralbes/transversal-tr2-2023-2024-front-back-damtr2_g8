@@ -192,7 +192,6 @@ export default {
             //Aqui haremos para guardar el avatar en bd
             console.log(`Avatar ${avatarId} clicado`);
             this.avatar = avatarId;
-            console.log(this.avatar);
             let store = useAppStore();
             store.usuari.avatar = this.avatar;
 
@@ -237,13 +236,9 @@ export default {
     }, mounted() {
         let store = useAppStore();
         this.name = store.usuari.nom;
-        console.log(this.name);
         this.surname = store.usuari.cognom;
-        console.log(this.surname);
         this.email = store.usuari.email;
-        console.log(this.email);
         this.avatar = store.usuari.avatar;
-        console.log(this.avatar);
     }
 }
 

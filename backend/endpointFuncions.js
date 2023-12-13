@@ -41,6 +41,22 @@ function editClass(nomClasse, idClasse) {
   });
 }
 
+function deleteClass(idClasse) {
+  console.log(idClasse);
+  return new Promise((resolve, reject) => {
+    const sql = "DELETE FROM CLASSE WHERE idClasse = ?";
+    const VALUES = [idClasse];
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({err: err});
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function getClassByUserId(id) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM `CLASSE` WHERE idPropietari = ?";
@@ -131,6 +147,7 @@ function changePassword(email, password){
 module.exports = {
   createClass,
   editClass,
+  deleteClass,
   getClassByUserId,
   getUserById,
   login,

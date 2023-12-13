@@ -124,17 +124,12 @@ export default {
             if (data.err) {
                 console.log(data.err);
             } else {
-                if (this.emailRegistration.isAdmin) {
-                    let store = useAppStore();
-                    store.usuari.nom = this.emailRegistration.name;
-                    store.usuari.cognom = this.emailRegistration.surname;
-                    store.usuari.email = this.emailRegistration.email;
-                    store.usuari.id = data.userData.insertId;
-                    store.usuari.contrassenya = this.emailRegistration.password;
-                    this.$router.push('/classes');
-                } else {
-                    this.$router.push('/join');
-                }
+                let store = useAppStore();
+                store.usuari.nom = this.emailRegistration.name;
+                store.usuari.cognom = this.emailRegistration.surname;
+                store.usuari.email = this.emailRegistration.email;
+                store.usuari.id = data.userData.insertId;
+                this.$router.push(this.emailRegistration.isAdmin ? '/classes' : '/join');
             }
         },
         async login() {
@@ -150,14 +145,7 @@ export default {
                 store.usuari.cognom = data.userData.cognom;
                 store.usuari.email = data.userData.correu;
                 store.usuari.id = data.userData.idUsu;
-                store.usuari.contrassenya = data.userData.pass;
-                console.log(store.usuari);
-                console.log(data);
-                if (this.usernameLogin.admin) {
-                    this.$router.push('/classes');
-                } else {
-                    this.$router.push('/join');
-                }
+                this.$router.push(this.usernameLogin.admin ? '/classes' : '/join');
             }
         },
 
