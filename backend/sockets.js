@@ -22,6 +22,10 @@ function sockets(io, partidas) {
       getSala(socket.id, idUser);
     });
 
+    socket.on("changeAvatar", (idSocket, avatar) => {
+      changeAvatar(idSocket, socket.id, avatar);
+    });
+
     socket.on("joinSala", (userInfo) => {
       joinSala(userInfo, socket.id);
     });
@@ -70,8 +74,19 @@ function sockets(io, partidas) {
   }
 
 
-  function changeAvatar(idJugador, idAvatar) {
+  function changeAvatar(idSala, idJugador, avatar) {
+    console.log(avatar);
+    if (salas.some(sala => sala.id_sala == idSala)) {
+      const salaEncontrada = salas.find(sala => sala.id_sala == idSala);
+      salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador).id_avatar = avatar;
 
+      io.to(salaEncontrada.owner).emit("join", salaEncontrada);
+      for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
+        io.to(salaEncontrada.jugadores[i].id_jugador).emit("join", salaEncontrada);
+      }
+    } else {
+      io.to(id).emit("join", false);
+    }
   }
 
   function joinSala(userInfo, id) {

@@ -20,7 +20,7 @@ export default {
                 codi += (inputs[i].value).toString();
             }
             const store = useAppStore();
-            socket.emit("joinSala", { codi: codi, username: store.usuari.nom, idAvatar: store.usuari.idAvatar });
+            socket.emit("joinSala", { codi: codi, username: store.usuari.nom, idAvatar: store.usuari.avatar });
         },
         async pasteCode() {
             try {

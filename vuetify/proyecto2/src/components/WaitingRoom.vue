@@ -8,6 +8,7 @@ export default {
             myId: null,
             owner: false,
             kick: false,
+            store: useAppStore(),
         };
     },
     methods: {
@@ -25,8 +26,7 @@ export default {
                 if (nuevoValor.owner == this.myId) {
                     this.owner = true;
                 } else {
-                    const store = useAppStore();
-                    if (nuevoValor.owner_id == store.usuari.id) {
+                    if (nuevoValor.owner_id == this.store.usuari.id) {
                         this.owner = false;
                         this.kick = true;
                         setTimeout(() => {
@@ -45,6 +45,10 @@ export default {
         'partidas': function (nuevoValor, antiguoValor) {
             console.log(nuevoValor);
         },
+        'store.usuari.avatar': function () {
+            console.log(this.store.usuari.avatar);
+            socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
+        }
     },
     computed: {
         sala() {
@@ -61,9 +65,8 @@ export default {
     },
     mounted() {
         this.myId = socket.id;
-        const store = useAppStore();
         if (this.sala == null || this.sala == false) {
-            socket.emit("getSala", store.usuari.id);
+            socket.emit("getSala", this.store.usuari.id);
         }
     },
 };
@@ -82,7 +85,7 @@ export default {
             <div class="user-col">
                 <div class="user-row">
                     <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/adventurer/svg?seed=" + jugador.id_avatar' width="75px" />
+                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>

@@ -2,7 +2,7 @@
   <div class="full-container">
     <div class="btnCrear">
       <v-btn
-        class="my-button create_class-button py-5"
+        class="my-button create_class-button"
         prepend-icon="mdi-plus"
         @click="this.mostrarPopUp = !this.mostrarPopUp"
         >Crear classe
