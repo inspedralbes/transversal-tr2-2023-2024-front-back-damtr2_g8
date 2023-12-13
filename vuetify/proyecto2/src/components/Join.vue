@@ -184,10 +184,11 @@ export default {
                             </v-btn>
                         </template>
                     </v-snackbar>
-                    <v-sheet class="text-center mt-7"> <router-link to="/classes">Crea una sala</router-link> </v-sheet>
                     <div class="btn-container">
                         <button class="btn" @click="onSubmit">JUGAR</button>
                     </div>
+
+                    <v-sheet clickable class="text-center mt-3 linkClasses " @click="$router.push('/classes')"><b>Crea una sala</b></v-sheet>
                 </form>
             </v-card>
         </div>
@@ -195,6 +196,9 @@ export default {
 </template>
 
 <style scoped>
+.linkClasses{
+    cursor: pointer;
+}
 .title {
     text-align: center;
     letter-spacing: 2.5px;
