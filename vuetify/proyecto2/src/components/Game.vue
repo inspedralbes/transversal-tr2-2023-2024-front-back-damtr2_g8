@@ -49,7 +49,9 @@ export default {
         ) == 0
           ? 0
           : 1;
-      console.log(state.partida);
+      if (state.partida.status == "finish") {
+        this.$router.push("/join");
+      }
       return state.partida;
     },
   },
@@ -87,14 +89,16 @@ export default {
       <v-row>
         <v-col cols="3">
           <div>
-            <img :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=" + flip' alt="Avatar" style="width:300px;">
+            <img
+              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=" + flip'
+              alt="Avatar" style="width:300px;">
           </div>
         </v-col>
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
               <span class="operation-label"><b>{{ setPartida.jugadores[idPlayer].operacion }}</b></span>
-              
+
             </div>
             <div class="input-operation">
               <v-text-field label="?" variant="outlined" type="number" v-model="result"></v-text-field>
@@ -104,7 +108,9 @@ export default {
         </v-col>
         <v-col cols="3">
           <div>
-            <img :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=" + flip' alt="Avatar" style="width:300px;">
+            <img
+              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=" + flip'
+              alt="Avatar" style="width:300px;">
           </div>
         </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
@@ -152,13 +158,14 @@ export default {
   text-align: center;
 }
 
-.operation-box{
+.operation-box {
   width: 700px;
   background-color: white;
   border-radius: 5px;
   height: 100px;
 
 }
+
 .operation-label {
   text-align: center;
   font-size: 60px;
@@ -217,5 +224,4 @@ export default {
   height: fit-content;
   display: flex;
   align-items: center;
-}
-</style>
+}</style>
