@@ -6,6 +6,7 @@ export default {
         return {
             myId: null,
             owner: false,
+            
         };
     },
     methods: {

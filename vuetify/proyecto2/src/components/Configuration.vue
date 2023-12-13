@@ -61,9 +61,14 @@
                                         <p>{{ this.email }}</p>
                                     </v-col>
                                     <v-col cols="12">
-                                        <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                                            :type="show1 ? 'text' : 'password'" name="input-10-1" label="Contrassenya" counter
-                                            @click:append="show1 = !show1"></v-text-field>
+                                        <v-text-field  v-model="password1" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :type="show1 ? 'text' : 'password'" name="password1" label="Contrassenya"
+                                            counter @click:append="show1 = !show1"></v-text-field>
+                                        <v-text-field v-model="password2" :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :type="show2 ? 'text' : 'password'" name="password2"
+                                            label="Confirmar contrassenya" counter
+                                            @click:append="show2 = !show2"></v-text-field>
+                                        <div class="error-message">{{ errorMessage }}</div>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -71,7 +76,7 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Close</v-btn>
-                            <v-btn color="blue-darken-1" variant="text" @click="cambiarContraseña()">Save</v-btn>
+                            <v-btn color="blue-darken-1" variant="text" @click="checkPassword()">Save</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -79,7 +84,7 @@
                 <v-dialog v-model="avatarModal" max-width="600px">
                     <v-card>
                         <v-card-title class="headline">
-                            
+
                             <v-spacer></v-spacer>
                             <v-btn icon @click="closeAvatarModal">
                                 <v-icon>mdi-close</v-icon>
@@ -111,15 +116,17 @@ export default {
     data() {
         return {
             dialog: false,
+            errorMessage: "",
             avatarModal: false,
             avatarIds: Array.from({ length: 40 }, (_, i) => i),
             name: "",
             surname: "",
             email: "",
-            password: "",
+            password1: "",
+            password2: "",
             avatar: null,
             show1: false,
-            show2: true,
+            show2: false,
             // rules: {
             //     required: value => !!value || 'Required.',
             //     min: v => v.length >= 8 || 'Min 8 characters',
@@ -129,6 +136,43 @@ export default {
     },
 
     methods: {
+        checkPassword() {
+            /*  console.log("Dentro")
+              this.password1 = password1.value;
+              this.password2 = password2.value;
+  
+              console.log(password1);
+              console.log(password2);
+  
+              // If Not same return False.     
+              if (password1 != password2) {
+                  alert("\nPassword did not match: Please try again...")
+                  return false;
+              }
+  
+              // If same return True. 
+              else {
+                  alert("Password Match: Welcome to GeeksforGeeks!")
+                  cambiarContrasena();
+                  return true;
+              }*/
+
+            console.log("Dentro");
+            console.log("Contraseña 1",this.password1);
+            console.log("Contraseña 2",this.password2);
+
+            // If Not same return False.     
+            if (this.password1 != this.password2) {
+                this.errorMessage = "Les contrassenyes no coincideixen"; // Clear the error message if passwords match
+                return false;
+            } else {
+                // If same return True. 
+                this.cambiarContrasena();
+                console.log("Iguales")
+                return true;
+            }
+
+        },
         openAvatarModal() {
             this.avatarModal = true;
         },
@@ -158,25 +202,29 @@ export default {
             event.target.style.transition = 'transform 0.3s ease';
             event.target.style.cursor = 'default';
         },
-        async cambiarContraseña(){
+        async cambiarContrasena() {
+
+            console.log("Dentro")
             let store = useAppStore();
             let email = store.usuari.email;
-            
-            let response = await fetch(import.meta.env.VITE_NODE_ROUTE+"/changePassword",{
+
+            let response = await fetch(import.meta.env.VITE_NODE_ROUTE + "/changePassword", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: this.password
+                    password2: this.password2,
+                    
                 }),
+                
             });
-            if(!response.ok){
+            if (!response.ok) {
                 window.alert("Error al cambiar la contraseña");
                 this.dialog = false;
                 console.log(response);
-            }else{
+            } else {
                 window.alert("Contraseña cambiada correctamente");
                 this.dialog = false;
             }
@@ -191,18 +239,17 @@ export default {
         console.log(this.email);
         this.avatar = store.usuari.avatar;
         console.log(this.avatar);
-       
-
     }
 }
 
 </script>
 
 <style scoped>
-.design-avatar{
+.design-avatar {
     display: flex;
     align-items: center;
 }
+
 .top-right-svg {
     position: absolute;
     top: 0;
@@ -214,5 +261,10 @@ export default {
 
 .div-gear {
     position: relative;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
 }
 </style>
