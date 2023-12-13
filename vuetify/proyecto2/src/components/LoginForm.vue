@@ -15,24 +15,28 @@
                                 </div>
                                 <v-text-field v-model="emailRegistration.email" :rules="emailRegistration.emailRules"
                                     label="Email" type="email" required></v-text-field>
-                                <v-text-field v-model="emailRegistration.password" :rules="emailRegistration.passwordRules"
-                                    label="Password" type="password" required></v-text-field>
+
+                                <v-text-field v-model="emailRegistration.password"
+                                    :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                    :rules="emailRegistration.passwordRules" :type="show1 ? 'text' : 'password'"
+                                    name="input-10-1" label="Contrassenya" counter @click:append="show1 = !show1"
+                                    required></v-text-field>
                                 <div class="name-field">
                                     <v-checkbox id="profeRegistro" type="checkbox" label="Soc professor/a"></v-checkbox>
-
                                 </div>
-
                                 <v-btn id="btnSubmit" type="submit" color="primary">Registra't</v-btn>
                             </v-form>
                         </v-col>
-
                         <v-col cols="6" class="container-right pr-10 py-10">
                             <h2 class="my-2 ml-6 text-center">Inicia sessió</h2>
                             <v-form @submit.prevent="login" class="ml-6">
                                 <v-text-field v-model="usernameLogin.email" :rules="emailRegistration.emailRules"
                                     label="Email" type="email" required></v-text-field>
-                                <v-text-field v-model="usernameLogin.password" :rules="emailRegistration.passwordRules"
-                                    label="Password" type="password" required></v-text-field>
+                                <v-text-field v-model="usernameLogin.password"
+                                    :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                    :rules="emailRegistration.passwordRules" :type="show2 ? 'text' : 'password'"
+                                    name="input-10-1" label="Contrassenya" counter @click:append="show2 = !show2"
+                                    required></v-text-field>
                                 <v-checkbox type="checkbox" id="profeLogin" label="Soc professor/a"></v-checkbox>
                                 <v-btn type="submit" color="primary">Inicia sessió</v-btn>
 
@@ -52,6 +56,8 @@ import party from 'party-js';
 export default {
     data() {
         return {
+            show1: false,
+            show2: false,
             emailRegistration: {
                 name: '',
                 surname: '',
@@ -171,5 +177,4 @@ export default {
     width: 100%;
     background-image: url("../assets/Background.png");
 
-}
-</style>
+}</style>

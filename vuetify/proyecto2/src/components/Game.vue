@@ -11,15 +11,30 @@ export default {
       emptyGameData: true,
       username: "",
       idPlayer: null,
+      avatar: null,
+      flip: true,
     };
   },
+  mounted() {
+    let store = useAppStore();
+    this.username = prompt();
+    this.avatar = store.usuari.avatar;
+    this.conectar();
+    this.setPartida;
+  },
   methods: {
+    getAvatarUrl(avatar) {
+
+      return `https://api.dicebear.com/7.x/big-smile/svg?seed=${this.avatar}&scale=80&flip=${this.flip}`;
+      console.log(this.avatar);
+    },
     getOperation(dificultad) {
       socket.emit("getOperation", {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
         dificultad: dificultad
       });
+
     },
     conectar() {
       socket.emit("conectarUsuario", { username: this.username, id_sala: state.sala });
@@ -44,12 +59,6 @@ export default {
       console.log(state.partida);
       return state.partida;
     },
-  },
-  mounted() {
-    const store = useAppStore();
-    this.username = store.usuari.nom;
-    this.conectar();
-    this.setPartida;
   },
 };
 </script>
@@ -83,11 +92,16 @@ export default {
     </v-sheet>
     <div class="game-bar">
       <v-row>
-        <v-col sm="4" lg="12" md="6" cols="2">
+        <v-col cols="3">
+          <div>
+            <img :src="getAvatarUrl(this.avatar)" alt="Avatar" style="width:300px;">
+          </div>
+        </v-col>
+        <v-col cols="6">
           <div class="input-container">
-            <div class="operation-label">
-              <span><b></b></span>
-              {{ setPartida.jugadores[idPlayer].operacion }}
+            <div class="operation-box">
+              <span class="operation-label"><b>{{ setPartida.jugadores[idPlayer].operacion }}</b></span>
+              
             </div>
             <div class="input-operation">
               <v-text-field label="?" variant="outlined" type="number" v-model="result"></v-text-field>
@@ -95,7 +109,11 @@ export default {
             </div>
           </div>
         </v-col>
-
+        <v-col cols="3">
+          <div>
+            <img :src="getAvatarUrl(this.avatar)" alt="Avatar" style="width:300px">
+          </div>
+        </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class=" dificulty-container">
@@ -141,14 +159,18 @@ export default {
   text-align: center;
 }
 
+.operation-box{
+  width: 700px;
+  background-color: white;
+  border-radius: 5px;
+  height: 100px;
+
+}
 .operation-label {
   text-align: center;
   font-size: 60px;
-  width: 700px;
-  background-color: white;
-  padding: 14px;
-  border-radius: 5px;
-  font-weight: bold;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .PS {

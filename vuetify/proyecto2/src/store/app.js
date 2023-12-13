@@ -8,6 +8,8 @@ export const useAppStore = defineStore('app', {
       cognom: "",
       email: "",
       id: null,
+      avatar: 0,
+      contrassenya: "",
     }
   }),
   persist: true,
