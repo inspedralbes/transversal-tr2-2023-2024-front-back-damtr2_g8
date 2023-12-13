@@ -117,6 +117,7 @@ app.get("/usuario/:idUsuari", async (req, res) => {
 
 //ruta para hacer login
 app.post("/login", async (req, res) => {
+  console.log(req.body);
   await login(req.body.email, req.body.password)
     .then((data) => {
       res.send(data);
