@@ -1,37 +1,52 @@
 <template>
   <div class="full-container">
     <div class="btnCrear">
-      <v-btn class="my-button" @click="this.mostrarPopUp = !this.mostrarPopUp"
+      <v-btn
+        class="my-button create_class-button py-5"
+        prepend-icon="mdi-plus"
+        @click="this.mostrarPopUp = !this.mostrarPopUp"
         >Crear classe
 
         <v-dialog v-model="this.mostrarPopUp" max-width="600">
-          <v-card>
+          <v-card class="py-5">
             <v-card-title
               class="text-center"
               style="padding-top: 8px; font-size: xx-large; font-weight: bolder"
-              >Crear nueva clase</v-card-title
+              >Crear nova classe</v-card-title
             >
             <v-card-text>
               <v-form @submit.prevent="this.crearClase()">
                 <v-text-field
-                  v-model="nombreNuevaClase"
-                  label="Nombre de la clase"
+                  label="Nom de la nova classe"
+                  variant="outlined"
+                  :rules="[
+                    (value) => !!value || 'Requerit',
+                    (value) =>
+                      (value && value.length >= 3) || 'Mínim 3 caràcters.',
+                  ]"
                 ></v-text-field>
-                <div class="botonesPopUp">
-                  <v-btn type="submit" color="primary">Aceptar</v-btn>
-                  <v-btn
-                    @click="this.mostrarPopUp = !this.mostrarPopUp"
-                    color="error"
-                    >Cancelar</v-btn
-                  >
-                </div>
+                <v-row>
+                  <v-col>
+                    <v-btn block type="submit" class="pa-5" color="primary"
+                      >Aceptar</v-btn
+                    >
+                  </v-col>
+                  <v-col>
+                    <v-btn
+                      class="bg-red-lighten-2 pa-5"
+                      block
+                      @click="this.mostrarPopUp = !this.mostrarPopUp"
+                      >Cancelar</v-btn
+                    >
+                  </v-col>
+                </v-row>
               </v-form>
             </v-card-text>
           </v-card>
         </v-dialog>
       </v-btn>
     </div>
-    <v-container>
+    <v-container class="mt-12">
       <v-row>
         <v-col
           v-for="classe in classes"
@@ -279,12 +294,11 @@ export default {
 }
 
 .vcard {
-  margin-top: 70px;
+  margin: 8px !important;
 }
 
 .titleCard {
   padding: 30px;
-  background-image: url("../assets/Background.png");
 }
 
 .titleCard2 {
@@ -299,10 +313,15 @@ export default {
 
 .my-button {
   margin-top: 10px;
-  margin-right: 10px;
   padding: auto;
-  border-radius: 2px;
+  border-radius: 4px;
   background-color: #72bae8;
   color: white;
+}
+.create_class-button {
+  margin-top: 17px;
+  margin-left: 2.9dvw;
+  padding: 30;
+  border-radius: 20px;
 }
 </style>

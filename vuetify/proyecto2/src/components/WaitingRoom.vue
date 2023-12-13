@@ -34,6 +34,7 @@ export default {
                         }, 3000)
                     }
                 }
+                console.log(this.sala);
             }
         },
         'play': function (nuevoValor, antiguoValor) {
@@ -81,7 +82,7 @@ export default {
             <div class="user-col">
                 <div class="user-row">
                     <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
+                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/adventurer/svg?seed=" + jugador.id_avatar' width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>

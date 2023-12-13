@@ -69,6 +69,11 @@ function sockets(io, partidas) {
     }
   }
 
+
+  function changeAvatar(idJugador, idAvatar) {
+
+  }
+
   function joinSala(userInfo, id) {
     if (salas.some(sala => sala.codi == userInfo.codi)) {
       const salaEncontrada = salas.find(sala => sala.codi == userInfo.codi);
@@ -76,6 +81,7 @@ function sockets(io, partidas) {
         id_jugador: id,
         nombre: userInfo.username,
         winner: false,
+        id_avatar: userInfo.idAvatar,
       });
 
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
@@ -276,6 +282,7 @@ function sockets(io, partidas) {
       operacion: "",
       resultadoJugador: null,
       dificultad: 1,
+      idAvatar: 0,
     };
 
     let partida = {
