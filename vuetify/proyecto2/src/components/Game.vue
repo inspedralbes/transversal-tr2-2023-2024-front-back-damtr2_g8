@@ -9,25 +9,18 @@ export default {
     return {
       result: null,
       emptyGameData: true,
-      username: "",
+      store: useAppStore(),
       idPlayer: null,
       avatar: null,
       flip: true,
     };
   },
   mounted() {
-    let store = useAppStore();
-    this.username = prompt();
-    this.avatar = store.usuari.avatar;
+    this.avatar = this.store.usuari.avatar;
     this.conectar();
     this.setPartida;
   },
   methods: {
-    getAvatarUrl(avatar) {
-
-      return `https://api.dicebear.com/7.x/big-smile/svg?seed=${this.avatar}&scale=80&flip=${this.flip}`;
-      console.log(this.avatar);
-    },
     getOperation(dificultad) {
       socket.emit("getOperation", {
         idPartida: state.partida.idPartida,
@@ -37,7 +30,7 @@ export default {
 
     },
     conectar() {
-      socket.emit("conectarUsuario", { username: this.username, id_sala: state.sala });
+      socket.emit("conectarUsuario", { username: this.store.usuari.nom, avatar: this.store.usuari.avatar, id_sala: state.sala });
     },
     solveOperation() {
       socket.emit("solveOperation", {
@@ -94,7 +87,7 @@ export default {
       <v-row>
         <v-col cols="3">
           <div>
-            <img :src="getAvatarUrl(this.avatar)" alt="Avatar" style="width:300px;">
+            <img :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=" + flip' alt="Avatar" style="width:300px;">
           </div>
         </v-col>
         <v-col cols="6">
@@ -111,7 +104,7 @@ export default {
         </v-col>
         <v-col cols="3">
           <div>
-            <img :src="getAvatarUrl(this.avatar)" alt="Avatar" style="width:300px">
+            <img :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=" + flip' alt="Avatar" style="width:300px;">
           </div>
         </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">

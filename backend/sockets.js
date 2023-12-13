@@ -75,7 +75,6 @@ function sockets(io, partidas) {
 
 
   function changeAvatar(idSala, idJugador, avatar) {
-    console.log(avatar);
     if (salas.some(sala => sala.id_sala == idSala)) {
       const salaEncontrada = salas.find(sala => sala.id_sala == idSala);
       salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador).id_avatar = avatar;
@@ -155,15 +154,17 @@ function sockets(io, partidas) {
   function solveOperation(idPartida, idJugador, result) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
-    try {
-      realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(realResult);
-    if (realResult == result) {
-      correcto = true;
-      disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
+    let realResult = null;
+
+    if(result != null) {
+      try {
+        realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
+      } catch (e) {}
+      console.log(realResult);
+      if (realResult == result) {
+        correcto = true;
+        disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
+      }
     }
 
     io.to(partida.jugadores[idJugador].idSocket).emit("evaluacionResultado", {
@@ -297,7 +298,7 @@ function sockets(io, partidas) {
       operacion: "",
       resultadoJugador: null,
       dificultad: 1,
-      idAvatar: 0,
+      avatar: user.avatar,
     };
 
     let partida = {
