@@ -20,6 +20,15 @@ export default {
         leaveSala() {
             socket.emit("leaveSala", {});
             this.$router.push("/join");
+        },
+        getColor(vidaJugador1, vidaJugador2) {
+            if (vidaJugador1 > vidaJugador2) {
+                return 'green';
+            } else if (vidaJugador1 < vidaJugador2) {
+                return 'red';
+            } else {
+                return 'blue';
+            }
         }
     },
     watch: {
@@ -64,17 +73,24 @@ export default {
             return state.play;
         },
         partidas() {
-            console.log("Partidas: " + state.partidas);
+            console.log(state.partidas);
+            let partidasFiltradas = state.partidas;
+
             if (state.partidas) {
                 if (state.partidas.every(partida => partida.status == "finish")) {
                     this.playing = false;
                 } else {
                     this.playing = true;
                 }
+                partidasFiltradas = partidasFiltradas.filter(partida => partida.status != "finish");
             } else {
                 this.playing = false;
             }
-            return state.partidas;
+
+            if (partidasFiltradas == null) {
+                partidasFiltradas = [];
+            }
+            return partidasFiltradas;
         },
     },
     mounted() {
@@ -103,22 +119,43 @@ export default {
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
-                <div class="user-row">
-                    <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar"
-                            :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
-                        <h3>{{ jugador.nombre }}</h3>
+                <div>
+                    <h1>Waiting Players</h1>
+                    <div class="user-row">
+                        <div class="user-item" v-for="jugador in sala.jugadores">
+                            <v-img class="img-avatar"
+                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar'
+                                width="60px" />
+                            <h3>{{ jugador.nombre }}</h3>
+                        </div>
                     </div>
                 </div>
-                <!-- <div class="user-row" v-else>
-                    <div class="user-item" v-for="partida in partidas">
-                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                        <h3>{{ partida.jugadores[0].username }}</h3>
-                        <h3>VS</h3>
-                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                        <h3>{{ partida.jugadores[1].username }}</h3>
+                <div class="user-row" style="margin-left: 100px;" v-if="partidas.length != 0">
+                    <div>
+                        <h1>Playing</h1>
+                        <div class="playing-container">
+                            <div class="partida-container" v-for="partida in partidas">
+                                <div class="player-container">
+                                    <v-img class="img-avatar"
+                                        :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + partida.jugadores[0].avatar'
+                                        width="50px" />
+                                    <h4 :style="{ color: getColor(partida.jugadores[0].vida, partida.jugadores[1].vida) }">
+                                        {{ partida.jugadores[0].username }}
+                                    </h4>
+                                </div>
+                                <h3>VS</h3>
+                                <div class="player-container">
+                                    <v-img class="img-avatar"
+                                        :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + partida.jugadores[1].avatar'
+                                        width="50px" />
+                                    <h4 :style="{ color: getColor(partida.jugadores[1].vida, partida.jugadores[0].vida) }">
+                                        {{ partida.jugadores[1].username }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
@@ -149,10 +186,16 @@ body {
 .user-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 .user-item {
-    margin: 5px 50px;
+    width: calc(33.33% - 10px);
+    margin: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
     text-align: center;
 }
 
@@ -224,5 +267,28 @@ body {
     100% {
         width: 100%;
     }
+}
+
+.playing-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.partida-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 2px;
+    background-color: aliceblue;
+    border-radius: 15px;
+    margin: 5px;
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+
+.player-container {
+    margin: 10px;
 }
 </style>

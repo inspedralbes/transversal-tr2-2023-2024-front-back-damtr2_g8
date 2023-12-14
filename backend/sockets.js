@@ -263,9 +263,11 @@ function sockets(io) {
       const vidaActual =
         idJugador == 1 ? partida.jugadores[1].vida : partida.jugadores[0].vida;
       const nuevaVida = Math.max(0, vidaActual - cantidad);
+      let sala = salas.find((sala) => sala.id_sala == partida.idSala);
 
       partida.jugadores[idJugador].vida = nuevaVida;
 
+      io.to(sala.owner).emit("getPartidas", partidas);
       for (let i = 0; i < partida.jugadores.length; i++) {
         io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
           vida: nuevaVida,
@@ -275,7 +277,6 @@ function sockets(io) {
 
       if (nuevaVida == 0) {
         partida.status = "finish";
-        let sala = salas.find((sala) => sala.id_sala == partida.idSala);
         io.to(sala.owner).emit("getPartidas", partidas);
         for (let i = 0; i < partida.jugadores.length; i++) {
           io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
