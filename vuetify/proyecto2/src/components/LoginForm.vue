@@ -19,7 +19,7 @@
                                 <v-text-field v-model="emailRegistration.password"
                                     :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                                     :rules="emailRegistration.passwordRules" :type="show1 ? 'text' : 'password'"
-                                    name="input-10-1" label="Contrassenya" counter @click:append="show1 = !show1"
+                                    name="input-10-1" label="Contrassenya" @click:append="show1 = !show1"
                                     required></v-text-field>
                                 <div class="name-field">
                                     <v-checkbox id="profeRegistro" type="checkbox" label="Soc professor/a"></v-checkbox>
@@ -35,7 +35,7 @@
                                 <v-text-field v-model="usernameLogin.password"
                                     :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                                     :rules="emailRegistration.passwordRules" :type="show2 ? 'text' : 'password'"
-                                    name="input-10-1" label="Contrassenya" counter @click:append="show2 = !show2"
+                                    name="input-10-1" label="Contrassenya" @click:append="show2 = !show2"
                                     required></v-text-field>
                                 <v-checkbox type="checkbox" id="profeLogin" label="Soc professor/a"></v-checkbox>
                                 <v-btn type="submit" color="primary">Inicia sessió</v-btn>

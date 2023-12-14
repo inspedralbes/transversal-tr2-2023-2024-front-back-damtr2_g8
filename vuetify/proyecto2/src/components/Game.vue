@@ -13,6 +13,7 @@ export default {
       idPlayer: null,
       avatar: null,
       flip: true,
+      hit: false,
     };
   },
   mounted() {
@@ -75,7 +76,7 @@ export default {
         </v-col>
         <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container" align="left">
+          <div class="PS-container" :class="{ shake: hit}" align="left">
             <div class="PS " v-bind:style="{
               width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
             }">
