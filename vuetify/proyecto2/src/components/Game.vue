@@ -13,6 +13,7 @@ export default {
       idPlayer: null,
       avatar: null,
       flip: true,
+      hit: false,
     };
   },
   mounted() {
@@ -75,7 +76,7 @@ export default {
         </v-col>
         <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container" align="left">
+          <div class="PS-container" :class="{ shake: hit}" align="left">
             <div class="PS " v-bind:style="{
               width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
             }">
@@ -224,5 +225,33 @@ export default {
   height: fit-content;
   display: flex;
   align-items: center;
+}
+
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 </style>

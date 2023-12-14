@@ -35,48 +35,53 @@
                     </g>
 
                 </svg>
-                <v-dialog v-model="dialog" activator="top-rght-svg" width="auto">
-                    <v-card>
+                <v-dialog v-model="dialog" activator="top-right-svg" width="auto">
+                    <v-card class="card rounded-xl">
                         <v-card-text>
                             <v-container>
                                 <v-row>
-                                    <v-col cols="12">
+                                    <v-col class="modal-row" cols="12">
                                         <div class="design-avatar">
-                                            <img :src="getAvatarUrl(this.avatar)" alt="Avatar"
-                                                style="width:70px; height: 70px;">
-                                            <a href="#" @click.prevent="openAvatarModal">Cambiar avatar</a>
-
+                                            <img :src="getAvatarUrl(this.avatar)" alt="Avatar" style="width:90px;">
+                                            <a href="#" @click.prevent="openAvatarModal"><svg width="30px" height="30px"
+                                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <g id="Edit / Edit_Pencil_Line_01">
+                                                        <path id="Vector"
+                                                            d="M4 20.0001H20M4 20.0001V16.0001L12 8.00012M4 20.0001L8 20.0001L16 12.0001M12 8.00012L14.8686 5.13146L14.8704 5.12976C15.2652 4.73488 15.463 4.53709 15.691 4.46301C15.8919 4.39775 16.1082 4.39775 16.3091 4.46301C16.5369 4.53704 16.7345 4.7346 17.1288 5.12892L18.8686 6.86872C19.2646 7.26474 19.4627 7.46284 19.5369 7.69117C19.6022 7.89201 19.6021 8.10835 19.5369 8.3092C19.4628 8.53736 19.265 8.73516 18.8695 9.13061L18.8686 9.13146L16 12.0001M12 8.00012L16 12.0001"
+                                                            stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round" />
+                                                    </g>
+                                                </svg></a>
                                         </div>
                                     </v-col>
-                                    <v-col cols="12" sm="6">
+                                    <v-col class="modal-row" cols="12" sm="6">
                                         <p><b>Nom</b></p>
-                                        <p>{{ this.name }}</p>
+                                        <v-text-field type="name" variant="solo" disabled>{{ this.name }}</v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="6">
+                                    <v-col class="modal-row" cols="12" sm="6">
                                         <p><b>Cognom</b></p>
-                                        <p>{{ this.surname }}</p>
+                                        <v-text-field type="name" variant="solo" disabled>{{ this.surname }}</v-text-field>
                                     </v-col>
-                                    <v-col cols="12">
+                                    <v-col class="modal-row" cols="12">
                                         <p><b>Correu</b></p>
-                                        <p>{{ this.email }}</p>
+                                        <v-text-field type="name" variant="solo" disabled>{{ this.email }}</v-text-field>
                                     </v-col>
-                                    <v-col cols="12">
-                                        <v-text-field  v-model="password1" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                    <v-col class="modal-row" cols="12">
+                                        <v-text-field v-model="password1" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                                             :type="show1 ? 'text' : 'password'" name="password1" label="Contrassenya"
-                                            counter @click:append="show1 = !show1"></v-text-field>
+                                            @click:append="show1 = !show1"></v-text-field>
                                         <v-text-field v-model="password2" :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                                             :type="show2 ? 'text' : 'password'" name="password2"
-                                            label="Confirmar contrassenya" counter
-                                            @click:append="show2 = !show2"></v-text-field>
-                                        <div class="error-message">{{ errorMessage }}</div>
+                                            label="Confirmar contrassenya" @click:append="show2 = !show2"></v-text-field>
+                                        <!-- <div class="error-message">{{ errorMessage }}</div> -->
                                     </v-col>
                                 </v-row>
                             </v-container>
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Close</v-btn>
-                            <v-btn color="blue-darken-1" variant="text" @click="checkPassword()">Save</v-btn>
+                            <v-btn color="blue-darken-1 buttons" variant="text" @click="dialog = false">Close</v-btn>
+                            <v-btn color="blue-darken-1 buttons" variant="text" @click="checkPassword()">Save</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -84,12 +89,12 @@
                 <v-dialog v-model="avatarModal" max-width="600px">
                     <v-card>
                         <v-card-title class="headline">
+                            <p><b>Escull un avatar</b></p>
 
-                            <v-spacer></v-spacer>
-                            <v-btn icon @click="closeAvatarModal">
-                                <v-icon>mdi-close</v-icon>
-                            </v-btn>
                         </v-card-title>
+                        <v-btn class="btnCloseAvatar" icon @click="closeAvatarModal">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
                         <v-card-text>
                             <v-row justify="center">
                                 <v-col v-for="avatarId in avatarIds" :key="avatarId" cols="12" sm="6" md="4" lg="3">
@@ -158,12 +163,12 @@ export default {
               }*/
 
             console.log("Dentro");
-            console.log("Contraseña 1",this.password1);
-            console.log("Contraseña 2",this.password2);
+            console.log("Contraseña 1", this.password1);
+            console.log("Contraseña 2", this.password2);
 
             // If Not same return False.     
             if (this.password1 != this.password2) {
-                this.errorMessage = "Les contrassenyes no coincideixen"; // Clear the error message if passwords match
+                //this.errorMessage = "Les contrassenyes no coincideixen";
                 return false;
             } else {
                 // If same return True. 
@@ -215,9 +220,9 @@ export default {
                 body: JSON.stringify({
                     email: email,
                     password2: this.password2,
-                    
+
                 }),
-                
+
             });
             if (!response.ok) {
                 window.alert("Error al cambiar la contraseña");
@@ -240,6 +245,32 @@ export default {
 </script>
 
 <style scoped>
+.headline {
+    margin-top: 20px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.btnCloseAvatar {
+    position: absolute;
+    right: 0;
+    margin: 15px;
+}
+
+.buttons {
+    background-color: white;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.card {
+    background-color: #5CBBF6;
+    width: 600px;
+    overflow: hidden;
+
+
+}
+
 .design-avatar {
     display: flex;
     align-items: center;
@@ -258,8 +289,7 @@ export default {
     position: relative;
 }
 
-.error-message {
-    color: red;
-    margin-top: 5px;
-}
-</style>
+.modal-row {
+    margin-bottom: -15px;
+    margin-top: -10px;
+}</style>
