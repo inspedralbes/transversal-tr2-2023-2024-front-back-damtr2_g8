@@ -76,7 +76,7 @@ export default {
         </v-col>
         <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container" :class="{ shake: hit}" align="left">
+          <div class="PS-container" :class="{ shake: hit }" align="left">
             <div class="PS " v-bind:style="{
               width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
             }">
@@ -233,6 +233,7 @@ export default {
 }
 
 @keyframes shake {
+
   10%,
   90% {
     transform: translate3d(-1px, 0, 0);

@@ -65,9 +65,12 @@ export default {
     },
     mounted() {
         this.myId = socket.id;
-        console.log(this.$route.params.classe);
         if (this.sala == null || this.sala == false) {
-            socket.emit("getSala", this.store.usuari.id, this.$route.params.classe);
+            socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+        } else {
+            if (this.sala.id_classe != this.store.usuari.classe) {
+                socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+            }
         }
     },
 };

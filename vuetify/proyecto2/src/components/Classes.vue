@@ -128,6 +128,7 @@ export default {
       nombreNuevaClase: "",
       mostrarPopUpEditar: false,
       classeEditar: null,
+      store: useAppStore(),
     };
   },
   methods: {
@@ -173,9 +174,9 @@ export default {
       this.mostrarPopUpEditar = true;
     },
     createSala(id) {
-      const store = useAppStore();
-      socket.emit("createSala", id, store.usuari.id);
-      this.$router.push({ name: 'Sala', params: { classe: 7 } });
+      socket.emit("createSala", id, this.store.usuari.id);
+      this.store.usuari.classe = id;
+      this.$router.push("/sala");
     },
     async eliminarClasse() {
       const response = await deleteClasse(this.classeEditar);
@@ -186,8 +187,7 @@ export default {
     },
   },
   mounted() {
-    const store = useAppStore();
-    this.idProfe = store.usuari.id;
+    this.idProfe = this.store.usuari.id;
     this.getClasses();
   },
 };

@@ -129,7 +129,7 @@ function sockets(io) {
   }
 
   function getSala(idSocket, idUser, idClasse) {
-    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
+    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish" && sala.id_classe == idClasse);
 
     if (sala) {
       let previusOwner = sala.owner;

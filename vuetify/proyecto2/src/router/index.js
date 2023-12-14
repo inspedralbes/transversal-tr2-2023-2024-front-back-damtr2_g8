@@ -23,7 +23,7 @@ const routes = [
     component: () => import('@/views/GameView.vue'),
   },
   {
-    path: '/sala/:classe',
+    path: '/sala',
     name: 'Sala',
     component: () => import('@/views/Sala.vue'),
   },
