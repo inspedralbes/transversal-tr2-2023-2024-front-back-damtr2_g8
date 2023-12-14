@@ -271,6 +271,8 @@ function sockets(io) {
 
       if (nuevaVida == 0) {
         partida.status = "finish";
+        let sala = salas.find((sala) => sala.id_sala == partida.idSala);
+        io.to(sala.owner).emit("getPartidas", partidas);
         for (let i = 0; i < partida.jugadores.length; i++) {
           io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
         }
@@ -280,17 +282,16 @@ function sockets(io) {
 }
 
 function gestionarPartida(socket, user, io) {
-  joinPartida(user, socket);
+  console.log("Soy usuario conectando");
+  let idPartida = joinPartida(user, socket);
 
-  let idPartidaFind = partidas.findIndex((partida) =>
-    partida.jugadores.some((jugador) => jugador.idSocket === socket.id)
-  );
+  let idPartidaIndex = partidas.findIndex((partida) => partida.idPartida == idPartida);
 
-  if (partidas[idPartidaFind].jugadores.length == 2) {
-    for (let i = 0; i < partidas[idPartidaFind].jugadores.length; i++) {
-      io.to(partidas[idPartidaFind].jugadores[i].idSocket).emit(
+  if (partidas[idPartidaIndex].jugadores.length == 2) {
+    for (let i = 0; i < partidas[idPartidaIndex].jugadores.length; i++) {
+      io.to(partidas[idPartidaIndex].jugadores[i].idSocket).emit(
         "enviaJson",
-        partidas[idPartidaFind]
+        partidas[idPartidaIndex]
       );
     }
   }
@@ -300,6 +301,7 @@ function gestionarPartida(socket, user, io) {
 }
 
 function joinPartida(user, socket) {
+  let partidaId = partidas.length + 1;
   let jugador = {
     idSocket: socket.id,
     username: user.username,
@@ -321,7 +323,7 @@ function joinPartida(user, socket) {
     partidas.push(partida);
   } else {
     if (partidas.every((partida) => partida.jugadores.length == 2)) {
-      partidas.push(partidas.push(partida));
+      partidas.push(partida);
     } else {
       let terminado = false;
 
@@ -331,6 +333,7 @@ function joinPartida(user, socket) {
             partidas[i].jugadores.push(jugador);
             i = partidas.length;
             terminado = true;
+            partidaId = i;
           }
         }
       }
@@ -340,6 +343,8 @@ function joinPartida(user, socket) {
       }
     }
   }
+
+  return partidaId;
 }
 
 module.exports = { sockets };
