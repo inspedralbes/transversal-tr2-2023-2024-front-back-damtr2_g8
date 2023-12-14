@@ -21,6 +21,7 @@ export default {
     };
   },
   mounted() {
+    this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.avatar = this.store.usuari.avatar;
     this.conectar();
     this.setPartida;

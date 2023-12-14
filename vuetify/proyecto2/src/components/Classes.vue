@@ -187,6 +187,7 @@ export default {
     },
   },
   mounted() {
+    this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.idProfe = this.store.usuari.id;
     this.getClasses();
   },
