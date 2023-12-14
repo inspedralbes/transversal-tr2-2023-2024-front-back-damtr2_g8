@@ -51,7 +51,22 @@
                                                             stroke="#ffffff" stroke-width="2" stroke-linecap="round"
                                                             stroke-linejoin="round" />
                                                     </g>
-                                                </svg></a>
+                                                </svg>
+                                            </a>
+                                            <a href="">
+                                                <svg width="30px" viewBox="0 0 64.00 64.00"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000000"
+                                                    stroke-width="4.928">
+                                                    <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <g id="SVGRepo_iconCarrier">
+                                                        <polyline points="40 44 40 56 8 56 8 8 40 8 40 20" />
+                                                        <polyline points="48 40 56 32 48 24" />
+                                                        <line x1="28" y1="32" x2="56" y2="32" />
+                                                    </g>
+                                                </svg>
+                                            </a>
                                         </div>
                                     </v-col>
                                     <v-col class="modal-row" cols="12" sm="6">
