@@ -50,7 +50,7 @@ export default {
           ? 0
           : 1;
       if (state.partida.status == "finish") {
-        this.$router.push("/join");
+        this.$router.push("/sala");
       }
       return state.partida;
     },
@@ -224,4 +224,5 @@ export default {
   height: fit-content;
   display: flex;
   align-items: center;
-}</style>
+}
+</style>

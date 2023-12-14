@@ -65,8 +65,9 @@ export default {
     },
     mounted() {
         this.myId = socket.id;
+        console.log(this.$route.params.classe);
         if (this.sala == null || this.sala == false) {
-            socket.emit("getSala", this.store.usuari.id);
+            socket.emit("getSala", this.store.usuari.id, this.$route.params.classe);
         }
     },
 };
@@ -85,7 +86,8 @@ export default {
             <div class="user-col">
                 <div class="user-row">
                     <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
+                        <v-img class="img-avatar"
+                            :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>
