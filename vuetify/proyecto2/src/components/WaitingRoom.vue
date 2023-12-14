@@ -21,15 +21,6 @@ export default {
             socket.emit("leaveSala", {});
             this.$router.push("/join");
         },
-        getColor(vidaJugador1, vidaJugador2) {
-            if (vidaJugador1 > vidaJugador2) {
-                return 'green';
-            } else if (vidaJugador1 < vidaJugador2) {
-                return 'red';
-            } else {
-                return 'blue';
-            }
-        }
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
@@ -139,18 +130,30 @@ export default {
                                     <v-img class="img-avatar"
                                         :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + partida.jugadores[0].avatar'
                                         width="50px" />
-                                    <h4 :style="{ color: getColor(partida.jugadores[0].vida, partida.jugadores[1].vida) }">
+                                    <h4>
                                         {{ partida.jugadores[0].username }}
                                     </h4>
+                                    <div class="PS-container" :class="{ shake: hit == 1 }" align="left">
+                                        <div class="PS" v-bind:style="{
+                                            width: partida.jugadores[0].vida + '%',
+                                        }">
+                                        </div>
+                                    </div>
                                 </div>
                                 <h3>VS</h3>
                                 <div class="player-container">
                                     <v-img class="img-avatar"
                                         :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + partida.jugadores[1].avatar'
                                         width="50px" />
-                                    <h4 :style="{ color: getColor(partida.jugadores[1].vida, partida.jugadores[0].vida) }">
+                                    <h4>
                                         {{ partida.jugadores[1].username }}
                                     </h4>
+                                    <div class="PS-container" :class="{ shake: hit == 1 }" align="left">
+                                        <div class="PS" v-bind:style="{
+                                            width: partida.jugadores[1].vida + '%',
+                                        }">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -290,5 +293,17 @@ body {
 
 .player-container {
     margin: 10px;
+}
+
+.PS-container {
+    background: rgb(255, 92, 92);
+    width: 100%;
+    height: 3px;
+    display: flex;
+}
+
+.PS {
+    background-color: rgb(5, 241, 5);
+    background-size: cover;
 }
 </style>
