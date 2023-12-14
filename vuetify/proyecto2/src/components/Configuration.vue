@@ -5,11 +5,8 @@
                 <svg fill="#ffffff" height="40px" width="40px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.64 29.64" xml:space="preserve"
                     stroke="#ffffff" stroke-width="0.00029643">
-
                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-
                     <g id="SVGRepo_iconCarrier">
                         <g>
                             <path
@@ -33,7 +30,6 @@
                             <g> </g>
                         </g>
                     </g>
-
                 </svg>
                 <v-dialog v-model="dialog" activator="top-right-svg" width="auto">
                     <v-card class="card rounded-xl">
@@ -53,9 +49,9 @@
                                                     </g>
                                                 </svg>
                                             </a>
-                                            <a href="">
+                                            <a class="logOut" href="/" @click="logout()">
                                                 <svg width="30px" viewBox="0 0 64.00 64.00"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000000"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ff2414"
                                                     stroke-width="4.928">
                                                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
                                                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
@@ -156,6 +152,17 @@ export default {
     },
 
     methods: {
+        logout() {
+
+            let store = useAppStore();
+            store.usuari = {
+                nom: "",
+                cognom: "",
+                email: "",
+                avatar: null,
+            };
+
+        },
         checkPassword() {
             /*  console.log("Dentro")
               this.password1 = password1.value;
@@ -260,6 +267,12 @@ export default {
 </script>
 
 <style scoped>
+.logOut{
+    position: absolute;
+    right: 0;
+    margin-right: 50px;
+}
+
 .headline {
     margin-top: 20px;
     font-size: 30px;
@@ -307,4 +320,5 @@ export default {
 .modal-row {
     margin-bottom: -15px;
     margin-top: -10px;
-}</style>
+}
+</style>

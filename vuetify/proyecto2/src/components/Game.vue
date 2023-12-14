@@ -44,12 +44,7 @@ export default {
   computed: {
     setPartida() {
       this.emptyGameData = false;
-      this.idPlayer =
-        state.partida.jugadores.findIndex(
-          (jugador) => jugador.idSocket == socket.id
-        ) == 0
-          ? 0
-          : 1;
+      this.idPlayer = state.partida.jugadores.findIndex((jugador) => jugador.idSocket == socket.id) == 0 ? 0 : 1;
       console.log(state.partida);
       return state.partida;
     },
@@ -74,7 +69,7 @@ export default {
         </v-col>
         <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container" :class="{ shake: hit}" align="left">
+          <div class="PS-container" :class="{ shake: hit }" align="left">
             <div class="PS " v-bind:style="{
               width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
             }">
@@ -88,14 +83,16 @@ export default {
       <v-row>
         <v-col cols="3">
           <div>
-            <img :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=" + flip' alt="Avatar" style="width:300px;">
+            <img
+              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=false"'
+              alt="Avatar" style="width:300px;">
           </div>
         </v-col>
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
               <span class="operation-label"><b>{{ setPartida.jugadores[idPlayer].operacion }}</b></span>
-              
+
             </div>
             <div class="input-operation">
               <v-text-field label="?" variant="outlined" type="number" v-model="result"></v-text-field>
@@ -105,7 +102,9 @@ export default {
         </v-col>
         <v-col cols="3">
           <div>
-            <img :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=" + flip' alt="Avatar" style="width:300px;">
+            <img
+              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=true"'
+              alt="Avatar" style="width:300px;">
           </div>
         </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
@@ -153,13 +152,14 @@ export default {
   text-align: center;
 }
 
-.operation-box{
+.operation-box {
   width: 700px;
   background-color: white;
   border-radius: 5px;
   height: 100px;
 
 }
+
 .operation-label {
   text-align: center;
   font-size: 60px;
