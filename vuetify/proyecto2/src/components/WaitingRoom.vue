@@ -15,7 +15,7 @@ export default {
     methods: {
         startGame() {
             this.owner = true;
-            socket.emit("startGame", {});
+            socket.emit("startGame", this.store.usuari.classe);
         },
         leaveSala() {
             socket.emit("leaveSala", {});
@@ -78,6 +78,7 @@ export default {
         },
     },
     mounted() {
+        console.log(this.play);
         this.myId = socket.id;
         if (this.sala == null || this.sala == false) {
             socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);

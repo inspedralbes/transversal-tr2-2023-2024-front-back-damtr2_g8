@@ -31,8 +31,8 @@ function sockets(io) {
       joinSala(userInfo, socket.id);
     });
 
-    socket.on("startGame", () => {
-      const sala = salas.find(sala => sala.owner == socket.id);
+    socket.on("startGame", (idClasse) => {
+      const sala = salas.find(sala => sala.owner == socket.id && sala.id_classe == idClasse);
       for (let i = 0; i < sala.jugadores.length; i++) {
         io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
