@@ -31,13 +31,17 @@ function sockets(io) {
       joinSala(userInfo, socket.id);
     });
 
-    socket.on("startGame", () => {
-      const sala = salas.find(sala => sala.owner == socket.id);
+    socket.on("startGame", (idClasse) => {
+      const sala = salas.find(sala => sala.owner == socket.id && sala.id_classe == idClasse);
       for (let i = 0; i < sala.jugadores.length; i++) {
         io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
       io.to(sala.owner).emit("startGame", sala.id_sala);
       io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.id_sala == sala.id_sala));
+    });
+
+    socket.on("leaveSala", () => {
+      desconectarJugador(socket);
     });
 
     socket.on("disconnect", () => {
@@ -260,9 +264,11 @@ function sockets(io) {
       const vidaActual =
         idJugador == 1 ? partida.jugadores[1].vida : partida.jugadores[0].vida;
       const nuevaVida = Math.max(0, vidaActual - cantidad);
+      let sala = salas.find((sala) => sala.id_sala == partida.idSala);
 
       partida.jugadores[idJugador].vida = nuevaVida;
 
+      io.to(sala.owner).emit("getPartidas", partidas);
       for (let i = 0; i < partida.jugadores.length; i++) {
         io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
           vida: nuevaVida,
@@ -272,7 +278,6 @@ function sockets(io) {
 
       if (nuevaVida == 0) {
         partida.status = "finish";
-        let sala = salas.find((sala) => sala.id_sala == partida.idSala);
         io.to(sala.owner).emit("getPartidas", partidas);
         for (let i = 0; i < partida.jugadores.length; i++) {
           io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
@@ -283,7 +288,6 @@ function sockets(io) {
 }
 
 function gestionarPartida(socket, user, io) {
-  console.log("Soy usuario conectando");
   let idPartida = joinPartida(user, socket);
 
   let idPartidaIndex = partidas.findIndex((partida) => partida.idPartida == idPartida);
