@@ -14,6 +14,10 @@ export default {
       avatar: null,
       flip: true,
       hit: null,
+      usuaris: {
+        vidaAnterior1: 100,
+        vidaAnterior2: 100,
+      },
     };
   },
   mounted() {
@@ -56,26 +60,30 @@ export default {
       if (state.partida.status == "finish") {
         this.$router.push("/sala");
       }
+
+      if (
+        state.partida.jugadores[this.idPlayer].vida <
+        this.usuaris.vidaAnterior1
+      ) {
+        this.hit = 0;
+        this.usuaris.vidaAnterior1 = state.partida.jugadores[this.idPlayer].vida;
+        setTimeout(() => {
+          this.hit = null;
+        }, 1500);
+      }
+
+      if (
+        state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida <
+        this.usuaris.vidaAnterior2
+      ) {
+        this.hit = 1;
+        this.usuaris.vidaAnterior2 = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
+        setTimeout(() => {
+          this.hit = null;
+        }, 100);
+      }
+
       return state.partida;
-    },
-    userHit() {
-      return setPartida.jugadores[0].vida;
-    },
-  },
-  watch: {
-    "userHit(0)": function () {
-      console.log("1");
-      this.hit = 0;
-      setTimeout(() => {
-        this.hit = null;
-      }, 1500);
-    },
-    "userHit(1)": function () {
-      console.log("2");
-      this.hit = 1
-      setTimeout(() => {
-        this.hit = null
-      }, 1500)
     },
   },
 };
@@ -251,31 +259,15 @@ export default {
 }
 
 .shake {
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: shake 0.12s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   transform: translate3d(0, 0, 0);
 }
 
 @keyframes shake {
-
-  10%,
-  90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-
-  20%,
-  80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: translate3d(-4px, 0, 0);
-  }
-
-  40%,
-  60% {
-    transform: translate3d(4px, 0, 0);
-  }
+  0% { transform: translateX(0) }
+  25% { transform: translateX(3px) }
+  50% { transform: translateX(-3px) }
+  75% { transform: translateX(3px) }
+  100% { transform: translateX(0) }
 }
 </style>

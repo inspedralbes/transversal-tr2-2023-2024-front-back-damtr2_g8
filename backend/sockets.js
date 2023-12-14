@@ -297,7 +297,11 @@ function gestionarPartida(socket, user, io) {
   }
 
   const sala = salas.find(sala => sala.id_sala == user.id_sala);
-  io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
+  if(sala.owner != undefined) {
+    io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
+  } else {
+    console.log("owner undefined");
+  }
 }
 
 function joinPartida(user, socket) {
