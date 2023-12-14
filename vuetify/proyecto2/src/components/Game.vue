@@ -97,12 +97,9 @@ export default {
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div class="PS-container" :class="{ shake: hit == 0 }">
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[idPlayer].vida + '%',
-              }"
-            >
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[idPlayer].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
             </div>
           </div>
@@ -110,12 +107,9 @@ export default {
         <v-col align="right">
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
           <div class="PS-container" :class="{ shake: hit == 1 }" align="left">
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
-              }"
-            >
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
             </div>
           </div>
@@ -126,76 +120,47 @@ export default {
       <v-row>
         <v-col cols="3">
           <div>
-            <img
-              :src="
-                'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer].avatar +
-                '&scale=80&flip=' +
-                flip
-              "
-              alt="Avatar"
-              style="width: 300px"
-            />
+            <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+              setPartida.jugadores[idPlayer].avatar +
+              '&scale=80&flip=' +
+              flip
+              " alt="Avatar" style="width: 300px" />
           </div>
         </v-col>
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
-              <span class="operation-label"
-                ><b>{{ setPartida.jugadores[idPlayer].operacion }}</b></span
-              >
+              <span class="operation-label"><b>{{ setPartida.jugadores[idPlayer].operacion }}</b></span>
             </div>
             <div class="input-operation">
-              <v-text-field
-                label="?"
-                variant="outlined"
-                type="number"
-                v-model="result"
-              ></v-text-field>
+              <v-text-field label="?" variant="outlined" type="number" v-model="result"></v-text-field>
               <v-btn class="btnSolve" @click="solveOperation()">Resolver</v-btn>
             </div>
           </div>
         </v-col>
         <v-col cols="3">
           <div>
-            <img
-              :src="
-                'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
-                '&scale=80&flip=' +
-                flip
-              "
-              alt="Avatar"
-              style="width: 300px"
-            />
+            <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+              setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
+              '&scale=80&flip=' +
+              flip
+              " alt="Avatar" style="width: 300px" />
           </div>
         </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class="dificulty-container">
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #7ed776"
-                  @click="getOperation(1)"
-                  >Facil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #7ed776"
+                  @click="getOperation(1)">Facil</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #768ed7"
-                  @click="getOperation(2)"
-                  >Medio</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #768ed7"
+                  @click="getOperation(2)">Medio</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #d77676"
-                  @click="getOperation(3)"
-                  >Dificil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #d77676"
+                  @click="getOperation(3)">Dificil</v-btn>
               </v-col>
             </v-row>
           </v-sheet>

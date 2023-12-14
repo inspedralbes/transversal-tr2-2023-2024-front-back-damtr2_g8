@@ -26,7 +26,9 @@ export const state = reactive({
 });
 
 socket.on("enviaJson", (data) => {
+  state.play = false;
   state.partida = data;
+  console.log(data);
 });
 
 socket.on("actualizarVida", (data) => {
@@ -44,11 +46,9 @@ socket.on("join", (data) => {
 socket.on("startGame", (idSala) => {
   state.play = true;
   state.sala = idSala;
+  state.partida.status = "waiting";
 });
 
 socket.on("getPartidas", (data) => {
-  if (data.length != 0) {
-    state.play = true;
-  }
   state.partidas = data;
 });

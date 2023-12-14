@@ -9,10 +9,12 @@ export default {
             owner: false,
             kick: false,
             store: useAppStore(),
+            playing: false,
         };
     },
     methods: {
         startGame() {
+            this.owner = true;
             socket.emit("startGame", {});
         }
     },
@@ -34,19 +36,18 @@ export default {
                         }, 3000)
                     }
                 }
-                console.log(this.sala);
             }
         },
         'play': function (nuevoValor, antiguoValor) {
+            console.log(nuevoValor);
             if (nuevoValor == true && this.owner == false) {
+                console.log("He llegado aquí " + nuevoValor);
                 this.$router.push("/game");
             }
         },
         'partidas': function (nuevoValor, antiguoValor) {
-            console.log(nuevoValor);
         },
         'store.usuari.avatar': function () {
-            console.log(this.store.usuari.avatar);
             socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
         }
     },
@@ -60,6 +61,15 @@ export default {
         },
         partidas() {
             console.log("Partidas: " + state.partidas);
+            if (state.partidas) {
+                if (state.partidas.every(partida => partida.status == "finish")) {
+                    this.playing = false;
+                } else {
+                    this.playing = true;
+                }
+            } else {
+                this.playing = false;
+            }
             return state.partidas;
         },
     },
@@ -82,8 +92,8 @@ export default {
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
 
-        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && play == false">COMENÇA</v-btn>
-        <div v-else-if="myId == sala.owner && play == true">S'estan jugant les partides</div>
+        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
+        <div v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</div>
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
