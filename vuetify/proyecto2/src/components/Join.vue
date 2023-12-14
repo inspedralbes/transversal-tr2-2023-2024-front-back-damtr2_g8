@@ -7,7 +7,8 @@ export default {
         return {
             errorCode: false,
             errorText: "",
-            proveSala: false
+            proveSala: false,
+            store: useAppStore(),
         };
     },
     methods: {
@@ -19,8 +20,7 @@ export default {
             for (let i = 0; i < inputs.length; i++) {
                 codi += (inputs[i].value).toString();
             }
-            const store = useAppStore();
-            socket.emit("joinSala", { codi: codi, username: store.usuari.nom, idAvatar: store.usuari.avatar });
+            socket.emit("joinSala", { codi: codi, username: this.store.usuari.nom, idAvatar: this.store.usuari.avatar });
         },
         async pasteCode() {
             try {
@@ -61,6 +61,7 @@ export default {
         },
     },
     mounted() {
+        this.store.usuari.id == null ? this.$router.push("/inici") : null;
         const form = document.querySelector('form')
         const inputs = form.querySelectorAll('input')
         const KEYBOARDS = {
