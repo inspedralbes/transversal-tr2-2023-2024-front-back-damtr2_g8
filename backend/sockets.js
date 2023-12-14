@@ -78,7 +78,8 @@ function sockets(io) {
   function changeAvatar(idSala, idJugador, avatar) {
     if (salas.some(sala => sala.id_sala == idSala)) {
       const salaEncontrada = salas.find(sala => sala.id_sala == idSala);
-      salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador).id_avatar = avatar;
+      const jugador = salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador);
+      jugador != undefined ? jugador.id_avatar = avatar : null;
 
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
       for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
@@ -295,7 +296,6 @@ function gestionarPartida(socket, user, io) {
   }
 
   const sala = salas.find(sala => sala.id_sala == user.id_sala);
-  console.log(partidas);
   io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
 }
 
