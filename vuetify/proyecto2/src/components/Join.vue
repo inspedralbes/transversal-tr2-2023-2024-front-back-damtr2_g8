@@ -9,18 +9,18 @@ export default {
             errorText: "",
             proveSala: false,
             store: useAppStore(),
+            codi: "",
         };
     },
     methods: {
         onSubmit() {
             this.proveSala = true;
-            let codi = "";
             const form = document.querySelector('form');
             const inputs = form.querySelectorAll('input');
             for (let i = 0; i < inputs.length; i++) {
-                codi += (inputs[i].value).toString();
+                this.codi += (inputs[i].value).toString();
             }
-            socket.emit("joinSala", { codi: codi, username: this.store.usuari.nom, idAvatar: this.store.usuari.avatar });
+            socket.emit("joinSala", { codi: this.codi, username: this.store.usuari.nom, idAvatar: this.store.usuari.avatar });
         },
         async pasteCode() {
             try {
@@ -50,9 +50,10 @@ export default {
                 this.errorText = "El codi de la sala no existeix";
                 this.proveSala = false;
                 state.joinedSala = null;
-            } else if (nuevoValor != null && nuevoValor != false) {
+            } else if (nuevoValor != null && nuevoValor != false && this.codi != "") {
                 this.$router.push('/sala');
             }
+            this.codi = "";
         },
     },
     computed: {
@@ -191,7 +192,8 @@ export default {
                         <button class="btn" @click="onSubmit">JUGAR</button>
                     </div>
 
-                    <v-sheet clickable class="text-center mt-3 linkClasses " @click="$router.push('/classes')"><b>Crea una sala</b></v-sheet>
+                    <v-sheet clickable class="text-center mt-3 linkClasses " @click="$router.push('/classes')"><b>Crea una
+                            sala</b></v-sheet>
                 </form>
             </v-card>
         </div>
@@ -199,9 +201,10 @@ export default {
 </template>
 
 <style scoped>
-.linkClasses{
+.linkClasses {
     cursor: pointer;
 }
+
 .title {
     text-align: center;
     letter-spacing: 2.5px;
