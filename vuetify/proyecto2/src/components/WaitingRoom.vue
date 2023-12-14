@@ -66,7 +66,11 @@ export default {
     mounted() {
         this.myId = socket.id;
         if (this.sala == null || this.sala == false) {
-            socket.emit("getSala", this.store.usuari.id);
+            socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+        } else {
+            if (this.sala.id_classe != this.store.usuari.classe) {
+                socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+            }
         }
     },
 };
@@ -85,7 +89,8 @@ export default {
             <div class="user-col">
                 <div class="user-row">
                     <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
+                        <v-img class="img-avatar"
+                            :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
                         <h3>{{ jugador.nombre }}</h3>
                     </div>
                 </div>

@@ -19,8 +19,8 @@ function sockets(io) {
       crearSala(idClasse, socket.id, idUser);
     });
 
-    socket.on("getSala", (idUser) => {
-      getSala(socket.id, idUser);
+    socket.on("getSala", (idUser, idClasse) => {
+      getSala(socket.id, idUser, idClasse);
     });
 
     socket.on("changeAvatar", (idSocket, avatar) => {
@@ -110,7 +110,7 @@ function sockets(io) {
   }
 
   function crearSala(idClasse, socketId, idUser) {
-    let existSala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
+    let existSala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish" && sala.id_classe == idClasse);
 
     if (!existSala) {
       let sala = {
@@ -128,8 +128,8 @@ function sockets(io) {
     }
   }
 
-  function getSala(idSocket, idUser) {
-    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
+  function getSala(idSocket, idUser, idClasse) {
+    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish" && sala.id_classe == idClasse);
 
     if (sala) {
       let previusOwner = sala.owner;

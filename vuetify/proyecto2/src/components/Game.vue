@@ -54,7 +54,7 @@ export default {
           ? 0
           : 1;
       if (state.partida.status == "finish") {
-        this.$router.push("/join");
+        this.$router.push("/sala");
       }
       return state.partida;
     },
@@ -291,6 +291,7 @@ export default {
 }
 
 @keyframes shake {
+
   10%,
   90% {
     transform: translate3d(-1px, 0, 0);
