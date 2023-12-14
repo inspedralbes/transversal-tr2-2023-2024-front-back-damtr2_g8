@@ -84,7 +84,7 @@ export default {
         <v-col cols="3">
           <div>
             <img
-              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=false"'
+              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer].avatar + "&scale=80&flip=false&eyes=angry&mouth=teethSmile"'
               alt="Avatar" style="width:300px;">
           </div>
         </v-col>
@@ -103,7 +103,7 @@ export default {
         <v-col cols="3">
           <div>
             <img
-              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=true"'
+              :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar + "&scale=80&flip=true&eyes=angry&mouth=teethSmile"'
               alt="Avatar" style="width:300px;">
           </div>
         </v-col>
