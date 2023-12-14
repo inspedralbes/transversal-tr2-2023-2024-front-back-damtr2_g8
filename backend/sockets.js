@@ -40,6 +40,10 @@ function sockets(io) {
       io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.id_sala == sala.id_sala));
     });
 
+    socket.on("leaveSala", () => {
+      desconectarJugador(socket);
+    });
+
     socket.on("disconnect", () => {
       // borrarSala(socket.id);
       desconectarJugador(socket)
@@ -282,7 +286,6 @@ function sockets(io) {
 }
 
 function gestionarPartida(socket, user, io) {
-  console.log("Soy usuario conectando");
   let idPartida = joinPartida(user, socket);
 
   let idPartidaIndex = partidas.findIndex((partida) => partida.idPartida == idPartida);
@@ -297,7 +300,7 @@ function gestionarPartida(socket, user, io) {
   }
 
   const sala = salas.find(sala => sala.id_sala == user.id_sala);
-  if(sala.owner != undefined) {
+  if (sala.owner != undefined) {
     io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
   } else {
     console.log("owner undefined");

@@ -16,6 +16,10 @@ export default {
         startGame() {
             this.owner = true;
             socket.emit("startGame", {});
+        },
+        leaveSala() {
+            socket.emit("leaveSala", {});
+            this.$router.push("/join");
         }
     },
     watch: {
@@ -88,6 +92,7 @@ export default {
 
 <template>
     <div class="full-container" v-if="sala && kick == false">
+        <v-btn @click="leaveSala()">Atras</v-btn>
         <h2 class="pt-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
