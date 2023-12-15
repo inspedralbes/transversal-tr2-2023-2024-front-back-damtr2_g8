@@ -7,20 +7,20 @@ export default {
         return {
             errorCode: false,
             errorText: "",
-            proveSala: false
+            proveSala: false,
+            store: useAppStore(),
+            codi: "",
         };
     },
     methods: {
         onSubmit() {
             this.proveSala = true;
-            let codi = "";
             const form = document.querySelector('form');
             const inputs = form.querySelectorAll('input');
             for (let i = 0; i < inputs.length; i++) {
-                codi += (inputs[i].value).toString();
+                this.codi += (inputs[i].value).toString();
             }
-            const store = useAppStore();
-            socket.emit("joinSala", { codi: codi, username: store.usuari.nom, idAvatar: store.usuari.avatar });
+            socket.emit("joinSala", { codi: this.codi, username: this.store.usuari.nom, idAvatar: this.store.usuari.avatar });
         },
         async pasteCode() {
             try {
@@ -50,9 +50,10 @@ export default {
                 this.errorText = "El codi de la sala no existeix";
                 this.proveSala = false;
                 state.joinedSala = null;
-            } else if (nuevoValor != null && nuevoValor != false) {
+            } else if (nuevoValor != null && nuevoValor != false && this.codi != "") {
                 this.$router.push('/sala');
             }
+            this.codi = "";
         },
     },
     computed: {
@@ -61,6 +62,7 @@ export default {
         },
     },
     mounted() {
+        this.store.usuari.id == null ? this.$router.push("/inici") : null;
         const form = document.querySelector('form')
         const inputs = form.querySelectorAll('input')
         const KEYBOARDS = {

@@ -1,9 +1,10 @@
-function sockets(io, partidas) {
-  let salas = [];
+let salas = [];
+let partidas = [];
 
+function sockets(io) {
   io.on("connection", (socket) => {
     socket.on("conectarUsuario", (user) => {
-      gestionarPartida(socket, user);
+      gestionarPartida(socket, user, io);
     });
 
     socket.on("getOperation", ({ idPartida, idJugador, dificultad }) => {
@@ -18,8 +19,8 @@ function sockets(io, partidas) {
       crearSala(idClasse, socket.id, idUser);
     });
 
-    socket.on("getSala", (idUser) => {
-      getSala(socket.id, idUser);
+    socket.on("getSala", (idUser, idClasse) => {
+      getSala(socket.id, idUser, idClasse);
     });
 
     socket.on("changeAvatar", (idSocket, avatar) => {
@@ -30,13 +31,17 @@ function sockets(io, partidas) {
       joinSala(userInfo, socket.id);
     });
 
-    socket.on("startGame", () => {
-      const sala = salas.find(sala => sala.owner == socket.id);
+    socket.on("startGame", (idClasse) => {
+      const sala = salas.find(sala => sala.owner == socket.id && sala.id_classe == idClasse);
       for (let i = 0; i < sala.jugadores.length; i++) {
         io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
       io.to(sala.owner).emit("startGame", sala.id_sala);
       io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.id_sala == sala.id_sala));
+    });
+
+    socket.on("leaveSala", () => {
+      desconectarJugador(socket);
     });
 
     socket.on("disconnect", () => {
@@ -77,7 +82,8 @@ function sockets(io, partidas) {
   function changeAvatar(idSala, idJugador, avatar) {
     if (salas.some(sala => sala.id_sala == idSala)) {
       const salaEncontrada = salas.find(sala => sala.id_sala == idSala);
-      salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador).id_avatar = avatar;
+      const jugador = salaEncontrada.jugadores.find(jugador => jugador.id_jugador == idJugador);
+      jugador != undefined ? jugador.id_avatar = avatar : null;
 
       io.to(salaEncontrada.owner).emit("join", salaEncontrada);
       for (let i = 0; i < salaEncontrada.jugadores.length; i++) {
@@ -108,7 +114,7 @@ function sockets(io, partidas) {
   }
 
   function crearSala(idClasse, socketId, idUser) {
-    let existSala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
+    let existSala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish" && sala.id_classe == idClasse);
 
     if (!existSala) {
       let sala = {
@@ -126,8 +132,8 @@ function sockets(io, partidas) {
     }
   }
 
-  function getSala(idSocket, idUser) {
-    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish");
+  function getSala(idSocket, idUser, idClasse) {
+    let sala = salas.find((sala) => sala.owner_id == idUser && sala.status != "finish" && sala.id_classe == idClasse);
 
     if (sala) {
       let previusOwner = sala.owner;
@@ -156,14 +162,15 @@ function sockets(io, partidas) {
     const partida = partidas.find((p) => p.idPartida == idPartida);
     let realResult = null;
 
-    if(result != null) {
+    if (result != null) {
       try {
         realResult = parseFloat(eval(partida.jugadores[idJugador].operacion).toFixed(2)); //Preguntar a la Aina
-      } catch (e) {}
+      } catch (e) { }
       console.log(realResult);
       if (realResult == result) {
         correcto = true;
         disminuirVida(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
+        getOperation(idPartida, idJugador, partida.jugadores[idJugador].dificultad);
       }
     }
 
@@ -239,8 +246,7 @@ function sockets(io, partidas) {
 
   // Función para disminuir la vida de un jugador en una partida
   function disminuirVida(idPartida, idJugador) {
-
-    const partida = partidas.find((p) => p.idPartida == idPartida);
+    let partida = partidas.find((p) => p.idPartida == idPartida);
 
     switch (partida.jugadores[idJugador].dificultad) {
       case 1:
@@ -258,79 +264,96 @@ function sockets(io, partidas) {
       const vidaActual =
         idJugador == 1 ? partida.jugadores[1].vida : partida.jugadores[0].vida;
       const nuevaVida = Math.max(0, vidaActual - cantidad);
+      let sala = salas.find((sala) => sala.id_sala == partida.idSala);
 
       partida.jugadores[idJugador].vida = nuevaVida;
 
+      io.to(sala.owner).emit("getPartidas", partidas);
       for (let i = 0; i < partida.jugadores.length; i++) {
         io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
           vida: nuevaVida,
           jugador: idJugador == 1 ? 0 : 1,
         });
       }
-    }
-  }
 
-  function gestionarPartida(socket, user) {
-    joinPartida(user, socket);
-
-    let idPartidaFind = partidas.findIndex((partida) =>
-      partida.jugadores.some((jugador) => jugador.idSocket === socket.id)
-    );
-
-    if (partidas[idPartidaFind].jugadores.length == 2) {
-      for (let i = 0; i < partidas[idPartidaFind].jugadores.length; i++) {
-        io.to(partidas[idPartidaFind].jugadores[i].idSocket).emit(
-          "enviaJson",
-          partidas[idPartidaFind]
-        );
+      if (nuevaVida == 0) {
+        partida.status = "finish";
+        io.to(sala.owner).emit("getPartidas", partidas);
+        for (let i = 0; i < partida.jugadores.length; i++) {
+          io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
+        }
       }
     }
+  }
+}
 
-    const sala = salas.find(sala => sala.id_sala == user.id_sala);
-    io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
+function gestionarPartida(socket, user, io) {
+  let idPartida = joinPartida(user, socket);
+
+  let idPartidaIndex = partidas.findIndex((partida) => partida.idPartida == idPartida);
+
+  if (partidas[idPartidaIndex].jugadores.length == 2) {
+    for (let i = 0; i < partidas[idPartidaIndex].jugadores.length; i++) {
+      io.to(partidas[idPartidaIndex].jugadores[i].idSocket).emit(
+        "enviaJson",
+        partidas[idPartidaIndex]
+      );
+    }
   }
 
-  function joinPartida(user, socket) {
-    let jugador = {
-      idSocket: socket.id,
-      username: user.username,
-      vida: 100,
-      operacion: "",
-      resultadoJugador: null,
-      dificultad: 1,
-      avatar: user.avatar,
-    };
+  const sala = salas.find(sala => sala.id_sala == user.id_sala);
+  if(sala != undefined) {
+    io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
+  } else {
+    console.log("owner undefined");
+  }
+}
 
-    let partida = {
-      idPartida: partidas.length + 1,
-      idSala: user.id_sala,
-      jugadores: [jugador],
-    }
+function joinPartida(user, socket) {
+  let partidaId = partidas.length + 1;
+  let jugador = {
+    idSocket: socket.id,
+    username: user.username,
+    vida: 100,
+    operacion: "",
+    resultadoJugador: null,
+    dificultad: 1,
+    avatar: user.avatar,
+  };
 
-    if (partidas.length == 0) {
+  let partida = {
+    idPartida: partidas.length + 1,
+    idSala: user.id_sala,
+    jugadores: [jugador],
+    status: "active"
+  };
+
+  if (partidas.length == 0) {
+    partidas.push(partida);
+  } else {
+    if (partidas.every((partida) => partida.jugadores.length == 2)) {
       partidas.push(partida);
     } else {
-      if (partidas.every((partida) => partida.jugadores.length == 2)) {
-        partidas.push(partidas.push(partida));
-      } else {
-        let terminado = false;
+      let terminado = false;
 
-        for (let i = 0; i < partidas.length; i++) {
-          if (partidas[i].jugadores.length < 2) {
-            if (partidas[i].idSala == user.id_sala) {
-              partidas[i].jugadores.push(jugador);
-              i = partidas.length;
-              terminado = true;
-            }
+      for (let i = 0; i < partidas.length; i++) {
+        if (partidas[i].jugadores.length < 2) {
+          if (partidas[i].idSala == user.id_sala) {
+            partidas[i].jugadores.push(jugador);
+            i = partidas.length;
+            terminado = true;
+            partidaId = i;
           }
         }
+      }
 
-        if (terminado == false) {
-          partidas.push(partidas.push(partida));
-        }
+      if (terminado == false) {
+        partidas.push(partidas.push(partida));
       }
     }
   }
+
+  return partidaId;
 }
 
 module.exports = { sockets };

@@ -1,6 +1,7 @@
 <script>
 import { socket, state } from "@/services/socket";
 import { useAppStore } from "@/store/app";
+import PlayersVS from "@/components/PlayersVS.vue";
 
 export default {
     data() {
@@ -9,12 +10,21 @@ export default {
             owner: false,
             kick: false,
             store: useAppStore(),
+            playing: false,
         };
     },
     methods: {
         startGame() {
-            socket.emit("startGame", {});
-        }
+            this.owner = true;
+            socket.emit("startGame", this.store.usuari.classe);
+        },
+        leaveSala() {
+            socket.emit("leaveSala", {});
+            this.$router.push("/join");
+        },
+    },
+    components: {
+        PlayersVS,
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
@@ -34,19 +44,18 @@ export default {
                         }, 3000)
                     }
                 }
-                console.log(this.sala);
             }
         },
         'play': function (nuevoValor, antiguoValor) {
+            console.log(nuevoValor);
             if (nuevoValor == true && this.owner == false) {
+                console.log("He llegado aquí " + nuevoValor);
                 this.$router.push("/game");
             }
         },
         'partidas': function (nuevoValor, antiguoValor) {
-            console.log(nuevoValor);
         },
         'store.usuari.avatar': function () {
-            console.log(this.store.usuari.avatar);
             socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
         }
     },
@@ -59,14 +68,35 @@ export default {
             return state.play;
         },
         partidas() {
-            console.log("Partidas: " + state.partidas);
-            return state.partidas;
+            console.log(state.partidas);
+            let partidasFiltradas = state.partidas;
+
+            if (state.partidas) {
+                if (state.partidas.every(partida => partida.status == "finish")) {
+                    this.playing = false;
+                } else {
+                    this.playing = true;
+                }
+                partidasFiltradas = partidasFiltradas.filter(partida => partida.status != "finish");
+            } else {
+                this.playing = false;
+            }
+
+            if (partidasFiltradas == null) {
+                partidasFiltradas = [];
+            }
+            return partidasFiltradas;
         },
     },
     mounted() {
+        console.log(this.play);
         this.myId = socket.id;
         if (this.sala == null || this.sala == false) {
-            socket.emit("getSala", this.store.usuari.id);
+            socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+        } else {
+            if (this.sala.id_classe != this.store.usuari.classe) {
+                socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+            }
         }
     },
 };
@@ -74,30 +104,37 @@ export default {
 
 <template>
     <div class="full-container" v-if="sala && kick == false">
+        <v-btn @click="leaveSala()">Atras</v-btn>
         <h2 class="pt-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
 
-        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && play == false">COMENÇA</v-btn>
-        <div v-else-if="myId == sala.owner && play == true">S'estan jugant les partides</div>
+        <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
+        <div v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</div>
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
-                <div class="user-row">
-                    <div class="user-item" v-for="jugador in sala.jugadores">
-                        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' width="75px" />
-                        <h3>{{ jugador.nombre }}</h3>
+                <div>
+                    <h1>Waiting Players</h1>
+                    <div class="user-row">
+                        <div class="user-item" v-for="jugador in sala.jugadores">
+                            <v-img class="img-avatar"
+                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar'
+                                width="60px" />
+                            <h3>{{ jugador.nombre }}</h3>
+                        </div>
                     </div>
                 </div>
-                <!-- <div class="user-row" v-else>
-                    <div class="user-item" v-for="partida in partidas">
-                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                        <h3>{{ partida.jugadores[0].username }}</h3>
-                        <h3>VS</h3>
-                        <v-img class="img-avatar" src="../assets/avatar1.png" width="75px" />
-                        <h3>{{ partida.jugadores[1].username }}</h3>
+                <div class="user-row" style="margin-left: 100px;" v-if="partidas.length != 0">
+                    <div>
+                        <h1>Playing</h1>
+                        <div class="playing-container">
+                            <div class="partida-container" v-for="partida in partidas">
+                                <PlayersVS :partida="partida" />
+                            </div>
+                        </div>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
@@ -128,10 +165,16 @@ body {
 .user-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 .user-item {
-    margin: 5px 50px;
+    width: calc(33.33% - 10px);
+    margin: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
     text-align: center;
 }
 
@@ -203,5 +246,11 @@ body {
     100% {
         width: 100%;
     }
+}
+
+.playing-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 }
 </style>

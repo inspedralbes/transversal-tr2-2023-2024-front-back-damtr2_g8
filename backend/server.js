@@ -20,8 +20,6 @@ const {
 } = require("./endpointFuncions.js");
 const { Server } = require("socket.io");
 
-let partidas = [];
-
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -29,7 +27,7 @@ const io = new Server(server, {
   },
 });
 
-sockets(io, partidas);
+sockets(io);
 
 //PARTE DE LA BASE DE DATOS
 let conn = mysql.createPool({
