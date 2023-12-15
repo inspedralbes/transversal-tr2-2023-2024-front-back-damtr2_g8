@@ -16,6 +16,7 @@ function sockets(io) {
     });
 
     socket.on("createSala", (idClasse, idUser) => {
+      console.log(idClasse, " ", idUser);
       crearSala(idClasse, socket.id, idUser);
     });
 
