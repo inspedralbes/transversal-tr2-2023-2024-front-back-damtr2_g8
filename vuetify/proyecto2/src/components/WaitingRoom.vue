@@ -20,6 +20,9 @@ export default {
         },
         leaveSala() {
             socket.emit("leaveSala", {});
+            if (this.myId == this.sala.owner) {
+                
+            }
             this.$router.push("/join");
         },
     },

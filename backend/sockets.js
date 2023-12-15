@@ -41,12 +41,16 @@ function sockets(io) {
     });
 
     socket.on("leaveSala", () => {
-      desconectarJugador(socket);
+      desconectarJugador(socket.id);
     });
+
+    socket.on("leaveAllSala", () => {
+      desconectarTodosJugadores();
+    })
 
     socket.on("disconnect", () => {
       // borrarSala(socket.id);
-      desconectarJugador(socket)
+      desconectarJugador(socket.id)
     });
   });
 
@@ -61,10 +65,18 @@ function sockets(io) {
     // console.log(salas);
   }
 
+  function desconectarTodosJugadores() {
+    let sala = salas.find(sala => sala.owner == id);
+
+    for (let i = 0; i < sala.jugadores.length; i++) {
+      desconectarJugador(sala.jugadores[i].id_jugador);
+    }
+  }
+
   function desconectarJugador(socket) {
     for (let i = 0; i < salas.length; i++) {
       const sala = salas[i];
-      const indexJugador = sala.jugadores.findIndex(jugador => jugador.id_jugador == socket.id);
+      const indexJugador = sala.jugadores.findIndex(jugador => jugador.id_jugador == socket);
 
       if (indexJugador !== -1) {
         sala.jugadores.splice(indexJugador, 1);
@@ -302,7 +314,7 @@ function gestionarPartida(socket, user, io) {
   }
 
   const sala = salas.find(sala => sala.id_sala == user.id_sala);
-  if(sala != undefined) {
+  if (sala != undefined) {
     io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
   } else {
     console.log("owner undefined");
