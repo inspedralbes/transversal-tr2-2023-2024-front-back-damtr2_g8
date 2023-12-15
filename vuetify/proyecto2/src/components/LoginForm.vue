@@ -132,7 +132,7 @@ export default {
             let data = await login(this.usernameLogin);
 
             if (data.err) {
-                console.log(data.err);
+                window.alert("El usuario o la contraseña son incorrectos o no existen")
             } else {
                 let store = useAppStore();
                 store.usuari.nom = data.userData.nom;
