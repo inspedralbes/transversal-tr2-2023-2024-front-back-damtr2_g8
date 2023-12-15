@@ -108,30 +108,27 @@ export default {
         <h2 class="pt-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
-
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
-        <div v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</div>
+        <h2 v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</h2>
+        <div class="user-row" v-if="partidas.length != 0">
+            <div>
+                <div class="playing-container">
+                    <div class="partida-container" v-for="partida in partidas">
+                        <PlayersVS :partida="partida" />
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="user-col">
                 <div>
-                    <h1>Waiting Players</h1>
+                    <h1>Jugadors esperant</h1>
                     <div class="user-row">
                         <div class="user-item" v-for="jugador in sala.jugadores">
                             <v-img class="img-avatar"
-                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar'
-                                width="60px" />
+                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar'/>
                             <h3>{{ jugador.nombre }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-row" style="margin-left: 100px;" v-if="partidas.length != 0">
-                    <div>
-                        <h1>Playing</h1>
-                        <div class="playing-container">
-                            <div class="partida-container" v-for="partida in partidas">
-                                <PlayersVS :partida="partida" />
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -170,7 +167,7 @@ body {
 }
 
 .user-item {
-    width: calc(33.33% - 10px);
+    width: calc(20% - 10px);
     margin: 5px;
     margin-left: auto;
     margin-right: auto;
@@ -181,6 +178,7 @@ body {
 .img-avatar {
     display: block;
     margin: 0 auto;
+    width: 150px;
 }
 
 .full-container {
