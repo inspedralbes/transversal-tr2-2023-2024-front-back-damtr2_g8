@@ -11,6 +11,28 @@ function sendPartidasOwner(owner, id, io) {
   }
 }
 
+function crearPartida(user, idSocket) {
+  let jugador = {
+    idSocket: idSocket,
+    username: user.username,
+    vida: 100,
+    operacion: "",
+    resultadoJugador: null,
+    dificultad: 1,
+    avatar: user.avatar,
+  };
+
+  let partida = {
+    idPartida: countPartida,
+    idSala: user.id_sala,
+    jugadores: [jugador],
+    status: "active",
+  };
+
+  partidas.push(partida);
+  countPartida++;
+}
+
 function sockets(io) {
   io.on("connection", (socket) => {
     socket.on("conectarUsuario", (user) => {
@@ -383,30 +405,12 @@ function gestionarPartida(socket, user, io) {
 }
 
 function joinPartida(user, socket) {
-  let jugador = {
-    idSocket: socket.id,
-    username: user.username,
-    vida: 100,
-    operacion: "",
-    resultadoJugador: null,
-    dificultad: 1,
-    avatar: user.avatar,
-  };
-
-  let partida = {
-    idPartida: countPartida,
-    idSala: user.id_sala,
-    jugadores: [jugador],
-    status: "active",
-  };
-
+  let partidaId = countPartida;
   if (partidas.length == 0) {
-    partidas.push(partida);
-    countPartida++;
+    crearPartida(user, socket.id);
   } else {
     if (partidas.every((partida) => partida.jugadores.length == 2)) {
-      partidas.push(partida);
-      countPartida++;
+      crearPartida(user, socket.id);
     } else {
       let terminado = false;
 
@@ -422,8 +426,7 @@ function joinPartida(user, socket) {
       }
 
       if (terminado == false) {
-        partidas.push(partida);
-        countPartida++;
+        crearPartida(user, socket.id);
       }
     }
   }
