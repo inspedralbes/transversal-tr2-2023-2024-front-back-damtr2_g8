@@ -33,6 +33,10 @@ function sockets(io) {
       getOperation(idPartida, idJugador, dificultad);
     });
 
+    socket.on("changeDificulty", ({ idPartida, idJugador, dificultad }) => {
+      changeDificulty(idPartida, idJugador, dificultad);
+    });
+
     socket.on("solveOperation", ({ idPartida, idJugador, result }) => {
       solveOperation(idPartida, idJugador, result);
     });
@@ -229,11 +233,12 @@ function sockets(io) {
     const partida = partidas.find((p) => p.idPartida == idPartida);
     let realResult = null;
     let dificultad = partida.jugadores[idJugador].dificultad;
+    console.log(dificultad);
 
     if (result != null) {
       try {
         realResult = parseFloat(
-          eval(partida.jugadores[idJugador].operacion[dificultad - 1]).toFixed(
+          eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(
             2
           )
         ); //Preguntar a la Aina
@@ -249,6 +254,11 @@ function sockets(io) {
     io.to(partida.jugadores[idJugador].idSocket).emit("evaluacionResultado", {
       result: correcto,
     });
+  }
+
+  function changeDificulty(idJugador, idPartida, dificultad) {
+    const partida = partidas.find((p) => p.idPartida == idPartida);
+    partida.jugadores[idJugador].dificultad = dificultad;
   }
 
   function getOperation(idPartida, idJugador, dificultad) {
@@ -337,13 +347,13 @@ function sockets(io) {
     let partida = partidas.find((p) => p.idPartida == idPartida);
 
     switch (partida.jugadores[idJugador].dificultad) {
-      case 1:
+      case 0:
         cantidad = 5;
         break;
-      case 2:
+      case 1:
         cantidad = 10;
         break;
-      case 3:
+      case 2:
         cantidad = 15;
         break;
     }

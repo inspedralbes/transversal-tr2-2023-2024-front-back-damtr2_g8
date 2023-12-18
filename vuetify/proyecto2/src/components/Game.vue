@@ -14,12 +14,12 @@ export default {
       avatar: null,
       flip: true,
       hit: null,
-      dificultad: 0,
+      dificultad: 1,
       usuaris: {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
       },
-      playing: false
+      playing: false,
     };
   },
   mounted() {
@@ -27,6 +27,12 @@ export default {
     this.avatar = this.store.usuari.avatar;
     this.conectar();
     this.setPartida;
+
+    this.$watch("playing", (newPlayingValue) => {
+      if (newPlayingValue === true) {
+        this.getOperation(this.dificultad - 1);
+      }
+    });
 
     const self = this;
 
@@ -43,7 +49,7 @@ export default {
       socket.emit("getOperation", {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
-        dificultad: dificultad,
+        dificultad: dificultad - 1,
       });
       this.dificultad = dificultad - 1;
       this.result = "";
@@ -53,6 +59,14 @@ export default {
         username: this.store.usuari.nom,
         avatar: this.store.usuari.avatar,
         id_sala: state.sala,
+      });
+    },
+    changeDificulty(dificultad) {
+      this.dificultad = dificultad;
+      socket.emit("changeDificulty", {
+        idPartida: state.partida.idPartida,
+        idJugador: this.idPlayer,
+        dificultad: dificultad,
       });
     },
     solveOperation() {
@@ -80,7 +94,10 @@ export default {
         this.playing = true;
       }
 
-      if (this.playing == true && state.partida.idPartida == 0 || state.partida.status == "finish") {
+      if (
+        (this.playing == true && state.partida.idPartida == 0) ||
+        state.partida.status == "finish"
+      ) {
         this.$router.push("/sala");
       }
 
@@ -182,14 +199,22 @@ export default {
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
-              <span class="operation-label"><b>{{
-                setPartida.jugadores[idPlayer].operacion[dificultad] == ""
-                ? "Escull una dificultat"
-                : setPartida.jugadores[idPlayer].operacion[dificultad]
-              }}</b></span>
+              <span class="operation-label"
+                ><b>{{
+                  setPartida.jugadores[idPlayer].operacion[dificultad] == ""
+                    ? "Escull una dificultat"
+                    : setPartida.jugadores[idPlayer].operacion[dificultad]
+                }}</b></span
+              >
             </div>
             <div class="input-operation">
-              <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
+              <v-text-field
+                label="?"
+                variant="outlined"
+                id="result"
+                type="number"
+                v-model="result"
+              ></v-text-field>
               <v-btn class="btnSolve" @click="solveOperation()">Resolver</v-btn>
             </div>
           </div>
@@ -215,7 +240,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #7ed776"
-                  @click="dificultad = 1"
+                  @click="changeDificulty(0)"
                   >Facil</v-btn
                 >
               </v-col>
@@ -223,7 +248,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #768ed7"
-                  @click="dificultad = 2"
+                  @click="changeDificulty(1)"
                   >Medio</v-btn
                 >
               </v-col>
@@ -231,7 +256,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #d77676"
-                  @click="dificultad = 3"
+                  @click="changeDificulty(2)"
                   >Dificil</v-btn
                 >
               </v-col>
