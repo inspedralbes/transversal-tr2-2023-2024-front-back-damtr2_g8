@@ -19,6 +19,7 @@ export default {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
       },
+      playing: false
     };
   },
   mounted() {
@@ -74,7 +75,12 @@ export default {
         ) == 0
           ? 0
           : 1;
-      if (state.partida.status == "finish") {
+
+      if (state.partida.idPartida != 0) {
+        this.playing = true;
+      }
+
+      if (this.playing == true && state.partida.idPartida == 0 || state.partida.status == "finish") {
         this.$router.push("/sala");
       }
 
@@ -176,22 +182,14 @@ export default {
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
-              <span class="operation-label"
-                ><b>{{
-                  setPartida.jugadores[idPlayer].operacion[dificultad] == ""
-                    ? "Escull una dificultat"
-                    : setPartida.jugadores[idPlayer].operacion[dificultad]
-                }}</b></span
-              >
+              <span class="operation-label"><b>{{
+                setPartida.jugadores[idPlayer].operacion[dificultad] == ""
+                ? "Escull una dificultat"
+                : setPartida.jugadores[idPlayer].operacion[dificultad]
+              }}</b></span>
             </div>
             <div class="input-operation">
-              <v-text-field
-                label="?"
-                variant="outlined"
-                id="result"
-                type="number"
-                v-model="result"
-              ></v-text-field>
+              <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
               <v-btn class="btnSolve" @click="solveOperation()">Resolver</v-btn>
             </div>
           </div>
@@ -343,15 +341,19 @@ export default {
   0% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(3px);
   }
+
   50% {
     transform: translateX(-3px);
   }
+
   75% {
     transform: translateX(3px);
   }
+
   100% {
     transform: translateX(0);
   }
@@ -362,16 +364,20 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+
   25% {
     transform: translateY(20px) translateX(2px);
   }
+
   50% {
     opacity: 0.7;
     transform: translateY(30px) translateX(-2px);
   }
+
   75% {
     transform: translateY(40px) translateX(2px);
   }
+
   100% {
     opacity: 0;
     transform: translateY(50px) translateX(2px);
