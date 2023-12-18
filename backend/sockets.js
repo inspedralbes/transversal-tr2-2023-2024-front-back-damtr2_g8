@@ -1,5 +1,7 @@
 let salas = [];
 let partidas = [];
+let countSala = 0;
+let countPartida = 0;
 
 function sendPartidasOwner(owner, id, io) {
   const partidasSala = partidas.filter(partida => partida.idSala == id);
@@ -169,13 +171,14 @@ function sockets(io) {
       let sala = {
         owner_id: idUser,
         owner: socketId,
-        id_sala: salas.length + 1,
+        id_sala: countSala,
         id_classe: idClasse,
         jugadores: [],
         status: "waiting",
         codi: generateCodi(),
       };
 
+      countSala++;
       salas.push(sala);
       io.to(socketId).emit("join", sala);
     }
@@ -221,7 +224,7 @@ function sockets(io) {
             2
           )
         ); //Preguntar a la Aina
-      } catch (e) {}
+      } catch (e) { }
       console.log(realResult);
       if (realResult == result) {
         correcto = true;
@@ -380,7 +383,6 @@ function gestionarPartida(socket, user, io) {
 }
 
 function joinPartida(user, socket) {
-  let partidaId = partidas.length + 1;
   let jugador = {
     idSocket: socket.id,
     username: user.username,
@@ -392,7 +394,7 @@ function joinPartida(user, socket) {
   };
 
   let partida = {
-    idPartida: partidas.length + 1,
+    idPartida: countPartida,
     idSala: user.id_sala,
     jugadores: [jugador],
     status: "active",
@@ -400,9 +402,11 @@ function joinPartida(user, socket) {
 
   if (partidas.length == 0) {
     partidas.push(partida);
+    countPartida++;
   } else {
     if (partidas.every((partida) => partida.jugadores.length == 2)) {
       partidas.push(partida);
+      countPartida++;
     } else {
       let terminado = false;
 
@@ -418,7 +422,8 @@ function joinPartida(user, socket) {
       }
 
       if (terminado == false) {
-        partidas.push(partidas.push(partida));
+        partidas.push(partida);
+        countPartida++;
       }
     }
   }
