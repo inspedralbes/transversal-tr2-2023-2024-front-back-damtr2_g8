@@ -1,6 +1,14 @@
 let salas = [];
 let partidas = [];
 
+function sendPartidasOwner(owner, id, io) {
+  const partidasSala = partidas.filter(partida => partida.idSala == id);
+
+  if (partidasSala) {
+    io.to(owner).emit("getPartidas", partidasSala);
+  }
+}
+
 function sockets(io) {
   io.on("connection", (socket) => {
     socket.on("conectarUsuario", (user) => {
@@ -37,7 +45,7 @@ function sockets(io) {
         io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
       io.to(sala.owner).emit("startGame", sala.id_sala);
-      io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.id_sala == sala.id_sala));
+      sendPartidasOwner(sala.owner, sala.id_sala, io);
     });
 
     socket.on("leaveSala", () => {
@@ -79,6 +87,7 @@ function sockets(io) {
 
         io.to(sala.owner).emit("join", sala);
         for (let i = 0; i < sala.jugadores.length; i++) {
+          desconectarPartida(sala.jugadores[i].id_jugador, sala.owner, sala.id_sala);
           io.to(sala.jugadores[i].id_jugador).emit("join", sala);
         }
         return;
@@ -86,6 +95,17 @@ function sockets(io) {
     }
   }
 
+  function desconectarPartida(id, owner, id_sala) {
+    for (let i = 0; i < partidas.length; i++) {
+      let partida = partidas[i];
+      const indexPartida = partida.jugadores.findIndex(jugador => jugador.id_jugador == id);
+      partidas.splice(indexPartida, 1);
+
+      if (owner != null) {
+        sendPartidasOwner(owner, id_sala, io);
+      }
+    }
+  }
 
   function changeAvatar(idSala, idJugador, avatar) {
     if (salas.some(sala => sala.id_sala == idSala)) {
@@ -153,10 +173,7 @@ function sockets(io) {
       io.to(sala.owner).emit("join", sala);
       io.to(previusOwner).emit("join", sala);
 
-      const partidasSala = partidas.filter(partida => partida.idSala == sala.id_sala);
-      if (partidasSala) {
-        io.to(sala.owner).emit("getPartidas", partidasSala);
-      }
+      sendPartidasOwner(sala.owner, sala.id_sala, io);
     }
   }
 
@@ -201,7 +218,7 @@ function sockets(io) {
     let operators = generarOperatorRandom();
 
     for (let i = 0; i < operators.length; i++) {
-      numeros.push({numero: generarNumeros(operators[i])})
+      numeros.push({ numero: generarNumeros(operators[i]) })
     }
 
     for (let i = 0; i < operators.length; i++) {
@@ -321,7 +338,7 @@ function gestionarPartida(socket, user, io) {
 
   const sala = salas.find(sala => sala.id_sala == user.id_sala);
   if (sala != undefined) {
-    io.to(sala.owner).emit("getPartidas", partidas.filter(partida => partida.idSala == user.id_sala));
+    sendPartidasOwner(sala.owner, user.id_sala, io);
   } else {
     console.log("owner undefined");
   }
