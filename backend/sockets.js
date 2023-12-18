@@ -1,7 +1,7 @@
 let salas = [];
 let partidas = [];
 let countSala = 0;
-let countPartida = 0;
+let countPartida = 1;
 
 function sendPartidasOwner(owner, id, io) {
   const partidasSala = partidas.filter(partida => partida.idSala == id);
@@ -11,17 +11,7 @@ function sendPartidasOwner(owner, id, io) {
   }
 }
 
-function crearPartida(user, idSocket) {
-  let jugador = {
-    idSocket: idSocket,
-    username: user.username,
-    vida: 100,
-    operacion: "",
-    resultadoJugador: null,
-    dificultad: 1,
-    avatar: user.avatar,
-  };
-
+function crearPartida(user, jugador) {
   let partida = {
     idPartida: countPartida,
     idSala: user.id_sala,
@@ -111,11 +101,11 @@ function sockets(io) {
       }
 
       if (indexJugador !== -1) {
+        desconectarPartida(sala.jugadores[indexJugador].id_jugador, sala.owner, sala.id_sala);
         sala.jugadores.splice(indexJugador, 1);
 
         io.to(sala.owner).emit("join", sala);
         for (let i = 0; i < sala.jugadores.length; i++) {
-          desconectarPartida(sala.jugadores[i].id_jugador, sala.owner, sala.id_sala);
           io.to(sala.jugadores[i].id_jugador).emit("join", sala);
         }
         return;
@@ -126,8 +116,30 @@ function sockets(io) {
   function desconectarPartida(id, owner, id_sala) {
     for (let i = 0; i < partidas.length; i++) {
       let partida = partidas[i];
-      const indexPartida = partida.jugadores.findIndex(jugador => jugador.id_jugador == id);
-      partidas.splice(indexPartida, 1);
+      const jugador = partida.jugadores.find(jugador => jugador.idSocket == id);
+
+      if (jugador != undefined) {
+        console.log("Estoy borrando la partida");
+        partidas.splice(i, 1);
+      }
+
+      for (let i = 0; i < partida.jugadores.length; i++) {
+        io.to(partida.jugadores[i].idSocket).emit("enviaJson", {
+          idPartida: 0,
+          jugadores: [
+            {
+              username: "",
+              vida: 100,
+              operacion: "",
+            },
+            {
+              username: "",
+              vida: 100,
+              operacion: "",
+            },
+          ],
+        });
+      }
 
       if (owner != null) {
         sendPartidasOwner(owner, id_sala, io);
@@ -296,8 +308,6 @@ function sockets(io) {
       operacionEval = `${operators}${numeros[1]}`;
     }
 
-    //console.log(operacionesGuardar);
-
     partida.jugadores[idJugador].operacion = operacionEval;
 
     io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
@@ -383,9 +393,7 @@ function sockets(io) {
 function gestionarPartida(socket, user, io) {
   let idPartida = joinPartida(user, socket);
 
-  let idPartidaIndex = partidas.findIndex(
-    (partida) => partida.idPartida == idPartida
-  );
+  let idPartidaIndex = partidas.findIndex((partida) => partida.idPartida == idPartida);
 
   if (partidas[idPartidaIndex].jugadores.length == 2) {
     for (let i = 0; i < partidas[idPartidaIndex].jugadores.length; i++) {
@@ -406,11 +414,22 @@ function gestionarPartida(socket, user, io) {
 
 function joinPartida(user, socket) {
   let partidaId = countPartida;
+
+  let jugador = {
+    idSocket: socket.id,
+    username: user.username,
+    vida: 100,
+    operacion: "",
+    resultadoJugador: null,
+    dificultad: 1,
+    avatar: user.avatar,
+  };
+
   if (partidas.length == 0) {
-    crearPartida(user, socket.id);
+    crearPartida(user, jugador);
   } else {
     if (partidas.every((partida) => partida.jugadores.length == 2)) {
-      crearPartida(user, socket.id);
+      crearPartida(user, jugador);
     } else {
       let terminado = false;
 
@@ -418,15 +437,15 @@ function joinPartida(user, socket) {
         if (partidas[i].jugadores.length < 2) {
           if (partidas[i].idSala == user.id_sala) {
             partidas[i].jugadores.push(jugador);
+            partidaId = partidas[i].idPartida;
             i = partidas.length;
             terminado = true;
-            partidaId = i;
           }
         }
       }
 
       if (terminado == false) {
-        crearPartida(user, socket.id);
+        crearPartida(user, jugador);
       }
     }
   }
