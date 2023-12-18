@@ -186,8 +186,7 @@ export default {
                             </v-btn>
                         </template>
                     </v-snackbar>
-                    <v-sheet class="text-center mt-7 bg-transparent"> <router-link to="/classes">Crea una sala</router-link>
-                    </v-sheet>
+
                     <div class="btn-container">
                         <button class="btn" @click="onSubmit">JUGAR</button>
                     </div>

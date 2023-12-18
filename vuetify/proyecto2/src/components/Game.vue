@@ -80,7 +80,9 @@ export default {
         state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1
       ) {
         this.hit = 0;
-        const vidaRestada = state.partida.jugadores[this.idPlayer].vida - this.usuaris.vidaAnterior1;
+        const vidaRestada =
+          state.partida.jugadores[this.idPlayer].vida -
+          this.usuaris.vidaAnterior1;
         console.log(vidaRestada);
         this.usuaris.vidaAnterior1 =
           state.partida.jugadores[this.idPlayer].vida;
@@ -94,7 +96,9 @@ export default {
         this.usuaris.vidaAnterior2
       ) {
         this.hit = 1;
-        const vidaRestada = state.partida.jugadores[this.idPlayer == 1? 0 : 1].vida - this.usuaris.vidaAnterior2;
+        const vidaRestada =
+          state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida -
+          this.usuaris.vidaAnterior2;
         console.log(vidaRestada);
         this.usuaris.vidaAnterior2 =
           state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
@@ -115,7 +119,7 @@ export default {
       <v-row class="px-12 py-5" style="margin: 0" v-if="!emptyGameData">
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
-          <div class="PS-container" :class="{ shake: hit == 0 }">
+          <div class="PS-container" :class="{ shake: hit == 0, damageAnimation: hit == 0 }">
             <div
               class="PS"
               v-bind:style="{
@@ -129,7 +133,7 @@ export default {
         <v-col align="right">
           <h2 v-if="hit == 1"></h2>
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container" :class="{ shake: hit == 1 }" align="left">
+          <div class="PS-container" :class="{ shake: hit == 1, damageAnimation: hit == 1 }" align="left">
             <div
               class="PS"
               v-bind:style="{
@@ -150,8 +154,7 @@ export default {
               :src="
                 'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
                 setPartida.jugadores[idPlayer].avatar +
-                '&scale=80&flip=' +
-                flip
+                '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
               "
               alt="Avatar"
               style="width: 300px"
@@ -162,7 +165,11 @@ export default {
           <div class="input-container">
             <div class="operation-box">
               <span class="operation-label"
-                ><b>{{ setPartida.jugadores[idPlayer].operacion == "" ? "Escull una dificultat" : setPartida.jugadores[idPlayer].operacion }}</b></span
+                ><b>{{
+                  setPartida.jugadores[idPlayer].operacion == ""
+                    ? "Escull una dificultat"
+                    : setPartida.jugadores[idPlayer].operacion
+                }}</b></span
               >
             </div>
             <div class="input-operation">
@@ -183,8 +190,7 @@ export default {
               :src="
                 'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
                 setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
-                '&scale=80&flip=' +
-                flip
+                '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
               "
               alt="Avatar"
               style="width: 300px"
@@ -339,23 +345,23 @@ export default {
 }
 
 @keyframes damageAnimation {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      25% {
-        transform: translateY(20px) translateX(2px);
-      }
-      50% {
-        opacity: 0.7;
-        transform: translateY(30px) translateX(-2px);
-      }
-      75% {
-        transform: translateY(40px) translateX(2px);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(50px) translateX(2px);
-      }
-    }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(20px) translateX(2px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(30px) translateX(-2px);
+  }
+  75% {
+    transform: translateY(40px) translateX(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(50px) translateX(2px);
+  }
+}
 </style>
