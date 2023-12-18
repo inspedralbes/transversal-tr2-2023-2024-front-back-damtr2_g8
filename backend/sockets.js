@@ -2,7 +2,7 @@ let salas = [];
 let partidas = [];
 
 function sendPartidasOwner(owner, id, io) {
-  const partidasSala = partidas.filter(partida => partida.idSala == id);
+  const partidasSala = partidas.filter((partida) => partida.idSala == id);
 
   if (partidasSala) {
     io.to(owner).emit("getPartidas", partidasSala);
@@ -91,7 +91,11 @@ function sockets(io) {
 
         io.to(sala.owner).emit("join", sala);
         for (let i = 0; i < sala.jugadores.length; i++) {
-          desconectarPartida(sala.jugadores[i].id_jugador, sala.owner, sala.id_sala);
+          desconectarPartida(
+            sala.jugadores[i].id_jugador,
+            sala.owner,
+            sala.id_sala
+          );
           io.to(sala.jugadores[i].id_jugador).emit("join", sala);
         }
         return;
@@ -102,7 +106,9 @@ function sockets(io) {
   function desconectarPartida(id, owner, id_sala) {
     for (let i = 0; i < partidas.length; i++) {
       let partida = partidas[i];
-      const indexPartida = partida.jugadores.findIndex(jugador => jugador.id_jugador == id);
+      const indexPartida = partida.jugadores.findIndex(
+        (jugador) => jugador.id_jugador == id
+      );
       partidas.splice(indexPartida, 1);
 
       if (owner != null) {
@@ -254,9 +260,7 @@ function sockets(io) {
       );
     }
 
-    operators.map((o) => (o == "^" ? "**" : o));
-
-    console.log(operators);
+    operators = operators.map((o) => (o == "^" ? "**" : o));
 
     for (let i = 0; i < operators.length; i++) {
       operacionEval.push(
@@ -264,14 +268,20 @@ function sockets(io) {
       );
     }
 
-    if (operators == "√") {
-      operacionesGuardar = `${operators}${numeros[1]}`;
-      operators = "Math.sqrt(";
-      numeros[1] += ")";
-      operacionEval = `${operators}${numeros[1]}`;
+    if (operators.some((o) => o.includes("√"))) {
+      let numberIndex = operacionesGuardar.findIndex((o) => o.includes("√"));
+      operacionesGuardar = operacionesGuardar.map((o) =>
+        o.includes("√") ? (o = "√" + numeros[numberIndex].numero[1]) : o
+      );
+
+      operators[numberIndex] = "Math.sqrt(";
+      numeros[numberIndex].numero[1] += ")";
+      operacionEval[
+        numberIndex
+      ] = `${operators[numberIndex]}${numeros[numberIndex].numero[1]}`;
     }
 
-    //console.log(operacionesGuardar);
+    console.log(operacionesGuardar);
 
     partida.jugadores[idJugador].operacion = operacionEval;
 

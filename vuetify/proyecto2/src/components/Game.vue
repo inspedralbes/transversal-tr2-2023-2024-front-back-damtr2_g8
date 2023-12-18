@@ -123,7 +123,10 @@ export default {
       <v-row class="px-12 py-5" style="margin: 0" v-if="!emptyGameData">
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
-          <div class="PS-container" :class="{ shake: hit == 0, damageAnimation: hit == 0 }">
+          <div
+            class="PS-container"
+            :class="{ shake: hit == 0, damageAnimation: hit == 0 }"
+          >
             <div
               class="PS"
               v-bind:style="{
@@ -137,7 +140,11 @@ export default {
         <v-col align="right">
           <h2 v-if="hit == 1"></h2>
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div class="PS-container" :class="{ shake: hit == 1, damageAnimation: hit == 1 }" align="left">
+          <div
+            class="PS-container"
+            :class="{ shake: hit == 1, damageAnimation: hit == 1 }"
+            align="left"
+          >
             <div
               class="PS"
               v-bind:style="{
@@ -160,7 +167,7 @@ export default {
                 setPartida.jugadores[idPlayer].avatar +
                 '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
               "
-              :class="{ shake: hit == 0}"
+              :class="{ shake: hit == 0 }"
               alt="Avatar"
               style="width: 300px"
             />
@@ -197,7 +204,7 @@ export default {
                 setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
                 '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
               "
-              :class="{ shake: hit == 1}"
+              :class="{ shake: hit == 1 }"
               alt="Avatar"
               style="width: 300px"
             />
@@ -210,7 +217,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #7ed776"
-                  @click="getOperation(1)"
+                  @click="dificultad = 1"
                   >Facil</v-btn
                 >
               </v-col>
@@ -218,7 +225,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #768ed7"
-                  @click="getOperation(2)"
+                  @click="dificultad = 2"
                   >Medio</v-btn
                 >
               </v-col>
@@ -226,7 +233,7 @@ export default {
                 <v-btn
                   class="dificulty-option rounded-lg"
                   style="background-color: #d77676"
-                  @click="getOperation(3)"
+                  @click="dificultad = 3"
                   >Dificil</v-btn
                 >
               </v-col>
