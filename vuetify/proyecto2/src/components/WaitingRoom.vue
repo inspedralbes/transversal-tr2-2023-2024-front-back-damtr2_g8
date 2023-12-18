@@ -19,9 +19,10 @@ export default {
             socket.emit("startGame", this.store.usuari.classe);
         },
         leaveSala() {
-            socket.emit("leaveSala", {});
             if (this.myId == this.sala.owner) {
-                
+                socket.emit("leaveAllSala", {});
+            } else {
+                socket.emit("leaveSala", {});
             }
             this.$router.push("/join");
         },
@@ -92,7 +93,6 @@ export default {
         },
     },
     mounted() {
-        console.log(this.play);
         this.myId = socket.id;
         if (this.sala == null || this.sala == false) {
             socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
