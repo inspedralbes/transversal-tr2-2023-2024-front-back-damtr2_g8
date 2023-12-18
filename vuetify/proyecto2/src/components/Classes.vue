@@ -4,10 +4,10 @@
       <v-btn class="my-button create_class-button" prepend-icon="mdi-plus"
         @click="this.mostrarPopUp = !this.mostrarPopUp">Crear classe
 
-        <v-dialog v-model="this.mostrarPopUp" max-width="600">
+        <v-dialog v-model="this.mostrarPopUp" max-width="500">
           <v-card class="py-5">
-            <v-card-title class="text-center" style="padding-top: 8px; font-size: xx-large; font-weight: bolder">Crear
-              nova classe</v-card-title>
+            <v-card-title class="text-center" style="padding-top: 8px; padding-bottom: 25px; font-size: xx-large; font-weight: bolder">Crea
+              una nova classe</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="this.crearClase()">
                 <v-text-field label="Nom de la nova classe" variant="outlined" :rules="[
@@ -97,9 +97,9 @@
             </div>
 
             <v-card-text class="txtCard">
-              <b>Número d'usuaris: {{ classe.numeroUsuarios }}</b>
+              <b>Número d'alumnes: {{ classe.numeroUsuarios }}</b>
               <div>
-                <v-btn class="my-button" @click="createSala(classe.idClasse)">Uneix-te</v-btn>
+                <v-btn class="my-button" @click="createSala(classe.idClasse)">Comença</v-btn>
               </div>
             </v-card-text>
           </v-card>

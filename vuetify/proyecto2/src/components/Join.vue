@@ -191,8 +191,8 @@ export default {
                         <button class="btn" @click="onSubmit">JUGAR</button>
                     </div>
 
-                    <v-sheet clickable class="text-center mt-3 linkClasses " @click="$router.push('/classes')"><b>Crea una
-                            sala</b></v-sheet>
+                    <v-sheet clickable class="text-center mt-3 linkClasses font-weight-bold pt-3 text-decoration-underline" style="background-color: transparent;" @click="$router.push('/classes')">Crea una
+                            sala</v-sheet>
                 </form>
             </v-card>
         </div>

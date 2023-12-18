@@ -14,6 +14,7 @@ export default {
       avatar: null,
       flip: true,
       hit: null,
+      dificultad: 0,
       usuaris: {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
@@ -43,6 +44,7 @@ export default {
         idJugador: this.idPlayer,
         dificultad: dificultad,
       });
+      this.dificultad = dificultad - 1;
       this.result = "";
     },
     conectar() {
@@ -107,6 +109,8 @@ export default {
         }, 100);
       }
 
+      console.log(state.partida.jugadores);
+
       return state.partida;
     },
   },
@@ -156,6 +160,7 @@ export default {
                 setPartida.jugadores[idPlayer].avatar +
                 '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
               "
+              :class="{ shake: hit == 0}"
               alt="Avatar"
               style="width: 300px"
             />
@@ -166,9 +171,9 @@ export default {
             <div class="operation-box">
               <span class="operation-label"
                 ><b>{{
-                  setPartida.jugadores[idPlayer].operacion == ""
+                  setPartida.jugadores[idPlayer].operacion[dificultad] == ""
                     ? "Escull una dificultat"
-                    : setPartida.jugadores[idPlayer].operacion
+                    : setPartida.jugadores[idPlayer].operacion[dificultad]
                 }}</b></span
               >
             </div>
@@ -192,6 +197,7 @@ export default {
                 setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
                 '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
               "
+              :class="{ shake: hit == 1}"
               alt="Avatar"
               style="width: 300px"
             />

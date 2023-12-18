@@ -16,7 +16,6 @@ function sockets(io) {
     });
 
     socket.on("createSala", (idClasse, idUser) => {
-      console.log(idClasse, " ", idUser);
       crearSala(idClasse, socket.id, idUser);
     });
 
@@ -194,33 +193,52 @@ function sockets(io) {
 
   function getOperation(idPartida, idJugador, dificultad) {
     const partida = partidas.find((p) => p.idPartida == idPartida);
+    let numeros = [];
+    let operacionesGuardar = []
 
     partida.jugadores[idJugador].dificultad = dificultad;
 
-    operator = generarOperatorRandom(dificultad);
-    numeros = generarNumeros(operator);
+    let operators = generarOperatorRandom();
 
-    let operacionGuardar = `${numeros[0]}${operator}${numeros[1]}`;
-
-    if (operator == "^") {
-      operator = "**";
+    for (let i = 0; i < operators.length; i++) {
+      numeros.push({numero: generarNumeros(operators[i])})
     }
 
-    let operacionEval = `${numeros[0]}${operator}${numeros[1]}`;
+    for (let i = 0; i < operators.length; i++) {
+      operacionesGuardar.push(`${numeros[i].numero[0]}${operators[i]}${numeros[i].numero[1]}`);
+    }
 
-    if (operator == "√") {
-      operacionGuardar = `${operator}${numeros[1]}`;
-      operator = "Math.sqrt(";
+    if (operators == "^") {
+      operators = "**";
+    }
+
+    let operacionEval = `${numeros[0]}${operators}${numeros[1]}`;
+
+    if (operators == "√") {
+      operacionesGuardar = `${operators}${numeros[1]}`;
+      operators = "Math.sqrt(";
       numeros[1] += ")";
-      operacionEval = `${operator}${numeros[1]}`;
+      operacionEval = `${operators}${numeros[1]}`;
     }
+
+    console.log(operacionesGuardar);
 
     partida.jugadores[idJugador].operacion = operacionEval;
 
     io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
-      operacion: operacionGuardar,
+      operacion: operacionesGuardar,
       jugador: idJugador == 1 ? 1 : 0,
     });
+  }
+
+  function generarOperatorRandom() {
+    const operators = ["+", "-", "*", "/", "^", "√"];
+
+    return [
+      operators[Math.floor(Math.random() * 2)],
+      operators[Math.floor(Math.random() * 2) + 2],
+      operators[Math.floor(Math.random() * 2) + 4]
+    ]
   }
 
   function generarNumeros(operator) {
@@ -242,19 +260,6 @@ function sockets(io) {
     }
 
     return [num1, num2];
-  }
-
-  function generarOperatorRandom(dificultad) {
-    const operators = ["+", "-", "*", "/", "^", "√"];
-
-    if (dificultad == 1) {
-      return operators[Math.floor(Math.random() * 2)];
-    } else if (dificultad == 2) {
-      return operators[Math.floor(Math.random() * 2) + 2];
-    } else if (dificultad == 3) {
-      return operators[Math.floor(Math.random() * 2) + 4];
-    }
-
   }
 
   // Función para disminuir la vida de un jugador en una partida
