@@ -61,7 +61,6 @@ function sockets(io) {
         io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
       io.to(sala.owner).emit("startGame", sala.id_sala);
-      sendPartidasOwner(sala.owner, sala.id_sala, io);
     });
 
     socket.on("leaveSala", () => {
@@ -304,9 +303,6 @@ function sockets(io) {
       ] = `${operators[numberIndex]}${numeros[numberIndex].numero[1]}`;
     }
 
-    console.log(operacionesGuardar);
-    console.log("================================================");
-
     partida.jugadores[idJugador].operacion = operacionEval;
 
     io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
@@ -392,6 +388,7 @@ function sockets(io) {
       }
     }
   }
+
   function gestionarPartida(socket, user, io) {
     let idPartida = joinPartida(user, socket);
 
@@ -410,7 +407,9 @@ function sockets(io) {
 
     const sala = salas.find((sala) => sala.id_sala == user.id_sala);
     if (sala != undefined) {
-      sendPartidasOwner(sala.owner, user.id_sala, io);
+      if (partidas[idPartidaIndex].jugadores.length == 2) {
+        sendPartidasOwner(sala.owner, user.id_sala, io);
+      }
     } else {
       console.log("owner undefined");
     }
@@ -454,13 +453,10 @@ function sockets(io) {
       }
     }
 
-    console.log("ID partida: " + partidaId);
-    console.log("ID Jugador: " + socket.id);
-    console.log(partidas);
+
     let partidaIndex = partidas.findIndex((partida) => partida.idPartida == partidaId);
     let idJugador = partidas[partidaIndex].jugadores.findIndex((jugador) => jugador.idSocket == socket.id);
 
-    console.log("ID devuelta: " + idJugador);
     getOperation(partidaId, idJugador, 1);
 
     return partidaId;

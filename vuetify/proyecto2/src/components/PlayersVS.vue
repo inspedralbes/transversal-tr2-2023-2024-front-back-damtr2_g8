@@ -2,9 +2,6 @@
 export default {
   props: ["partida"],
   name: "PlayersVS",
-  mounted() {
-    console.log(this.partida);
-  },
 };
 </script>
 

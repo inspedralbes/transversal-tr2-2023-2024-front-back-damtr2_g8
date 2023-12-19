@@ -48,9 +48,7 @@ export default {
 } */
 
 .winner {
-    position: relative;
-    top: 15px;
-    left: 50%;
+    position: absolute;
     background-color: white;
     width: 50px;
     height: 30px;
