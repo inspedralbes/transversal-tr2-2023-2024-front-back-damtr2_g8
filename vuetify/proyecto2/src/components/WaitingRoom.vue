@@ -2,6 +2,7 @@
 import { socket, state } from "@/services/socket";
 import { useAppStore } from "@/store/app";
 import PlayersVS from "@/components/PlayersVS.vue";
+import Jugador from "@/components/Jugador.vue";
 
 export default {
     data() {
@@ -11,6 +12,7 @@ export default {
             kick: false,
             store: useAppStore(),
             playing: false,
+            partidasFiltradas: [],
         };
     },
     methods: {
@@ -29,6 +31,7 @@ export default {
     },
     components: {
         PlayersVS,
+        Jugador,
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
@@ -58,6 +61,9 @@ export default {
             }
         },
         'partidas': function (nuevoValor, antiguoValor) {
+            if (nuevoValor) {
+                let partidasFinalizadas = nuevoValor.filter(partida => partida.status == "finish");
+            }
         },
         'store.usuari.avatar': function () {
             socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
@@ -72,8 +78,7 @@ export default {
             return state.play;
         },
         partidas() {
-            console.log(state.partidas);
-            let partidasFiltradas = state.partidas;
+            let partidasFiltro = state.partidas;
 
             if (state.partidas) {
                 if (state.partidas.every(partida => partida.status == "finish")) {
@@ -81,15 +86,18 @@ export default {
                 } else {
                     this.playing = true;
                 }
-                partidasFiltradas = partidasFiltradas.filter(partida => partida.status != "finish");
+                partidasFiltro = partidasFiltro.filter(partida => partida.status != "finish");
             } else {
                 this.playing = false;
             }
 
-            if (partidasFiltradas == null) {
-                partidasFiltradas = [];
+            if (partidasFiltro == null) {
+                partidasFiltro = [];
             }
-            return partidasFiltradas;
+
+            this.partidasFiltradas = partidasFiltro;
+
+            return state.partidas;
         },
     },
     mounted() {
@@ -113,10 +121,10 @@ export default {
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
         <h2 v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</h2>
-        <div class="user-row" v-if="partidas.length != 0">
+        <div class="user-row" v-if="partidasFiltradas.length != 0">
             <div>
                 <div class="playing-container">
-                    <div class="partida-container" v-for="partida in partidas">
+                    <div class="partida-container" v-for="partida in partidasFiltradas">
                         <PlayersVS :partida="partida" />
                     </div>
                 </div>
@@ -129,9 +137,7 @@ export default {
                     <h1>Jugadors esperant</h1>
                     <div class="user-row">
                         <div class="user-item" v-for="jugador in sala.jugadores">
-                            <v-img class="img-avatar"
-                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar'/>
-                            <h3>{{ jugador.nombre }}</h3>
+                            <Jugador :jugador="jugador" />
                         </div>
                     </div>
                 </div>
@@ -176,12 +182,6 @@ body {
     margin-right: auto;
     box-sizing: border-box;
     text-align: center;
-}
-
-.img-avatar {
-    display: block;
-    margin: 0 auto;
-    width: 150px;
 }
 
 .full-container {
