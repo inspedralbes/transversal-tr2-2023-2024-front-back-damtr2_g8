@@ -244,7 +244,7 @@ function sockets(io) {
         realResult = parseFloat(
           eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
         ); //Preguntar a la Aina
-      } catch (e) {}
+      } catch (e) { }
       console.log(realResult);
       if (realResult == result) {
         correcto = true;
@@ -270,6 +270,7 @@ function sockets(io) {
     let operacionEval = [];
     let operators = generarOperatorRandom();
 
+    console.log(partida);
     partida.jugadores[idJugador].dificultad = dificultad;
 
     for (let i = 0; i < operators.length; i++) {
@@ -304,6 +305,7 @@ function sockets(io) {
     }
 
     console.log(operacionesGuardar);
+    console.log("================================================");
 
     partida.jugadores[idJugador].operacion = operacionEval;
 
@@ -452,13 +454,13 @@ function sockets(io) {
       }
     }
 
-    let idJugador =
-      partidas[user.id_sala].jugadores.findIndex(
-        (jugador) => jugador.idSocket == socket.id
-      ) == 0
-        ? 0
-        : 1;
+    console.log("ID partida: " + partidaId);
+    console.log("ID Jugador: " + socket.id);
+    console.log(partidas);
+    let partidaIndex = partidas.findIndex((partida) => partida.idPartida == partidaId);
+    let idJugador = partidas[partidaIndex].jugadores.findIndex((jugador) => jugador.idSocket == socket.id);
 
+    console.log("ID devuelta: " + idJugador);
     getOperation(partidaId, idJugador, 1);
 
     return partidaId;

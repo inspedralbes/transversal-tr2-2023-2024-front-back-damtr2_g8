@@ -19,24 +19,38 @@ export default {
 </script>
 
 <template>
-    <div class="winner">
-        <svg-icon type="mdi" :path="path"></svg-icon>
-        <p>1</p>
+    <div class="jugador">
+        <div class="winner" v-if="jugador.wins">
+            <svg-icon type="mdi" :path="path"></svg-icon>
+            <p>{{ jugador.wins }}</p>
+        </div>
+        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
+        <h3>{{ jugador.nombre }}</h3>
     </div>
-    <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
-    <h3>{{ jugador.nombre }}</h3>
 </template>
 
 <style>
+.jugador {
+    width: 130px;
+}
+
 .img-avatar {
     display: block;
     margin: 0 auto;
+    width: 100px;
 }
+
+/* Cuando sea md se hará esto (portatil) 
+@media only screen and (min-width: 960px) and (max-width: 1919px) {
+    .img-avatar {
+        width: 90px;
+    }
+} */
 
 .winner {
     position: relative;
     top: 15px;
-    left: 10px;
+    left: 50%;
     background-color: white;
     width: 50px;
     height: 30px;

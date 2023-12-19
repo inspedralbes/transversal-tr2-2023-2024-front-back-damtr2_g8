@@ -29,6 +29,24 @@ export default {
                 this.$router.push("/join");
             }
         },
+        filterWins() {
+            if (this.partidas) {
+                let partidasFinalizadas = this.partidas.filter(partida => partida.status == "finish");
+                if (partidasFinalizadas.length) {
+                    this.sala.jugadores.forEach(jugadorSala => {
+                        jugadorSala.wins = 0;
+                        partidasFinalizadas.forEach(partida => {
+                            for (let i = 0; i < partida.jugadores.length; i++) {
+                                if (partida.jugadores[i].idSocket == jugadorSala.id_jugador && partida.jugadores[i].vida != 0) {
+                                    jugadorSala.wins++;
+                                    i = partida.jugadores.length;
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+        }
     },
     components: {
         PlayersVS,
@@ -60,9 +78,6 @@ export default {
             }
         },
         'partidas': function (nuevoValor, antiguoValor) {
-            if (nuevoValor) {
-                let partidasFinalizadas = nuevoValor.filter(partida => partida.status == "finish");
-            }
         },
         'store.usuari.avatar': function () {
             socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
@@ -71,6 +86,7 @@ export default {
     computed: {
         sala() {
             this.myId = socket.id;
+            this.filterWins();
             return state.joinedSala;
         },
         play() {
@@ -95,6 +111,7 @@ export default {
             }
 
             this.partidasFiltradas = partidasFiltro;
+            this.filterWins();
 
             return state.partidas;
         },
@@ -114,12 +131,7 @@ export default {
 
 <template>
     <div class="full-container" v-if="sala && kick == false">
-        <v-btn
-            variant="tonal"
-            icon="mdi-arrow-left"
-            class="mt-5"
-            @click="leaveSala()"
-        ></v-btn>
+        <v-btn variant="tonal" icon="mdi-arrow-left" class="mt-5" @click="leaveSala()"></v-btn>
         <h2 class="pt-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
@@ -136,13 +148,11 @@ export default {
         </div>
         <div class="loader" v-else></div>
         <div class="footer">
-            <div class="user-col">
-                <div>
-                    <h1>Jugadors esperant</h1>
-                    <div class="user-row">
-                        <div class="user-item" v-for="jugador in sala.jugadores">
-                            <Jugador :jugador="jugador" />
-                        </div>
+            <div class="jugadors-container">
+                <h1>Jugadors esperant</h1>
+                <div class="jugadors-list">
+                    <div class="user-item" v-for="jugador in sala.jugadores">
+                        <Jugador :jugador="jugador" />
                     </div>
                 </div>
             </div>
@@ -184,29 +194,6 @@ body {
     margin-top: 20px;
 }
 
-.user-item {
-    width: calc(20% - 10px);
-    margin: 5px;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box;
-    text-align: center;
-
-}
-
-.img-avatar {
-    display: block;
-    margin: 0 auto;
-    width: 300px;
-}
-
-/* Cuando sea md se hará esto (portatil) */
-@media only screen and (min-width: 960px) and (max-width: 1919px) {
-    .img-avatar {
-        width: 200px;
-    }
-}
-
 .full-container {
     height: 100vh;
     background-color: #add8e6;
@@ -224,16 +211,24 @@ body {
     left: 0;
     bottom: 0;
     width: 100%;
-
-
 }
 
+.jugadors-container {
+    width: 70%;
+    margin: auto;
+}
+
+.jugadors-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 10px;
+}
 
 .my-button {
     display: flex;
     justify-content: center;
     align-items: center;
-
     margin-top: 10px;
     width: fit-content;
     border-radius: 2px;
