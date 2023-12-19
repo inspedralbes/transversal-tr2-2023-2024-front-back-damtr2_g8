@@ -194,6 +194,19 @@ body {
 
 }
 
+.img-avatar {
+    display: block;
+    margin: 0 auto;
+    width: 300px;
+}
+
+/* Cuando sea md se hará esto (portatil) */
+@media only screen and (min-width: 960px) and (max-width: 1919px) {
+    .img-avatar {
+        width: 200px;
+    }
+}
+
 .full-container {
     height: 100vh;
     background-color: #add8e6;
