@@ -163,7 +163,6 @@ function sockets(io) {
         salaEncontrada.jugadores.push({
           id_jugador: id,
           nombre: userInfo.username,
-          winner: false,
           id_avatar: userInfo.idAvatar,
         });
 
