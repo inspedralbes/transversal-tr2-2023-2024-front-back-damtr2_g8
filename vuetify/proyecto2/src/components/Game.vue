@@ -120,12 +120,9 @@ export default {
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div class="PS-container" :class="{ shake: hit == 0, damageAnimation: hit == 0 }">
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[idPlayer].vida + '%',
-              }"
-            >
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[idPlayer].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
             </div>
           </div>
@@ -134,12 +131,9 @@ export default {
           <h2 v-if="hit == 1"></h2>
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
           <div class="PS-container" :class="{ shake: hit == 1, damageAnimation: hit == 1 }" align="left">
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
-              }"
-            >
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
             </div>
           </div>
@@ -150,79 +144,49 @@ export default {
       <v-row>
         <v-col cols="3">
           <div>
-            <img
-              :src="
-                'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer].avatar +
-                '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
-              "
-              alt="Avatar"
-              style="width: 300px"
-            />
+            <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+              setPartida.jugadores[idPlayer].avatar +
+              '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
+              " alt="Avatar" style="width: 300px max-width:500px" />
           </div>
         </v-col>
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
-              <span class="operation-label"
-                ><b>{{
-                  setPartida.jugadores[idPlayer].operacion == ""
-                    ? "Escull una dificultat"
-                    : setPartida.jugadores[idPlayer].operacion
-                }}</b></span
-              >
+              <span class="operation-label"><b>{{
+                setPartida.jugadores[idPlayer].operacion == ""
+                ? "Escull una dificultat"
+                : setPartida.jugadores[idPlayer].operacion
+              }}</b></span>
             </div>
             <div class="input-operation">
-              <v-text-field
-                label="?"
-                variant="outlined"
-                id="result"
-                type="number"
-                v-model="result"
-              ></v-text-field>
+              <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
               <v-btn class="btnSolve" @click="solveOperation()">Resolver</v-btn>
             </div>
           </div>
         </v-col>
         <v-col cols="3">
           <div>
-            <img
-              :src="
-                'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
-                '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
-              "
-              alt="Avatar"
-              style="width: 300px"
-            />
+            <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+              setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
+              '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
+              " alt="Avatar" style="width: 300px max-width:500px" />
           </div>
         </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class="dificulty-container">
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #7ed776"
-                  @click="getOperation(1)"
-                  >Facil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #7ed776"
+                  @click="getOperation(1)">Facil</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #768ed7"
-                  @click="getOperation(2)"
-                  >Medio</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #768ed7"
+                  @click="getOperation(2)">Medio</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #d77676"
-                  @click="getOperation(3)"
-                  >Dificil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #d77676"
+                  @click="getOperation(3)">Dificil</v-btn>
               </v-col>
             </v-row>
           </v-sheet>
@@ -252,6 +216,12 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 40px;
+  right: 0;
 }
 
 .operation-box {
@@ -330,15 +300,19 @@ export default {
   0% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(3px);
   }
+
   50% {
     transform: translateX(-3px);
   }
+
   75% {
     transform: translateX(3px);
   }
+
   100% {
     transform: translateX(0);
   }
@@ -349,19 +323,22 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+
   25% {
     transform: translateY(20px) translateX(2px);
   }
+
   50% {
     opacity: 0.7;
     transform: translateY(30px) translateX(-2px);
   }
+
   75% {
     transform: translateY(40px) translateX(2px);
   }
+
   100% {
     opacity: 0;
     transform: translateY(50px) translateX(2px);
   }
-}
-</style>
+}</style>
