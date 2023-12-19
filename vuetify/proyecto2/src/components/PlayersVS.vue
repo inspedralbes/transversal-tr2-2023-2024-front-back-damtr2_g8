@@ -9,46 +9,32 @@ export default {
 </script>
 
 <template>
-  <div v-if="partida.jugadores != undefined">
+  <div class="container" v-if="partida.jugadores != undefined">
     <div class="player-container-mini">
-      <v-img
-        class="img-avatar-mini"
-        :src="
-          'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-          partida.jugadores[0]?.avatar
-        "
-      />
+      <v-img class="img-avatar-mini" :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+        partida.jugadores[0]?.avatar
+        " />
       <h4>
         {{ partida.jugadores[0]?.username }}
       </h4>
       <div class="PS-container-mini">
-        <div
-          class="PS-mini"
-          v-bind:style="{
-            width: partida.jugadores[0]?.vida + '%',
-          }"
-        ></div>
+        <div class="PS-mini" v-bind:style="{
+          width: partida.jugadores[0]?.vida + '%',
+        }"></div>
       </div>
     </div>
     <h2>VS</h2>
     <div class="player-container-mini">
-      <v-img
-        class="img-avatar-mini"
-        :src="
-          'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-          partida.jugadores[1]?.avatar
-        "
-      />
+      <v-img class="img-avatar-mini" :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+        partida.jugadores[1]?.avatar
+        " />
       <h4>
         {{ partida.jugadores[1]?.username }}
       </h4>
       <div class="PS-container-mini">
-        <div
-          class="PS-mini"
-          v-bind:style="{
-            width: partida.jugadores[1]?.vida + '%',
-          }"
-        ></div>
+        <div class="PS-mini" v-bind:style="{
+          width: partida.jugadores[1]?.vida + '%',
+        }"></div>
       </div>
     </div>
   </div>
@@ -57,6 +43,7 @@ export default {
 <style>
 .partida-container {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
@@ -69,6 +56,14 @@ export default {
   padding-left: 40px;
   padding-right: 40px;
 }
+
+
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
 
 .PS-container-mini {
   background: rgb(255, 92, 92);
