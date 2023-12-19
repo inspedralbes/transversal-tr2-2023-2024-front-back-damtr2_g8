@@ -104,8 +104,16 @@ export default {
 
 <template>
     <div class="full-container" v-if="sala && kick == false">
-        <v-btn @click="leaveSala()">Atras</v-btn>
-        <h2 class="pt-5">Sala d'espera</h2>
+        <div class="btnBack">
+            <button @click="leaveSala()"><svg width="50px" height="50px" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M4 10L3.29289 10.7071L2.58579 10L3.29289 9.29289L4 10ZM21 18C21 18.5523 20.5523 19 20 19C19.4477 19 19 18.5523 19 18L21 18ZM8.29289 15.7071L3.29289 10.7071L4.70711 9.29289L9.70711 14.2929L8.29289 15.7071ZM3.29289 9.29289L8.29289 4.29289L9.70711 5.70711L4.70711 10.7071L3.29289 9.29289ZM4 9L14 9L14 11L4 11L4 9ZM21 16L21 18L19 18L19 16L21 16ZM14 9C17.866 9 21 12.134 21 16L19 16C19 13.2386 16.7614 11 14 11L14 9Z"
+                        fill="#ffffff" />
+                </svg>
+            </button>
+        </div>
+        <h2 class="pt-5 my-5">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
@@ -127,7 +135,7 @@ export default {
                     <div class="user-row">
                         <div class="user-item" v-for="jugador in sala.jugadores">
                             <v-img class="img-avatar"
-                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar'/>
+                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
                             <h3>{{ jugador.nombre }}</h3>
                         </div>
                     </div>
@@ -152,6 +160,11 @@ body {
     flex-direction: column;
 }
 
+.btnBack {
+    position: absolute;
+    left: 0;
+    margin: 10px;
+}
 
 .user-col {
     display: flex;
@@ -173,12 +186,20 @@ body {
     margin-right: auto;
     box-sizing: border-box;
     text-align: center;
+
 }
 
 .img-avatar {
     display: block;
     margin: 0 auto;
     width: 150px;
+}
+
+/* Cuando sea md se hará esto (portatil) */
+@media only screen and (min-width: 960px) and (max-width: 1919px) {
+    .img-avatar {
+        width: 200px;
+    }
 }
 
 .full-container {
@@ -191,14 +212,14 @@ body {
 }
 
 .footer {
-
     background-color: #79b6c9;
     padding: 20px;
     box-sizing: border-box;
-    position: fixed;
+    position: absolute;
     left: 0;
     bottom: 0;
     width: 100%;
+
 
 }
 
