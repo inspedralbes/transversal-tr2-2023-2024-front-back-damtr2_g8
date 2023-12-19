@@ -192,7 +192,7 @@ body {
 .img-avatar {
     display: block;
     margin: 0 auto;
-    width: 150px;
+    width: 300px;
 }
 
 /* Cuando sea md se hará esto (portatil) */
