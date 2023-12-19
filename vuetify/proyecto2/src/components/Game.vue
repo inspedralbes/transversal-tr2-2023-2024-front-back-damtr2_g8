@@ -46,7 +46,7 @@ export default {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
         dificultad: dificultad,
-      }); //Provar dificultat hardcoded
+      });
     },
     solveOperation() {
       socket.emit("solveOperation", {

@@ -311,7 +311,7 @@ function sockets(io) {
       operacion: operacionesGuardar,
       jugador: idJugador == 1 ? 1 : 0,
     });
-  };
+  }
 
   function generarOperatorRandom() {
     const operators = ["+", "-", "*", "/", "^", "√"];
@@ -330,9 +330,14 @@ function sockets(io) {
     if (operator == "-" || operator == "+") {
       num1 = Math.floor(Math.random() * 90) + 10;
       num2 = Math.floor(Math.random() * 90) + 10;
-    } else if (operator == "*" || operator == "/") {
-      num1 = Math.floor(Math.random() * 19) + 5;
+    } else if (operator == "*") {
+      num1 = Math.floor(Math.random() * 5) + 5;
       num2 = Math.floor(Math.random() * (num1 / 2)) + 3;
+    } else if (operator == "/") {
+      do {
+        num1 = Math.floor(Math.random() * 19) + 5;
+        num2 = Math.floor(Math.random() * (num1 / 2)) + 3;
+      } while (num1 % num2 != 0);
     } else if (operator == "^") {
       num1 = Math.floor(Math.random() * 9) + 2;
       num2 = Math.floor(Math.random() * 3) + 2;
