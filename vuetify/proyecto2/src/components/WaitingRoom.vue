@@ -51,9 +51,7 @@ export default {
             }
         },
         'play': function (nuevoValor, antiguoValor) {
-            console.log(nuevoValor);
             if (nuevoValor == true && this.owner == false) {
-                console.log("He llegado aquí " + nuevoValor);
                 this.$router.push("/game");
             }
         },
@@ -72,9 +70,7 @@ export default {
             return state.play;
         },
         partidas() {
-            console.log(state.partidas);
             let partidasFiltradas = state.partidas;
-
             if (state.partidas) {
                 if (state.partidas.every(partida => partida.status == "finish")) {
                     this.playing = false;

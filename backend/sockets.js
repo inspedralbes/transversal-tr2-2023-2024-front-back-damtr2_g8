@@ -29,10 +29,6 @@ function sockets(io) {
       gestionarPartida(socket, user, io);
     });
 
-    socket.on("getOperation", ({ idPartida, idJugador, dificultad }) => {
-      getOperation(idPartida, idJugador, dificultad);
-    });
-
     socket.on("changeDificulty", ({ idPartida, idJugador, dificultad }) => {
       changeDificulty(idPartida, idJugador, dificultad);
     });
@@ -105,12 +101,20 @@ function sockets(io) {
       }
 
       if (indexJugador !== -1) {
-        desconectarPartida(sala.jugadores[indexJugador].id_jugador, sala.owner, sala.id_sala);
+        desconectarPartida(
+          sala.jugadores[indexJugador].id_jugador,
+          sala.owner,
+          sala.id_sala
+        );
         sala.jugadores.splice(indexJugador, 1);
 
         io.to(sala.owner).emit("join", sala);
         for (let i = 0; i < sala.jugadores.length; i++) {
-          desconectarPartida(sala.jugadores[i].id_jugador, sala.owner, sala.id_sala);
+          desconectarPartida(
+            sala.jugadores[i].id_jugador,
+            sala.owner,
+            sala.id_sala
+          );
           io.to(sala.jugadores[i].id_jugador).emit("join", sala);
         }
         return;
@@ -121,7 +125,9 @@ function sockets(io) {
   function desconectarPartida(id, owner, id_sala) {
     for (let i = 0; i < partidas.length; i++) {
       let partida = partidas[i];
-      const indexPartida = partida.jugadores.findIndex(jugador => jugador.id_jugador == id);
+      const indexPartida = partida.jugadores.findIndex(
+        (jugador) => jugador.id_jugador == id
+      );
       partidas.splice(indexPartida, 1);
 
       if (owner != null) {
@@ -233,16 +239,13 @@ function sockets(io) {
     const partida = partidas.find((p) => p.idPartida == idPartida);
     let realResult = null;
     let dificultad = partida.jugadores[idJugador].dificultad;
-    console.log(dificultad);
 
     if (result != null) {
       try {
         realResult = parseFloat(
-          eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(
-            2
-          )
+          eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
         ); //Preguntar a la Aina
-      } catch (e) { }
+      } catch (e) {}
       console.log(realResult);
       if (realResult == result) {
         correcto = true;
@@ -256,7 +259,7 @@ function sockets(io) {
     });
   }
 
-  function changeDificulty(idJugador, idPartida, dificultad) {
+  function changeDificulty(idPartida, idJugador, dificultad) {
     const partida = partidas.find((p) => p.idPartida == idPartida);
     partida.jugadores[idJugador].dificultad = dificultad;
   }
@@ -301,7 +304,7 @@ function sockets(io) {
       ] = `${operators[numberIndex]}${numeros[numberIndex].numero[1]}`;
     }
 
-    //console.log(operacionesGuardar);
+    console.log(operacionesGuardar);
 
     partida.jugadores[idJugador].operacion = operacionEval;
 
@@ -309,7 +312,7 @@ function sockets(io) {
       operacion: operacionesGuardar,
       jugador: idJugador == 1 ? 1 : 0,
     });
-  }
+  };
 
   function generarOperatorRandom() {
     const operators = ["+", "-", "*", "/", "^", "√"];
@@ -383,69 +386,79 @@ function sockets(io) {
       }
     }
   }
-}
+  function gestionarPartida(socket, user, io) {
+    let idPartida = joinPartida(user, socket);
 
-function gestionarPartida(socket, user, io) {
-  let idPartida = joinPartida(user, socket);
+    let idPartidaIndex = partidas.findIndex(
+      (partida) => partida.idPartida == idPartida
+    );
 
-  let idPartidaIndex = partidas.findIndex((partida) => partida.idPartida == idPartida);
+    if (partidas[idPartidaIndex].jugadores.length == 2) {
+      for (let i = 0; i < partidas[idPartidaIndex].jugadores.length; i++) {
+        io.to(partidas[idPartidaIndex].jugadores[i].idSocket).emit(
+          "enviaJson",
+          partidas[idPartidaIndex]
+        );
+      }
+    }
 
-  if (partidas[idPartidaIndex].jugadores.length == 2) {
-    for (let i = 0; i < partidas[idPartidaIndex].jugadores.length; i++) {
-      io.to(partidas[idPartidaIndex].jugadores[i].idSocket).emit(
-        "enviaJson",
-        partidas[idPartidaIndex]
-      );
+    const sala = salas.find((sala) => sala.id_sala == user.id_sala);
+    if (sala != undefined) {
+      sendPartidasOwner(sala.owner, user.id_sala, io);
+    } else {
+      console.log("owner undefined");
     }
   }
 
-  const sala = salas.find((sala) => sala.id_sala == user.id_sala);
-  if (sala != undefined) {
-    sendPartidasOwner(sala.owner, user.id_sala, io);
-  } else {
-    console.log("owner undefined");
-  }
-}
+  function joinPartida(user, socket) {
+    let partidaId = countPartida;
 
-function joinPartida(user, socket) {
-  let partidaId = countPartida;
+    let jugador = {
+      idSocket: socket.id,
+      username: user.username,
+      vida: 100,
+      operacion: "",
+      resultadoJugador: null,
+      dificultad: 1,
+      avatar: user.avatar,
+    };
 
-  let jugador = {
-    idSocket: socket.id,
-    username: user.username,
-    vida: 100,
-    operacion: "",
-    resultadoJugador: null,
-    dificultad: 1,
-    avatar: user.avatar,
-  };
-
-  if (partidas.length == 0) {
-    crearPartida(user, jugador);
-  } else {
-    if (partidas.every((partida) => partida.jugadores.length == 2)) {
+    if (partidas.length == 0) {
       crearPartida(user, jugador);
     } else {
-      let terminado = false;
+      if (partidas.every((partida) => partida.jugadores.length == 2)) {
+        crearPartida(user, jugador);
+      } else {
+        let terminado = false;
 
-      for (let i = 0; i < partidas.length; i++) {
-        if (partidas[i].jugadores.length < 2) {
-          if (partidas[i].idSala == user.id_sala) {
-            partidas[i].jugadores.push(jugador);
-            partidaId = partidas[i].idPartida;
-            i = partidas.length;
-            terminado = true;
+        for (let i = 0; i < partidas.length; i++) {
+          if (partidas[i].jugadores.length < 2) {
+            if (partidas[i].idSala == user.id_sala) {
+              partidas[i].jugadores.push(jugador);
+              partidaId = partidas[i].idPartida;
+              i = partidas.length;
+              terminado = true;
+            }
           }
         }
-      }
 
-      if (terminado == false) {
-        crearPartida(user, jugador);
+        if (terminado == false) {
+          crearPartida(user, jugador);
+        }
       }
     }
-  }
 
-  return partidaId;
+    let idJugador =
+      partidas[user.id_sala].jugadores.findIndex(
+        (jugador) => jugador.idSocket == socket.id
+      ) == 0
+        ? 0
+        : 1;
+
+    getOperation(partidaId, idJugador, 1);
+
+    return partidaId;
+  }
 }
 
 module.exports = { sockets };

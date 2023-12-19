@@ -8,11 +8,8 @@ export default {
   data() {
     return {
       result: null,
-      emptyGameData: true,
       store: useAppStore(),
       idPlayer: null,
-      avatar: null,
-      flip: true,
       hit: null,
       dificultad: 1,
       usuaris: {
@@ -24,18 +21,9 @@ export default {
   },
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
-    this.avatar = this.store.usuari.avatar;
     this.conectar();
     this.setPartida;
-
-    this.$watch("playing", (newPlayingValue) => {
-      if (newPlayingValue === true) {
-        this.getOperation(this.dificultad - 1);
-      }
-    });
-
     const self = this;
-
     document
       .getElementById("result")
       .addEventListener("keypress", function (e) {
@@ -45,15 +33,6 @@ export default {
       });
   },
   methods: {
-    getOperation(dificultad) {
-      socket.emit("getOperation", {
-        idPartida: state.partida.idPartida,
-        idJugador: this.idPlayer,
-        dificultad: dificultad - 1,
-      });
-      this.dificultad = dificultad - 1;
-      this.result = "";
-    },
     conectar() {
       socket.emit("conectarUsuario", {
         username: this.store.usuari.nom,
@@ -67,11 +46,9 @@ export default {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
         dificultad: dificultad,
-      });
+      }); //Provar dificultat hardcoded
     },
     solveOperation() {
-      console.log(this.result);
-
       socket.emit("solveOperation", {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
@@ -82,7 +59,6 @@ export default {
   },
   computed: {
     setPartida() {
-      this.emptyGameData = false;
       this.idPlayer =
         state.partida.jugadores.findIndex(
           (jugador) => jugador.idSocket == socket.id
@@ -131,9 +107,7 @@ export default {
           this.hit = null;
         }, 100);
       }
-
-      console.log(state.partida.jugadores);
-
+      console.log(state.partida);
       return state.partida;
     },
   },
@@ -141,9 +115,9 @@ export default {
 </script>
 
 <template>
-  <div class="game-container">
+  <div class="game-container" v-if="setPartida">
     <v-sheet class="content-wrap bg-transparent">
-      <v-row class="px-12 py-5" style="margin: 0" v-if="!emptyGameData">
+      <v-row class="px-12 py-5" style="margin: 0">
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
           <div
