@@ -165,6 +165,11 @@ body {
     flex-direction: column;
 }
 
+.btnBack {
+    position: absolute;
+    left: 0;
+    margin: 10px;
+}
 
 .user-col {
     display: flex;
@@ -186,6 +191,7 @@ body {
     margin-right: auto;
     box-sizing: border-box;
     text-align: center;
+
 }
 
 .full-container {
@@ -198,14 +204,14 @@ body {
 }
 
 .footer {
-
     background-color: #79b6c9;
     padding: 20px;
     box-sizing: border-box;
-    position: fixed;
+    position: absolute;
     left: 0;
     bottom: 0;
     width: 100%;
+
 
 }
 

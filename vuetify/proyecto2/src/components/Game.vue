@@ -157,7 +157,7 @@ export default {
     <div class="game-bar">
       <v-row>
         <v-col cols="3">
-          <div>
+          <div class="avatar-container no-bottom-lg ">
             <img
               :src="
                 'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
@@ -166,7 +166,7 @@ export default {
               "
               :class="{ shake: hit == 0 }"
               alt="Avatar"
-              style="width: 300px"
+              style="width: 300px; max-width:500px"
             />
           </div>
         </v-col>
@@ -182,19 +182,13 @@ export default {
               >
             </div>
             <div class="input-operation">
-              <v-text-field
-                label="?"
-                variant="outlined"
-                id="result"
-                type="number"
-                v-model="result"
-              ></v-text-field>
+              <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
               <v-btn class="btnSolve" @click="solveOperation()">Resolver</v-btn>
             </div>
           </div>
         </v-col>
         <v-col cols="3">
-          <div>
+          <div class="avatar-container no-bottom-lg ">
             <img
               :src="
                 'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
@@ -203,7 +197,7 @@ export default {
               "
               :class="{ shake: hit == 1 }"
               alt="Avatar"
-              style="width: 300px"
+              style="width: 300px; max-width:500px"
             />
           </div>
         </v-col>
@@ -243,6 +237,23 @@ export default {
 </template>
 
 <style scoped>
+.avatar-container {
+  display: flex;
+}
+
+@media only screen and (min-width: 960px) and (max-width: 1919px) {
+  .avatar-container {
+    position: relative;
+    bottom: 50px;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .no-bottom-lg {
+    margin-bottom: 0 !important;
+  }
+}
+
 .input-operation {
   width: 500px;
   margin-top: 20px;
@@ -262,6 +273,12 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 40px;
+  right: 0;
 }
 
 .operation-box {

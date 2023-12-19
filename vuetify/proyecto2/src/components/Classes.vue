@@ -196,7 +196,7 @@ export default {
 
 <style scoped>
 .full-container {
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   background-color: lightblue;
 }
