@@ -58,6 +58,5 @@ const debouncedUpdate = _.debounce((data) => {
 socket.on("getPartidas", (data) => {
   debouncedUpdate(data);
   num++;
-  console.log("He entrado: " + num);
 });
 
