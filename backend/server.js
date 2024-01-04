@@ -3,6 +3,9 @@ const express = require("express");
 const app = express();
 const port = 3751;
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const http = require("http");
@@ -157,6 +160,65 @@ app.post("/changePassword", async (req, res) => {
       res.send(err);
     });
 });
+
+//Recibir la imagen de la estadistica
+app.get("/getImatgeEstadistiques", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas()
+    .then(() => {
+      res.sendFile(path.resolve("stats/producteCantidad.png"));
+
+    })
+    .catch((err) => {
+      res.send(err);
+      //console.log(err);
+    });
+});
+
+function ejecutarEstadisticas() {
+
+  function createDirectory(dirName) {
+    if (!fs.existsSync(dirName)) {
+      fs.mkdir(path.join(__dirname, dirName), (err) => {
+      });
+    }
+  }
+
+  function createFile(fileName, write) {
+    if (!fs.existsSync(fileName)) {
+      fs.writeFile(fileName, write, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // console.log("S'ha escrit");
+        }
+      });
+    }
+  }
+
+  createDirectory("stats");
+  createFile("./stats/producteCantidad.png", "");
+
+  return new Promise((resolve, reject) => {
+
+    let pythonProcess = spawn("python3", ["./stats.py"]);
+
+    const handleData = (data) => {
+      resolve(data.toString());
+    };
+
+    const handleError = () => {
+      pythonProcess = spawn("python", ["./stats.py"]);
+      pythonProcess.stdout.on("data", handleData);
+    };
+
+    pythonProcess.on('exit', (code) => {
+      if (code !== 0) {
+        handleError();
+      }
+    });
+  });
+}
 
 server.listen(port, () => {
   console.log(`Server running at PORT: ${port}`);
