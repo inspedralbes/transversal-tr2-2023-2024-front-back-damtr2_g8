@@ -73,6 +73,7 @@ export default {
             }
         },
         'play': function (nuevoValor, antiguoValor) {
+            console.log(this.partidas);
             if (nuevoValor == true && this.owner == false) {
                 this.$router.push("/game");
             }

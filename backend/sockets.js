@@ -57,7 +57,11 @@ function sockets(io) {
       const sala = salas.find(
         (sala) => sala.owner == socket.id && sala.id_classe == idClasse
       );
-      for (let i = 0; i < sala.jugadores.length; i++) {
+      let totalPlayers = sala.jugadores.length;
+      if (sala.jugadores.length % 2 != 0) {
+        totalPlayers = totalPlayers - 1;
+      }
+      for (let i = 0; i < totalPlayers; i++) {
         io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
       }
       io.to(sala.owner).emit("startGame", sala.id_sala);
