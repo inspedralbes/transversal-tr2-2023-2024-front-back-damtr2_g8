@@ -242,7 +242,7 @@ function sockets(io) {
       try {
         realResult = parseFloat(
           eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
-        ); //Preguntar a la Aina
+        );
       } catch (e) { }
       console.log(realResult);
       if (realResult == result) {

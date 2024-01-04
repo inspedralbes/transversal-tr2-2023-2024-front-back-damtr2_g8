@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import mysql.connector
+from pymongo import MongoClient
 import seaborn as sns
 from datetime import datetime
 
@@ -12,6 +13,12 @@ def establecer_conexion():
         password='Projecte1',
         database='a22tomybanog_Projecte1'
     )
+    # client = MongoClient(
+    #     host='dam.inspedralbes.cat',
+    #     user='a22tomybanog_Projecte1',
+    #     password='Projecte1',
+    #     database='a22tomybanog_Projecte1'
+    # )
     return conexion, conexion.cursor()
 
 
