@@ -16,6 +16,7 @@ const {
   editClass,
   deleteClass,
   getClassByUserId,
+  joinClasse,
   getUserById,
   login,
   register,
@@ -117,6 +118,17 @@ app.get("/classeProfe/:idProfe", async (req, res) => {
     });
 });
 
+//ruta para unir a un alumno a una classe
+app.post("/joinClasse", async (req, res) => {
+  await joinClasse(req.body.idClasse, req.body.idUsu)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
 //ruta para obtener un usuario en concreto
 app.get("/usuario/:idUsuari", async (req, res) => {
   await getUserById(req.params.idUsuari)
@@ -165,13 +177,13 @@ app.post("/changePassword", async (req, res) => {
 app.get("/getImatgeEstadistiques", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   await ejecutarEstadisticas()
-    .then(() => {
+    .then((data) => {
       res.sendFile(path.resolve("stats/producteCantidad.png"));
-
+      console.log(data);
     })
     .catch((err) => {
       res.send(err);
-      //console.log(err);
+      console.log(err);
     });
 });
 
@@ -208,7 +220,7 @@ function ejecutarEstadisticas() {
     };
 
     const handleError = () => {
-      pythonProcess = spawn("python", ["./stats.py"]);
+      pythonProcess = spawn("python", ["./stats.py", JSON.stringify([1, 2, 3])]);
       pythonProcess.stdout.on("data", handleData);
     };
 

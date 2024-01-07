@@ -33,7 +33,7 @@ function editClass(nomClasse, idClasse) {
 
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
-        reject({err: err});
+        reject({ err: err });
       } else {
         resolve(result);
       }
@@ -49,7 +49,7 @@ function deleteClass(idClasse) {
 
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
-        reject({err: err});
+        reject({ err: err });
       } else {
         resolve(result);
       }
@@ -57,10 +57,45 @@ function deleteClass(idClasse) {
   });
 }
 
-function getClassByUserId(id) {
+function getClassByUserId(idPropietari) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM `CLASSE` WHERE idPropietari = ?";
-    const VALUES = [id];
+    const VALUES = [idPropietari];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        const promises = [];
+        for (let i = 0; i < result.length; i++) {
+          promises.push(
+            new Promise((resolve, reject) => {
+              const sql2 =
+                "SELECT CLASSE.idClasse, CLASSE.nomClasse, COUNT(PERTANY.idUsu) AS numeroUsuarios FROM CLASSE LEFT JOIN PERTANY ON CLASSE.idClasse = PERTANY.idClasse WHERE CLASSE.idPropietari = ? AND CLASSE.idClasse = ? GROUP BY CLASSE.idClasse, CLASSE.nomClasse;";
+              const VALUES2 = [idPropietari, result[i].idClasse];
+              conn.query(sql2, VALUES2, (err2, result2) => {
+                if (err2) {
+                  reject({ err: err2 });
+                } else {
+                  resolve(result2[0]);
+                }
+              });
+            })
+          );
+        }
+        Promise.all(promises)
+          .then((results) => {
+            resolve(results);
+          })
+          .catch((err) => reject({ err: err }));
+      }
+    });
+  });
+}
+
+function joinClasse(idClass, idUsu) {
+  return new Promise((resolve, reject) => {
+    const sql = "INSERT INTO `PERTANY` (`idClasse`, `idUsu`) VALUES (?, ?);";
+    const VALUES = [idClass, idUsu];
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
         reject({ err: err });
@@ -129,16 +164,16 @@ function register(email, password, nom, cognom) {
   });
 }
 
-function changePassword(email, password){
-  return new Promise((resolve, reject)=>{
-    if(!email || !password){
-      reject({err: "Both email and password are required"});
-    }else{
+function changePassword(email, password) {
+  return new Promise((resolve, reject) => {
+    if (!email || !password) {
+      reject({ err: "Both email and password are required" });
+    } else {
       let sql = "UPDATE USUARIS SET pass = ? WHERE correu = ?";
       let VALUES = [CryptoJS.MD5(password).toString(), email];
-      conn.query(sql, VALUES, (err, result)=>{
-        if(err) reject({err: err});
-        resolve({userData: result});
+      conn.query(sql, VALUES, (err, result) => {
+        if (err) reject({ err: err });
+        resolve({ userData: result });
       })
     }
   })
@@ -149,6 +184,7 @@ module.exports = {
   editClass,
   deleteClass,
   getClassByUserId,
+  joinClasse,
   getUserById,
   login,
   register,

@@ -161,7 +161,9 @@
             </div>
 
             <v-card-text class="txtCard">
-              <b>Número d'alumnes: {{ classe.numeroUsuarios }}</b>
+              <v-chip color="blue" append-icon="mdi-account-multiple">
+                {{ classe.numeroUsuarios }}
+              </v-chip>
               <div>
                 <v-btn class="my-button" @click="createSala(classe.idClasse)"
                   >Comença</v-btn
