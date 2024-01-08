@@ -161,11 +161,33 @@
             </div>
 
             <v-card-text class="txtCard">
-              <b>Número d'alumnes: {{ classe.numeroUsuarios }}</b>
+              <v-chip color="blue" append-icon="mdi-account-multiple">
+                {{ classe.numeroUsuarios }}
+              </v-chip>
               <div>
-                <v-btn class="my-button" @click="createSala(classe.idClasse)"
-                  >Comença</v-btn
-                >
+                <v-row >
+                  <v-col>
+                    <v-sheet>
+                      <v-btn
+                        block
+                        class="my-button"
+                        @click="createSala(classe.idClasse)"
+                        >Comença</v-btn
+                      >
+                    </v-sheet>
+                  </v-col>
+                  <v-col>
+                    <v-sheet>
+                      <v-select
+                        label="Dificultat predeterminada" density="compact" class="mt-2"
+                        :items="[
+                          'Crea una dificultat',
+                        ]"
+                        variant="outlined"
+                      ></v-select>
+                    </v-sheet>
+                  </v-col>
+                </v-row>
               </div>
             </v-card-text>
           </v-card>
@@ -328,9 +350,8 @@ export default {
 }
 
 .create_class-button {
-  margin-top: 17px;
+  margin-top: 25px;
   margin-left: 2.9dvw;
-  padding: 30;
   border-radius: 20px;
 }
 </style>

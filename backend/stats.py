@@ -1,57 +1,47 @@
 import pandas as pd
+import sys
+import json
 import matplotlib.pyplot as plt
-import mysql.connector
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+
 import seaborn as sns
 from datetime import datetime
 
 def establecer_conexion():
-    """Establece la conexión a la base de datos y devuelve el cursor."""
-    conexion = mysql.connector.connect(
-        host='dam.inspedralbes.cat',
-        user='a22tomybanog_Projecte1',
-        password='Projecte1',
-        database='a22tomybanog_Projecte1'
-    )
-    # client = MongoClient(
-    #     host='dam.inspedralbes.cat',
-    #     user='a22tomybanog_Projecte1',
-    #     password='Projecte1',
-    #     database='a22tomybanog_Projecte1'
-    # )
-    return conexion, conexion.cursor()
+    uri = "mongodb+srv://a21marsalval_bd:ToniNoRobes2021@tr2.eatpoha.mongodb.net/?retryWrites=true&w=majority"
+
+    client = MongoClient(uri, server_api=ServerApi('1'))
+    # Send a ping to confirm a successful connection
+    try:
+        client.mathbattle.command('ping')
+    except Exception as e:
+        print(e)
+    return client
 
 
-def obtener_productos_ordenados_cantidad(cursor):
-    """Obtiene los productos ordenados por cantidad."""
-    consulta = """
-    SELECT id, nom, quantitat
-    FROM Producte
-    ORDER BY quantitat ASC
-   
-    """
-    cursor.execute(consulta)
-    #si pongo fetchone coge solo el primero
-    return cursor.fetchall()
+def obtener_respuestas_correctas_por_usuario_y_dificultad(cursor):
+    print()
+    pipeline = [
+        {"$match": {"id_usuari": {"$in": json.loads(sys.argv[1])}}},
+        {"$group": {"_id": "$difficulty", "count": {"$sum": 1}}}
+    ]
+    return list(cursor.mathbattle.correctAnswers.aggregate(pipeline))
 
-def graficoCantidad(df, filename):
-    """Crea un gráfico de barras horizontales a partir de un DataFrame."""
+def graficar_respuestas_correctas_por_dificultad(df, filename):
     plt.figure(figsize=(10, 6), facecolor='#f3f1ff')  # Establecer el color de fondo de toda la figura
     
     # Crear un gráfico de barras horizontales con puntas redondas y color personalizado
-    plt.barh(df['nom'], df['quantitat'], color='#9094e9', capstyle='round')
+    plt.pie(df['count'], labels=df['_id'], autopct='%1.1f%%', colors=['#d77676', '#7ed776', '#768ed7'], wedgeprops={'edgecolor': 'black', 'linewidth': 2, 'linestyle': 'solid', 'antialiased': True})
     
     # Obtener la fecha actual
     fecha_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
    
-    sns.set(style="whitegrid", rc={'axes.facecolor': '#f3f1ff'})
    
     # Utilizar la fecha actual en el título del gráfico
-    plt.title(f'Unitats restants productes ({fecha_actual})', fontsize=16)
+    plt.title(f'Dificultat de les respostes encertades ({fecha_actual})', fontsize=16)
    
     plt.yticks(fontsize=12)
-    plt.xlabel('Quantitat', fontsize=14)
-    plt.ylabel('Productes', fontsize=14)
     
     # Eliminar la cuadrícula horizontal
     plt.grid(axis='x', linestyle='--', alpha=0.7)
@@ -60,14 +50,7 @@ def graficoCantidad(df, filename):
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
-    """Crea un gráfico de barras horizontales a partir de un DataFrame."""
-   
-    plt.figure(figsize=(10, 6), facecolor='#f3f1ff')
     
-    plt.barh("", "", color='#9094e9', capstyle='round')
-
-    
-
     # Obtener la fecha actual
     fecha_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -87,15 +70,14 @@ def graficoCantidad(df, filename):
     plt.close()
 
 def CantidaRestante():
-    conexion, cursor = establecer_conexion()
-    resultados = obtener_productos_ordenados_cantidad(cursor)
-    print(resultados)
-    conexion.close()
+    conexion = establecer_conexion()
+    resultados = obtener_respuestas_correctas_por_usuario_y_dificultad(conexion)
+    # print(resultados)
 
-
-    df = pd.DataFrame(resultados, columns=['id', 'nom', 'quantitat'])
-    filename = './stats/producteCantidad.png'
-    graficoCantidad(df,filename)
+    df = pd.DataFrame(resultados, columns=['_id', 'count'])
+    df = df.sort_values('_id')
+    filename = './stats/dificultatRespostes.png'
+    graficar_respuestas_correctas_por_dificultad(df,filename)
 
 def main():
     CantidaRestante()
