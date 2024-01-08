@@ -247,11 +247,11 @@ export default {
 
             });
             if (!response.ok) {
-                window.alert("Error al cambiar la contraseña");
+                window.alert("Error: los datos no se han podido guardar");
                 this.dialog = false;
                 console.log(response);
             } else {
-                window.alert("Contraseña cambiada correctamente");
+                window.alert("Datos guardados correctamente");
                 this.dialog = false;
             }
         }

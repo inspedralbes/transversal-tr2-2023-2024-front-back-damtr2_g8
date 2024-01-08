@@ -14,6 +14,8 @@ export default {
       avatar: null,
       flip: true,
       hit: null,
+      mouthPlayer1: "teethSmile",
+      mouthPlayer2: "teethSmile",
       usuaris: {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
@@ -61,7 +63,7 @@ export default {
         result: this.result,
       });
       this.result = "";
-    },
+    }
   },
   computed: {
     setPartida() {
@@ -76,32 +78,32 @@ export default {
         this.$router.push("/sala");
       }
 
-      if (
-        state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1
-      ) {
+      if (state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1) {
         this.hit = 0;
-        const vidaRestada =
-          state.partida.jugadores[this.idPlayer].vida -
-          this.usuaris.vidaAnterior1;
+        const vidaRestada = state.partida.jugadores[this.idPlayer].vida - this.usuaris.vidaAnterior1;
         console.log(vidaRestada);
-        this.usuaris.vidaAnterior1 =
-          state.partida.jugadores[this.idPlayer].vida;
+        this.usuaris.vidaAnterior1 = state.partida.jugadores[this.idPlayer].vida;
         setTimeout(() => {
           this.hit = null;
         }, 100);
+
+        if(this.idPlayer == 0) {
+          this.mouthPlayer1="unimpressed";
+          this.mouthPlayer2="teethSmile"
+
+        }else{
+          this.mouthPlayer1="teethSmile"
+          this.mouthPlayer2="unimpressed";
+        }
+        console.log("Mouth: ",this.mouth);
       }
 
-      if (
-        state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida <
-        this.usuaris.vidaAnterior2
-      ) {
+      if (state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida < this.usuaris.vidaAnterior2) {
         this.hit = 1;
-        const vidaRestada =
-          state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida -
-          this.usuaris.vidaAnterior2;
+        const vidaRestada = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida - this.usuaris.vidaAnterior2;
         console.log(vidaRestada);
-        this.usuaris.vidaAnterior2 =
-          state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
+        this.usuaris.vidaAnterior2 = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
+        //this.mouth = "unimpressed";
         setTimeout(() => {
           this.hit = null;
         }, 100);
@@ -146,7 +148,7 @@ export default {
           <div class="avatar-container no-bottom-lg ">
             <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
               setPartida.jugadores[idPlayer].avatar +
-              '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
+              '&scale=80&flip=false&eyes=angry&mouth='+mouthPlayer1
               " alt="Avatar" style="width: 300px max-width:500px" />
           </div>
         </v-col>
@@ -169,7 +171,7 @@ export default {
           <div class="avatar-container no-bottom-lg ">
             <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
               setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
-              '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
+              '&scale=80&flip=true&eyes=angry&mouth='+mouthPlayer2
               " alt="Avatar" style="width: 300px max-width:500px" />
           </div>
         </v-col>
