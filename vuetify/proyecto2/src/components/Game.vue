@@ -68,12 +68,7 @@ export default {
   computed: {
     setPartida() {
       this.emptyGameData = false;
-      this.idPlayer =
-        state.partida.jugadores.findIndex(
-          (jugador) => jugador.idSocket == socket.id
-        ) == 0
-          ? 0
-          : 1;
+      this.idPlayer = state.partida.jugadores.findIndex((jugador) => jugador.idSocket == socket.id) == 0 ? 0 : 1;
       if (state.partida.status == "finish") {
         this.$router.push("/sala");
       }
@@ -87,13 +82,10 @@ export default {
           this.hit = null;
         }, 100);
 
-        if(this.idPlayer == 0) {
-          this.mouthPlayer1="unimpressed";
-          this.mouthPlayer2="teethSmile"
+        this.mouthPlayer1="unimpressed";
 
-        }else{
-          this.mouthPlayer1="teethSmile"
-          this.mouthPlayer2="unimpressed";
+        if(this.usuaris.vidaAnterior1 <= 10){
+          this.mouthPlayer1="unimpressed&skinColor=F44336";
         }
         console.log("Mouth: ",this.mouth);
       }
@@ -104,6 +96,12 @@ export default {
         console.log(vidaRestada);
         this.usuaris.vidaAnterior2 = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
         //this.mouth = "unimpressed";
+        this.mouthPlayer2="unimpressed";
+
+        if(this.usuaris.vidaAnterior2 <= 10){
+          this.mouthPlayer2="unimpressed&skinColor=F44336";
+        }
+
         setTimeout(() => {
           this.hit = null;
         }, 100);
