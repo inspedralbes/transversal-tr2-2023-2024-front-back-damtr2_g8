@@ -53,7 +53,6 @@ socket.on("startGame", (startInfo) => {
 });
 
 socket.on("getPartidas", (data) => {
-  console.log(data);
   state.partidas = data;
 });
 

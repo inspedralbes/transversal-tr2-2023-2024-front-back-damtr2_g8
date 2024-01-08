@@ -35,7 +35,6 @@ export default {
         },
         filterWins(partidas) {
             if (partidas) {
-                console.log(partidas);
                 let partidasFinalizadas = partidas.filter(partida => partida.status == "finish");
                 if (partidasFinalizadas.length && this.sala != undefined) {
                     this.sala.jugadores.forEach(jugadorSala => {
@@ -91,7 +90,6 @@ export default {
     computed: {
         sala() {
             this.myId = socket.id;
-            console.log(state.joinedSala);
             return state.joinedSala;
         },
         play() {
