@@ -17,11 +17,18 @@ let partidas = [];
 let countSala = 0;
 let countPartida = 1;
 
-function sendPartidasOwner(owner, id, io) {
+function sendPartidas(owner, id, io) {
   const partidasSala = partidas.filter((partida) => partida.idSala == id);
 
   if (partidasSala) {
+    console.log(partidasSala);
     io.to(owner).emit("getPartidas", partidasSala);
+    let sala = salas.filter((sala) => sala.id_sala == id);
+    if (sala[0]) {
+      for (let i = 0; i < sala[0].jugadores.length; i++) {
+        io.to(sala[0].jugadores[i].id_jugador).emit("getPartidas", partidasSala);
+      }
+    }
   }
 }
 
@@ -70,18 +77,25 @@ function sockets(io) {
       joinSala(userInfo, socket.id);
     });
 
-    socket.on("startGame", (idClasse) => {
+    socket.on("startGame", (startGameInfo) => {
       const sala = salas.find(
-        (sala) => sala.owner == socket.id && sala.id_classe == idClasse
+        (sala) => sala.owner == socket.id && sala.id_classe == startGameInfo.idClasse
       );
+
       let totalPlayers = sala.jugadores.length;
-      if (sala.jugadores.length % 2 != 0) {
+      if (sala.jugadores.length % 2 != 0 && startGameInfo.playProf == false) {
         totalPlayers = totalPlayers - 1;
       }
+
       for (let i = 0; i < totalPlayers; i++) {
-        io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
+        io.to(sala.jugadores[i].id_jugador).emit("startGame", { idSala: sala.id_sala, play: true });
       }
-      io.to(sala.owner).emit("startGame", sala.id_sala);
+
+      if (sala.jugadores.length % 2 != 0 && startGameInfo.playProf == true) {
+        io.to(sala.owner).emit("startGame", { idSala: sala.id_sala, play: true });
+      } else {
+        io.to(sala.owner).emit("startGame", { idSala: sala.id_sala, play: false });
+      }
     });
 
     socket.on("leaveSala", () => {
@@ -95,6 +109,7 @@ function sockets(io) {
     socket.on("disconnect", () => {
       desconectarJugador(socket.id);
     });
+
   });
 
   function desconectarTodosJugadores(id) {
@@ -151,7 +166,7 @@ function sockets(io) {
       partidas.splice(indexPartida, 1);
 
       if (owner != null) {
-        sendPartidasOwner(owner, id_sala, io);
+        sendPartidas(owner, id_sala, io);
       }
     }
   }
@@ -192,6 +207,10 @@ function sockets(io) {
             "join",
             salaEncontrada
           );
+        }
+        const partidasSala = partidas.filter((partida) => partida.idSala == salaEncontrada.id_sala);
+        if (partidasSala) {
+          io.to(id).emit("getPartidas", partidasSala);
         }
       } else {
         io.to(id).emit("join", false);
@@ -240,7 +259,9 @@ function sockets(io) {
       io.to(sala.owner).emit("join", sala);
       io.to(previusOwner).emit("join", sala);
 
-      sendPartidasOwner(sala.owner, sala.id_sala, io);
+      sendPartidas(sala.owner, sala.id_sala, io);
+    } else {
+      io.to(idSocket).emit("join", false);
     }
   }
 
@@ -406,26 +427,26 @@ function sockets(io) {
     }
 
     if (partida) {
-      const vidaActual =
-        idJugador == 1 ? partida.jugadores[1].vida : partida.jugadores[0].vida;
+      const vidaActual = idJugador == 1 ? partida.jugadores[0].vida : partida.jugadores[1].vida;
       const nuevaVida = Math.max(0, vidaActual - cantidad);
       let sala = salas.find((sala) => sala.id_sala == partida.idSala);
 
-      partida.jugadores[idJugador].vida = nuevaVida;
-
-      io.to(sala.owner).emit("getPartidas", partidas);
-      for (let i = 0; i < partida.jugadores.length; i++) {
-        io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
-          vida: nuevaVida,
-          jugador: idJugador == 1 ? 0 : 1,
-        });
-      }
-
-      if (nuevaVida == 0) {
-        partida.status = "finish";
-        io.to(sala.owner).emit("getPartidas", partidas);
+      partida.jugadores[idJugador == 1 ? 0 : 1].vida = nuevaVida;
+      if (sala) {
+        sendPartidas(sala.owner, sala.id_sala, io);
         for (let i = 0; i < partida.jugadores.length; i++) {
-          io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
+          io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
+            vida: nuevaVida,
+            jugador: idJugador == 1 ? 0 : 1,
+          });
+        }
+
+        if (nuevaVida == 0) {
+          partida.status = "finish";
+          sendPartidas(sala.owner, sala.id_sala, io);
+          for (let i = 0; i < partida.jugadores.length; i++) {
+            io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
+          }
         }
       }
     }
@@ -450,7 +471,7 @@ function sockets(io) {
     const sala = salas.find((sala) => sala.id_sala == user.id_sala);
     if (sala != undefined) {
       if (partidas[idPartidaIndex].jugadores.length == 2) {
-        sendPartidasOwner(sala.owner, user.id_sala, io);
+        sendPartidas(sala.owner, user.id_sala, io);
       }
     } else {
       console.log("owner undefined");

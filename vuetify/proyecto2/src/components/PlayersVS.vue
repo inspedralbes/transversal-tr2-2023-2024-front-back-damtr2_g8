@@ -6,9 +6,9 @@ export default {
 </script>
 
 <template>
-  <div class="container" v-if="partida.jugadores != undefined">
+  <div class="container" v-if="partida.jugadores != undefined" :key="partida.idPartida">
     <div class="player-container-mini">
-      <v-img class="img-avatar-mini" :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+      <v-img style="height: 100px;" class="img-avatar-mini" :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
         partida.jugadores[0]?.avatar
         " />
       <h4>
@@ -22,7 +22,7 @@ export default {
     </div>
     <h2>VS</h2>
     <div class="player-container-mini">
-      <v-img class="img-avatar-mini" :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+      <v-img style="height: 100px;" class="img-avatar-mini" :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
         partida.jugadores[1]?.avatar
         " />
       <h4>
