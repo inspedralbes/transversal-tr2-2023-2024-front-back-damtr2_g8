@@ -13,12 +13,13 @@ export default {
             store: useAppStore(),
             playing: false,
             partidasFiltradas: [],
+            playProf: false,
         };
     },
     methods: {
         startGame() {
             this.owner = true;
-            socket.emit("startGame", this.store.usuari.classe);
+            socket.emit("startGame", { idClasse: this.store.usuari.classe, playProf: this.playProf });
         },
         leaveSala() {
             if (this.myId == this.sala.owner) {
@@ -29,10 +30,14 @@ export default {
                 this.$router.push("/join");
             }
         },
+        changePlayProf() {
+            this.playProf = !this.playProf;
+            console.log(this.playProf);
+        },
         filterWins() {
             if (this.partidas) {
                 let partidasFinalizadas = this.partidas.filter(partida => partida.status == "finish");
-                if (partidasFinalizadas.length) {
+                if (partidasFinalizadas.length && this.sala != undefined) {
                     this.sala.jugadores.forEach(jugadorSala => {
                         jugadorSala.wins = 0;
                         partidasFinalizadas.forEach(partida => {
@@ -73,8 +78,7 @@ export default {
             }
         },
         'play': function (nuevoValor, antiguoValor) {
-            console.log(this.partidas);
-            if (nuevoValor == true && this.owner == false) {
+            if (nuevoValor == true && this.owner == false || nuevoValor == true && this.playProf == true) {
                 this.$router.push("/game");
             }
         },
@@ -138,6 +142,9 @@ export default {
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
         <h2 v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</h2>
+        <div v-if="myId == sala.owner && playing == false">
+            <v-checkbox label="Vols unir-te a la partida?" color="blue" @click="changePlayProf"></v-checkbox>
+        </div>
         <div class="user-row" v-if="partidasFiltradas.length != 0">
             <div>
                 <div class="playing-container">

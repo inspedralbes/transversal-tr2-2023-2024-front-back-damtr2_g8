@@ -53,18 +53,25 @@ function sockets(io) {
       joinSala(userInfo, socket.id);
     });
 
-    socket.on("startGame", (idClasse) => {
+    socket.on("startGame", (startGameInfo) => {
       const sala = salas.find(
-        (sala) => sala.owner == socket.id && sala.id_classe == idClasse
+        (sala) => sala.owner == socket.id && sala.id_classe == startGameInfo.idClasse
       );
+
       let totalPlayers = sala.jugadores.length;
-      if (sala.jugadores.length % 2 != 0) {
+      if (sala.jugadores.length % 2 != 0 && startGameInfo.playProf == false) {
         totalPlayers = totalPlayers - 1;
       }
+
       for (let i = 0; i < totalPlayers; i++) {
-        io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
+        io.to(sala.jugadores[i].id_jugador).emit("startGame", { idSala: sala.id_sala, play: true });
       }
-      io.to(sala.owner).emit("startGame", sala.id_sala);
+
+      if (sala.jugadores.length % 2 != 0 && startGameInfo.playProf == true) {
+        io.to(sala.owner).emit("startGame", { idSala: sala.id_sala, play: true });
+      } else {
+        io.to(sala.owner).emit("startGame", { idSala: sala.id_sala, play: false });
+      }
     });
 
     socket.on("leaveSala", () => {

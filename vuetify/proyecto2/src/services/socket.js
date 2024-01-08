@@ -45,9 +45,10 @@ socket.on("join", (data) => {
   state.play = false;
 });
 
-socket.on("startGame", (idSala) => {
-  state.play = true;
-  state.sala = idSala;
+socket.on("startGame", (startInfo) => {
+  console.log(startInfo.play);
+  state.play = startInfo.play;
+  state.sala = startInfo.idSala;
   state.partida.status = "waiting";
 });
 
