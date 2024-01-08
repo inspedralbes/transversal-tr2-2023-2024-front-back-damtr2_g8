@@ -217,6 +217,20 @@ function changePassword(email, password) {
   })
 }
 
+function getDificultats(idProfe){
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM DIFICULTAT WHERE idProfe = ?";
+    const VALUES = [idProfe];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 module.exports = {
   createClass,
   editClass,
@@ -229,4 +243,5 @@ module.exports = {
   login,
   register,
   changePassword,
+  getDificultats
 };

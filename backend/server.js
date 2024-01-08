@@ -23,8 +23,10 @@ const {
   login,
   register,
   changePassword,
+  getDificultats
 } = require("./endpointFuncions.js");
 const { Server } = require("socket.io");
+const { log } = require("console");
 
 const io = new Server(server, {
   cors: {
@@ -211,6 +213,19 @@ app.get("/getImatgeEstadistiques/", async (req, res) => {
     .catch((err) => {
       res.send(err);
       console.log(err);
+    });
+});
+
+//Ruta para obtener las dificultades
+app.get("/getDificultats", async (req, res) => {
+  const idProfe = req.query.idProfe;
+  console.log(`idProfe: `,idProfe);
+  await getDificultats(idProfe)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
     });
 });
 
