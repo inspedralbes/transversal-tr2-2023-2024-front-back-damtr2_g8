@@ -60,7 +60,6 @@ export default {
         this.proveSala = false;
         state.joinedSala = null;
       } else if (nuevoValor != null && nuevoValor != false && this.codi != "") {
-        console.log(this.setSala.id_classe);
         await joinClasse(this.setSala.id_classe, this.store.usuari.id);
         this.$router.push('/sala');
       }

@@ -16,6 +16,8 @@ const {
   editClass,
   deleteClass,
   getClassByUserId,
+  getUserIdByClassId,
+  saveGameData,
   joinClasse,
   getUserById,
   login,
@@ -33,7 +35,7 @@ const io = new Server(server, {
 
 sockets(io);
 
-//PARTE DE LA BASE DE DATOS
+//PARTE DE LA BASE DE DATOS MYSQL
 let conn = mysql.createPool({
   host: "dam.inspedralbes.cat",
   user: "a22oscmungar_proyecto2",
@@ -173,12 +175,23 @@ app.post("/changePassword", async (req, res) => {
     });
 });
 
-//Recibir la imagen de la estadistica
-app.get("/getImatgeEstadistiques", async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  await ejecutarEstadisticas()
+//ruta para guardar los datos de la partida
+app.post("/saveGameData", async (req, res) => { // ACABAR A CLASSE ---------------------------------------------------------------------------------
+  await saveGameData(req.body.idUsuari, req.body.idClasse, req.body.puntuacio, req.body.dificultat)
     .then((data) => {
-      res.sendFile(path.resolve("stats/producteCantidad.png"));
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//Recibir la imagen de la estadistica
+app.get("/getImatgeEstadistiques/dificultatRespostes/:idClasse", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas(req.params.idClasse)
+    .then((data) => {
+      res.sendFile(path.resolve("stats/dificultatRespostes.png"));
       console.log(data);
     })
     .catch((err) => {
@@ -187,7 +200,21 @@ app.get("/getImatgeEstadistiques", async (req, res) => {
     });
 });
 
-function ejecutarEstadisticas() {
+//Recibir la imagen de la estadistica
+app.get("/getImatgeEstadistiques/", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas()
+    .then((data) => {
+      res.sendFile(path.resolve("stats/numRespostes.png"));
+      console.log(data);
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err);
+    });
+});
+
+function ejecutarEstadisticas(idClasse) {
 
   function createDirectory(dirName) {
     if (!fs.existsSync(dirName)) {
@@ -209,18 +236,23 @@ function ejecutarEstadisticas() {
   }
 
   createDirectory("stats");
-  createFile("./stats/producteCantidad.png", "");
+  createFile("./stats/dificultatRespostes.png", "");
 
-  return new Promise((resolve, reject) => {
+  return new Promise( async (resolve, reject) => {
+    let arrayUsuarios = [];
 
-    let pythonProcess = spawn("python3", ["./stats.py"]);
+    await getUserIdByClassId(idClasse).then((data) => {
+      arrayUsuarios = idClasse ? data.map((item) => item.idUsu) : [];
+    });
+
+    let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios)]);
 
     const handleData = (data) => {
       resolve(data.toString());
     };
 
     const handleError = () => {
-      pythonProcess = spawn("python", ["./stats.py", JSON.stringify([1, 2, 3])]);
+      pythonProcess = spawn("python", ["./stats.py", JSON.stringify(arrayUsuarios)]);
       pythonProcess.stdout.on("data", handleData);
     };
 

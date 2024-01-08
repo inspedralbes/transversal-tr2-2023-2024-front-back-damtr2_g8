@@ -1,5 +1,15 @@
 const mysql = require("mysql2");
 const CryptoJS = require("crypto-js");
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+//PARTE DE LA BASE DE DATOS MongoDB
+const client = new MongoClient("mongodb+srv://a21marsalval_bd:ToniNoRobes2021@tr2.eatpoha.mongodb.net/?retryWrites=true&w=majority", {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 let conn = mysql.createPool({
   host: "dam.inspedralbes.cat",
@@ -89,6 +99,34 @@ function getClassByUserId(idPropietari) {
           .catch((err) => reject({ err: err }));
       }
     });
+  });
+}
+
+function getUserIdByClassId(idClass) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT idUsu FROM PERTANY WHERE idClasse = ?";
+    const VALUES = [idClass];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+function saveGameData(idUsu, idClasse, puntuacio, dificultat) {
+  return new Promise(async (resolve, reject) => {
+    await client.connect();
+    let dbo = client.db("mathbattle");
+    let myobj = { id_usuari: idUsu, id_classe: idClasse, points: puntuacio, difficulty: dificultat };
+
+    dbo.collection("correctAnswers").insertOne(myobj, function (err, res) {
+      if (err) throw reject({ err: err });
+      db.close();
+    });
+    resolve({ userData: "ok" });
   });
 }
 
@@ -184,6 +222,8 @@ module.exports = {
   editClass,
   deleteClass,
   getClassByUserId,
+  getUserIdByClassId,
+  saveGameData,
   joinClasse,
   getUserById,
   login,

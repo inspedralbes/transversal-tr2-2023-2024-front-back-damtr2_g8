@@ -76,7 +76,7 @@ def CantidaRestante():
 
     df = pd.DataFrame(resultados, columns=['_id', 'count'])
     df = df.sort_values('_id')
-    filename = './stats/producteCantidad.png'
+    filename = './stats/dificultatRespostes.png'
     graficar_respuestas_correctas_por_dificultad(df,filename)
 
 def main():
