@@ -1,3 +1,17 @@
+const { MongoClient, ServerApiVersion } = require("mongodb");
+
+//PARTE DE LA BASE DE DATOS MongoDB
+const client = new MongoClient(
+  "mongodb+srv://a21marsalval_bd:ToniNoRobes2021@tr2.eatpoha.mongodb.net/?retryWrites=true&w=majority",
+  {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+  }
+);
+
 let salas = [];
 let partidas = [];
 let countSala = 0;
@@ -33,9 +47,12 @@ function sockets(io) {
       changeDificulty(idPartida, idJugador, dificultad);
     });
 
-    socket.on("solveOperation", ({ idPartida, idJugador, result }) => {
-      solveOperation(idPartida, idJugador, result);
-    });
+    socket.on(
+      "solveOperation",
+      ({ idPartida, idJugador, idUsuari, idClasse, result }) => {
+        solveOperation(idPartida, idJugador, idUsuari, idClasse, result);
+      }
+    );
 
     socket.on("createSala", (idClasse, idUser) => {
       crearSala(idClasse, socket.id, idUser);
@@ -236,7 +253,7 @@ function sockets(io) {
     return codigo;
   }
 
-  function solveOperation(idPartida, idJugador, result) {
+  function solveOperation(idPartida, idJugador, idUsuari, idClasse, result) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
     let realResult = null;
@@ -247,12 +264,13 @@ function sockets(io) {
         realResult = parseFloat(
           eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
         );
-      } catch (e) { }
+      } catch (e) {}
       console.log(realResult);
       if (realResult == result) {
         correcto = true;
         disminuirVida(idPartida, idJugador, dificultad);
         getOperation(idPartida, idJugador, dificultad);
+        saveGameData(idUsuari, idClasse, dificultad);
       }
     }
 
@@ -273,7 +291,6 @@ function sockets(io) {
     let operacionEval = [];
     let operators = generarOperatorRandom();
 
-    console.log(partida);
     partida.jugadores[idJugador].dificultad = dificultad;
 
     for (let i = 0; i < operators.length; i++) {
@@ -312,6 +329,27 @@ function sockets(io) {
     io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
       operacion: operacionesGuardar,
       jugador: idJugador == 1 ? 1 : 0,
+    });
+  }
+
+  function saveGameData(idUsu, idClasse, dificultat) {
+    return new Promise(async (resolve, reject) => {
+      await client.connect();
+      let dbo = client.db("mathbattle");
+      dificultat == 0 ? (dificultat = "fàcil") : null;
+      dificultat == 1 ? (dificultat = "mitjà") : null;
+      dificultat == 2 ? (dificultat = "difícil") : null;
+      let myobj = {
+        id_usuari: idUsu,
+        id_classe: idClasse,
+        difficulty: dificultat,
+      };
+
+      dbo.collection("correctAnswers").insertOne(myobj, function (err, res) {
+        if (err) throw reject({ err: err });
+        db.close();
+      });
+      resolve({ userData: "ok" });
     });
   }
 
@@ -457,9 +495,12 @@ function sockets(io) {
       }
     }
 
-
-    let partidaIndex = partidas.findIndex((partida) => partida.idPartida == partidaId);
-    let idJugador = partidas[partidaIndex].jugadores.findIndex((jugador) => jugador.idSocket == socket.id);
+    let partidaIndex = partidas.findIndex(
+      (partida) => partida.idPartida == partidaId
+    );
+    let idJugador = partidas[partidaIndex].jugadores.findIndex(
+      (jugador) => jugador.idSocket == socket.id
+    );
 
     getOperation(partidaId, idJugador, 1);
 

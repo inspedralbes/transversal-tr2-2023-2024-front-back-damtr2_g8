@@ -17,7 +17,6 @@ const {
   deleteClass,
   getClassByUserId,
   getUserIdByClassId,
-  saveGameData,
   joinClasse,
   getUserById,
   login,
@@ -167,17 +166,6 @@ app.post("/register", async (req, res) => {
 //ruta para cambiar la contraseña de un usuario
 app.post("/changePassword", async (req, res) => {
   await changePassword(req.body.email, req.body.password)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.send(err);
-    });
-});
-
-//ruta para guardar los datos de la partida
-app.post("/saveGameData", async (req, res) => { // ACABAR A CLASSE ---------------------------------------------------------------------------------
-  await saveGameData(req.body.idUsuari, req.body.idClasse, req.body.puntuacio, req.body.dificultat)
     .then((data) => {
       res.send(data);
     })

@@ -1,15 +1,5 @@
 const mysql = require("mysql2");
 const CryptoJS = require("crypto-js");
-const { MongoClient, ServerApiVersion } = require('mongodb');
-
-//PARTE DE LA BASE DE DATOS MongoDB
-const client = new MongoClient("mongodb+srv://a21marsalval_bd:ToniNoRobes2021@tr2.eatpoha.mongodb.net/?retryWrites=true&w=majority", {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
 
 let conn = mysql.createPool({
   host: "dam.inspedralbes.cat",
@@ -116,20 +106,6 @@ function getUserIdByClassId(idClass) {
   });
 }
 
-function saveGameData(idUsu, idClasse, puntuacio, dificultat) {
-  return new Promise(async (resolve, reject) => {
-    await client.connect();
-    let dbo = client.db("mathbattle");
-    let myobj = { id_usuari: idUsu, id_classe: idClasse, points: puntuacio, difficulty: dificultat };
-
-    dbo.collection("correctAnswers").insertOne(myobj, function (err, res) {
-      if (err) throw reject({ err: err });
-      db.close();
-    });
-    resolve({ userData: "ok" });
-  });
-}
-
 function joinClasse(idClass, idUsu) {
   return new Promise((resolve, reject) => {
     const sql = "INSERT INTO `PERTANY` (`idClasse`, `idUsu`) VALUES (?, ?);";
@@ -223,7 +199,6 @@ module.exports = {
   deleteClass,
   getClassByUserId,
   getUserIdByClassId,
-  saveGameData,
   joinClasse,
   getUserById,
   login,

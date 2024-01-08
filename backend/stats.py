@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-import seaborn as sns
 from datetime import datetime
 
 def establecer_conexion():

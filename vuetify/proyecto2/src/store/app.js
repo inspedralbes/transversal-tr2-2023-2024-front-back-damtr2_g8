@@ -9,7 +9,6 @@ export const useAppStore = defineStore('app', {
       email: "",
       id: null,
       avatar: 0,
-      classe: "",
     }
   }),
   persist: true,
