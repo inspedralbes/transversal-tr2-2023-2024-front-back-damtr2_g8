@@ -165,7 +165,7 @@
                 {{ classe.numeroUsuarios }}
               </v-chip>
               <div>
-                <v-row >
+                <v-row>
                   <v-col>
                     <v-sheet>
                       <v-btn
@@ -179,12 +179,24 @@
                   <v-col>
                     <v-sheet>
                       <v-select
-                        label="Dificultat predeterminada" density="compact" class="mt-2"
-                        :items="[
-                          'Crea una dificultat',
-                        ]"
+                        label="Dificultat predeterminada"
+                        density="compact"
+                        class="mt-2"
+                        v-model="selectedDificultat"
                         variant="outlined"
-                      ></v-select>
+                        :items="dificultats.target"
+                      >
+                        <v-list-item-group
+                          v-for="dificultat in dificultats.target"
+                          :key="dificultat.idDificultat"
+                        >
+                          <v-list-item>
+                            <v-list-item-content>
+                              {{ dificultat.nomDificultat }}
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list-item-group>
+                      </v-select>
                     </v-sheet>
                   </v-col>
                 </v-row>
@@ -203,6 +215,7 @@ import {
   createClasse,
   editClasse,
   deleteClasse,
+  getDificultatsFetch,
 } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
@@ -217,6 +230,12 @@ export default {
       mostrarPopUpEditar: false,
       classeEditar: null,
       store: useAppStore(),
+      dificultats: null,
+      selectedDificultat: {
+        idDificultat: null,
+        nomDificultat: null,
+        idProfe: null,
+      },
     };
   },
   methods: {
@@ -273,11 +292,23 @@ export default {
         this.getClasses();
       }
     },
+    async getDificultats() {
+      console.log(`idProfe: `, this.idProfe);
+      const response = await getDificultatsFetch(this.idProfe);
+      if (!response.ok) {
+        window.alert("Error al carregar les dificultats");
+      } else {
+        const data = await response.json();
+        this.dificultats = data;
+        console.log(`Dificultats: `, this.dificultats);
+      }
+    },
   },
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.idProfe = this.store.usuari.id;
     this.getClasses();
+    this.getDificultats();
   },
 };
 </script>
