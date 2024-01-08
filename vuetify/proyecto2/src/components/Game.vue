@@ -86,8 +86,9 @@ export default {
 
         if(this.usuaris.vidaAnterior1 <= 10){
           this.mouthPlayer1="unimpressed&skinColor=F44336";
+        }else if (this.usuaris.vidaAnterior1 == 0){
+        this.mouthPlayer2 ="openedSmile";
         }
-        console.log("Mouth: ",this.mouth);
       }
 
       if (state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida < this.usuaris.vidaAnterior2) {
@@ -100,6 +101,8 @@ export default {
 
         if(this.usuaris.vidaAnterior2 <= 10){
           this.mouthPlayer2="unimpressed&skinColor=F44336";
+        }else if (this.usuaris.vidaAnterior2 == 0){
+        this.mouthPlayer1 ="openedSmile";
         }
 
         setTimeout(() => {
