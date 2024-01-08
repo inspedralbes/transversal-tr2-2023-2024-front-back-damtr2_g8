@@ -50,13 +50,15 @@ export default {
 
 .winner {
     position: absolute;
-    background-color: white;
+    margin-left: 10px;
+    background-color: rgb(255, 255, 93);
     width: 50px;
     height: 30px;
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .winner p {
