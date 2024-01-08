@@ -52,12 +52,8 @@ socket.on("startGame", (startInfo) => {
   state.partida.status = "waiting";
 });
 
-const debouncedUpdate = _.debounce((data) => {
-  state.partidas = data;
-}, 500);
-
 socket.on("getPartidas", (data) => {
-  debouncedUpdate(data);
-  num++;
+  console.log(data);
+  state.partidas = data;
 });
 

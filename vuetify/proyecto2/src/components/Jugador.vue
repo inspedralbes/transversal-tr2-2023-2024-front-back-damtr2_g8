@@ -24,7 +24,8 @@ export default {
             <svg-icon type="mdi" :path="path"></svg-icon>
             <p>{{ jugador.wins }}</p>
         </div>
-        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
+        <v-img style="height: 100px;" class="img-avatar"
+            :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
         <h3>{{ jugador.nombre }}</h3>
     </div>
 </template>

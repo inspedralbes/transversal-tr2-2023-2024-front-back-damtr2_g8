@@ -32,11 +32,11 @@ export default {
         },
         changePlayProf() {
             this.playProf = !this.playProf;
-            console.log(this.playProf);
         },
-        filterWins() {
-            if (this.partidas) {
-                let partidasFinalizadas = this.partidas.filter(partida => partida.status == "finish");
+        filterWins(partidas) {
+            if (partidas) {
+                console.log(partidas);
+                let partidasFinalizadas = partidas.filter(partida => partida.status == "finish");
                 if (partidasFinalizadas.length && this.sala != undefined) {
                     this.sala.jugadores.forEach(jugadorSala => {
                         jugadorSala.wins = 0;
@@ -86,12 +86,12 @@ export default {
         },
         'store.usuari.avatar': function () {
             socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
-        }
+        },
     },
     computed: {
         sala() {
             this.myId = socket.id;
-            this.filterWins();
+            console.log(state.joinedSala);
             return state.joinedSala;
         },
         play() {
@@ -107,6 +107,7 @@ export default {
                     this.playing = true;
                 }
                 partidasFiltro = partidasFiltro.filter(partida => partida.status != "finish");
+                this.filterWins(state.partidas);
             } else {
                 this.playing = false;
             }
@@ -116,7 +117,6 @@ export default {
             }
 
             this.partidasFiltradas = partidasFiltro;
-            this.filterWins();
 
             return state.partidas;
         },
@@ -126,8 +126,10 @@ export default {
         if (this.sala == null || this.sala == false) {
             socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
         } else {
-            if (this.sala.id_classe != this.store.usuari.classe) {
-                socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+            if (this.store.usuari.classe != "") {
+                if (this.sala.id_classe != this.store.usuari.classe) {
+                    socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+                }
             }
         }
     },
@@ -166,7 +168,7 @@ export default {
             </div>
         </div>
     </div>
-    <div class="full-container justify-center" v-else>
+    <div class="full-container justify-center" v-else ref="elseBlock">
         <h2 class="text-h2 font-weight-black">El Professor ha tancat la Sala</h2>
         <div class="progress-loader">
             <div class="progress"></div>
