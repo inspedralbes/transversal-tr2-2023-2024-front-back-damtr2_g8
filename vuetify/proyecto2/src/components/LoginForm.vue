@@ -72,7 +72,7 @@ export default {
                     value => {
                         if (value?.length <= 10) return true
 
-                        return 'Name must be less than 10 characters.'
+                        return 'El nom ha de ser més curt.'
                     },
                 ],
                 emailRules: [
@@ -132,7 +132,7 @@ export default {
             let data = await login(this.usernameLogin);
 
             if (data.err) {
-                window.alert("El usuario o la contraseña son incorrectos o no existen")
+                window.alert("L'usuari o la contrasenya no són correctes o no existeixen")
             } else {
                 let store = useAppStore();
                 store.usuari.nom = data.userData.nom;

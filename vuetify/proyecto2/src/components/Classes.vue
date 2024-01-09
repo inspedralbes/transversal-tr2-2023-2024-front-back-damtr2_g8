@@ -34,7 +34,7 @@
                 <v-row>
                   <v-col>
                     <v-btn block type="submit" class="pa-5" color="primary"
-                      >Aceptar</v-btn
+                      >Acceptar</v-btn
                     >
                   </v-col>
                   <v-col>
@@ -286,7 +286,7 @@
                             <v-btn
                               @click="cerrarOperaciones()"
 															style="background-color: red; margin: 15px;"
-                              >Salir</v-btn
+                              >Sortir</v-btn
                             >
                           </v-row>
                         </v-card-text>
