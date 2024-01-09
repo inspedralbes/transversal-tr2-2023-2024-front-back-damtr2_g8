@@ -107,7 +107,7 @@ def graficar_puntos_por_usuario(df, filename):
 
     plt.xlabel("id_usuari", fontsize=12)
     plt.ylabel("Puntos totales", fontsize=12)
-
+    plt.xticks(df["_id"])
     # Guardar la figura en un archivo
     plt.tight_layout()
     plt.savefig(filename)
@@ -117,7 +117,6 @@ def graficar_puntos_por_usuario(df, filename):
 def dificultatRespostes():
     conexion = establecer_conexion()
     resultados = obtener_respuestas_correctas_por_usuario_y_dificultad(conexion)
-    print(resultados)
 
     df = pd.DataFrame(resultados, columns=["_id", "count"])
     df = df.sort_values("_id")
@@ -128,6 +127,7 @@ def dificultatRespostes():
 def puntsRespostes():
     conexion = establecer_conexion()
     resultados = obtener_puntos_de_respuestas_correctas_por_usuario(conexion)
+    print(resultados)
 
     df = pd.DataFrame(resultados, columns=["_id", "puntos"])
     df = df.sort_values("_id")
