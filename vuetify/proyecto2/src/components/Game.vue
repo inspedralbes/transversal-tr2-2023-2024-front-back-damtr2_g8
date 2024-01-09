@@ -16,6 +16,8 @@ export default {
       hit: null,
       mouthPlayer1: "teethSmile",
       mouthPlayer2: "teethSmile",
+      vidaRestada1: null,
+      vidaRestada2: null,
       usuaris: {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
@@ -75,7 +77,7 @@ export default {
 
       if (state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1) {
         this.hit = 0;
-        const vidaRestada = state.partida.jugadores[this.idPlayer].vida - this.usuaris.vidaAnterior1;
+        this.vidaRestada1 = state.partida.jugadores[this.idPlayer].vida - this.usuaris.vidaAnterior1;
         console.log(vidaRestada);
         this.usuaris.vidaAnterior1 = state.partida.jugadores[this.idPlayer].vida;
         setTimeout(() => {
@@ -93,7 +95,7 @@ export default {
 
       if (state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida < this.usuaris.vidaAnterior2) {
         this.hit = 1;
-        const vidaRestada = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida - this.usuaris.vidaAnterior2;
+        this.vidaRestada2 = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida - this.usuaris.vidaAnterior2;
         console.log(vidaRestada);
         this.usuaris.vidaAnterior2 = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
         //this.mouth = "unimpressed";
@@ -150,7 +152,8 @@ export default {
             <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
               setPartida.jugadores[idPlayer].avatar +
               '&scale=80&flip=false&eyes=angry&mouth='+mouthPlayer1
-              " alt="Avatar" style="width: 300px max-width:500px" />
+              " alt="Avatar" style="width: 300px" />
+              <span>{{ this.vidaRestada1 }}</span>
           </div>
         </v-col>
         <v-col cols="6">
@@ -170,13 +173,14 @@ export default {
         </v-col>
         <v-col cols="3">
           <div class="avatar-container no-bottom-lg ">
+            <span>{{ this.vidaRestada1 }}</span>
             <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
               setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
               '&scale=80&flip=true&eyes=angry&mouth='+mouthPlayer2
-              " alt="Avatar" style="width: 300px max-width:500px" />
+              " alt="Avatar" style="width: 300px" />
           </div>
         </v-col>
-        <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
+        <v-col sm="12" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class="dificulty-container">
               <v-col align="center">
