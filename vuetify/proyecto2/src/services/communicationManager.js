@@ -107,3 +107,16 @@ export function deleteClasse(classeEditar) {
     }).then((response) => resolve(response));
   });
 }
+
+export function getDificultatsFetch(idProfe){  
+  return new Promise((resolve, reject) => {
+    
+    fetch(import.meta.env.VITE_NODE_ROUTE + `/getDificultats/?idProfe=${idProfe}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => resolve(response))
+  });
+}
