@@ -270,21 +270,11 @@ function ejecutarEstadisticas(idClasse) {
     });
 
     let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
-
+    pythonProcess.stdout.on("data", handleData);
     const handleData = (data) => {
       resolve(data.toString());
     };
 
-    const handleError = () => {
-      pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
-      pythonProcess.stdout.on("data", handleData);
-    };
-
-    pythonProcess.on('exit', (code) => {
-      if (code !== 0) {
-        handleError();
-      }
-    });
   });
 }
 
