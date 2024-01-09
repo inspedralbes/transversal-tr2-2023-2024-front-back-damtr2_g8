@@ -65,8 +65,8 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1 buttons" variant="text" @click="dialog = false">Close</v-btn>
-                            <v-btn color="blue-darken-1 buttons" variant="text" @click="checkPassword()">Save</v-btn>
+                            <v-btn color="blue-darken-1 buttons" variant="text" @click="dialog = false">Tancar</v-btn>
+                            <v-btn color="blue-darken-1 buttons" variant="text" @click="checkPassword()">Guardar</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -221,11 +221,11 @@ export default {
 
             });
             if (!response.ok) {
-                window.alert("Error al cambiar la contraseña");
+                window.alert("Error al canviar la contrasenya");
                 this.dialog = false;
                 console.log(response);
             } else {
-                window.alert("Contraseña cambiada correctamente");
+                window.alert("Contrasenya canviada correctament");
                 this.dialog = false;
             }
         }

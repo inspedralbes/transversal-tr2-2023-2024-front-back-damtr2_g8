@@ -22,6 +22,7 @@ export default {
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.conectar();
+    
     this.setPartida;
     const self = this;
     document
@@ -52,6 +53,8 @@ export default {
       socket.emit("solveOperation", {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
+        idUsuari: this.store.usuari.id,
+        idClasse: state.joinedSala.id_classe,
         result: this.result,
       });
       this.result = "";
@@ -107,7 +110,6 @@ export default {
           this.hit = null;
         }, 100);
       }
-      console.log(state.partida);
       return state.partida;
     },
   },

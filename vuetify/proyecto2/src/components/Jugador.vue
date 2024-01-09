@@ -24,7 +24,8 @@ export default {
             <svg-icon type="mdi" :path="path"></svg-icon>
             <p>{{ jugador.wins }}</p>
         </div>
-        <v-img class="img-avatar" :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
+        <v-img style="height: 100px;" class="img-avatar"
+            :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
         <h3>{{ jugador.nombre }}</h3>
     </div>
 </template>
@@ -49,13 +50,15 @@ export default {
 
 .winner {
     position: absolute;
-    background-color: white;
+    margin-left: 10px;
+    background-color: rgb(255, 255, 93);
     width: 50px;
     height: 30px;
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .winner p {

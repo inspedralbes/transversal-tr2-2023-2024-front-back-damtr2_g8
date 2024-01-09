@@ -1,13 +1,33 @@
+const { MongoClient, ServerApiVersion } = require("mongodb");
+
+//PARTE DE LA BASE DE DATOS MongoDB
+const client = new MongoClient(
+  "mongodb+srv://a21marsalval_bd:ToniNoRobes2021@tr2.eatpoha.mongodb.net/?retryWrites=true&w=majority",
+  {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+  }
+);
+
 let salas = [];
 let partidas = [];
 let countSala = 0;
 let countPartida = 1;
 
-function sendPartidasOwner(owner, id, io) {
+function sendPartidas(owner, id, io) {
   const partidasSala = partidas.filter((partida) => partida.idSala == id);
 
   if (partidasSala) {
     io.to(owner).emit("getPartidas", partidasSala);
+    let sala = salas.filter((sala) => sala.id_sala == id);
+    if (sala[0]) {
+      for (let i = 0; i < sala[0].jugadores.length; i++) {
+        io.to(sala[0].jugadores[i].id_jugador).emit("getPartidas", partidasSala);
+      }
+    }
   }
 }
 
@@ -33,9 +53,12 @@ function sockets(io) {
       changeDificulty(idPartida, idJugador, dificultad);
     });
 
-    socket.on("solveOperation", ({ idPartida, idJugador, result }) => {
-      solveOperation(idPartida, idJugador, result);
-    });
+    socket.on(
+      "solveOperation",
+      ({ idPartida, idJugador, idUsuari, idClasse, result }) => {
+        solveOperation(idPartida, idJugador, idUsuari, idClasse, result);
+      }
+    );
 
     socket.on("createSala", (idClasse, idUser) => {
       crearSala(idClasse, socket.id, idUser);
@@ -53,14 +76,25 @@ function sockets(io) {
       joinSala(userInfo, socket.id);
     });
 
-    socket.on("startGame", (idClasse) => {
+    socket.on("startGame", (startGameInfo) => {
       const sala = salas.find(
-        (sala) => sala.owner == socket.id && sala.id_classe == idClasse
+        (sala) => sala.owner == socket.id && sala.id_classe == startGameInfo.idClasse
       );
-      for (let i = 0; i < sala.jugadores.length; i++) {
-        io.to(sala.jugadores[i].id_jugador).emit("startGame", sala.id_sala);
+
+      let totalPlayers = sala.jugadores.length;
+      if (sala.jugadores.length % 2 != 0 && startGameInfo.playProf == false) {
+        totalPlayers = totalPlayers - 1;
       }
-      io.to(sala.owner).emit("startGame", sala.id_sala);
+
+      for (let i = 0; i < totalPlayers; i++) {
+        io.to(sala.jugadores[i].id_jugador).emit("startGame", { idSala: sala.id_sala, play: true });
+      }
+
+      if (sala.jugadores.length % 2 != 0 && startGameInfo.playProf == true) {
+        io.to(sala.owner).emit("startGame", { idSala: sala.id_sala, play: true });
+      } else {
+        io.to(sala.owner).emit("startGame", { idSala: sala.id_sala, play: false });
+      }
     });
 
     socket.on("leaveSala", () => {
@@ -74,6 +108,7 @@ function sockets(io) {
     socket.on("disconnect", () => {
       desconectarJugador(socket.id);
     });
+
   });
 
   function desconectarTodosJugadores(id) {
@@ -130,7 +165,7 @@ function sockets(io) {
       partidas.splice(indexPartida, 1);
 
       if (owner != null) {
-        sendPartidasOwner(owner, id_sala, io);
+        sendPartidas(owner, id_sala, io);
       }
     }
   }
@@ -171,6 +206,10 @@ function sockets(io) {
             "join",
             salaEncontrada
           );
+        }
+        const partidasSala = partidas.filter((partida) => partida.idSala == salaEncontrada.id_sala);
+        if (partidasSala) {
+          io.to(id).emit("getPartidas", partidasSala);
         }
       } else {
         io.to(id).emit("join", false);
@@ -219,7 +258,9 @@ function sockets(io) {
       io.to(sala.owner).emit("join", sala);
       io.to(previusOwner).emit("join", sala);
 
-      sendPartidasOwner(sala.owner, sala.id_sala, io);
+      sendPartidas(sala.owner, sala.id_sala, io);
+    } else {
+      io.to(idSocket).emit("join", false);
     }
   }
 
@@ -232,7 +273,7 @@ function sockets(io) {
     return codigo;
   }
 
-  function solveOperation(idPartida, idJugador, result) {
+  function solveOperation(idPartida, idJugador, idUsuari, idClasse, result) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
     let realResult = null;
@@ -242,13 +283,14 @@ function sockets(io) {
       try {
         realResult = parseFloat(
           eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
-        ); //Preguntar a la Aina
-      } catch (e) { }
+        );
+      } catch (e) {}
       console.log(realResult);
       if (realResult == result) {
         correcto = true;
         disminuirVida(idPartida, idJugador, dificultad);
         getOperation(idPartida, idJugador, dificultad);
+        saveGameData(idUsuari, idClasse, dificultad);
       }
     }
 
@@ -269,7 +311,6 @@ function sockets(io) {
     let operacionEval = [];
     let operators = generarOperatorRandom();
 
-    console.log(partida);
     partida.jugadores[idJugador].dificultad = dificultad;
 
     for (let i = 0; i < operators.length; i++) {
@@ -308,6 +349,27 @@ function sockets(io) {
     io.to(partida.jugadores[idJugador].idSocket).emit("actualizarOperacion", {
       operacion: operacionesGuardar,
       jugador: idJugador == 1 ? 1 : 0,
+    });
+  }
+
+  function saveGameData(idUsu, idClasse, dificultat) {
+    return new Promise(async (resolve, reject) => {
+      await client.connect();
+      let dbo = client.db("mathbattle");
+      dificultat == 0 ? (dificultat = "fàcil") : null;
+      dificultat == 1 ? (dificultat = "mitjà") : null;
+      dificultat == 2 ? (dificultat = "difícil") : null;
+      let myobj = {
+        id_usuari: idUsu,
+        id_classe: idClasse,
+        difficulty: dificultat,
+      };
+
+      dbo.collection("correctAnswers").insertOne(myobj, function (err, res) {
+        if (err) throw reject({ err: err });
+        db.close();
+      });
+      resolve({ userData: "ok" });
     });
   }
 
@@ -364,26 +426,26 @@ function sockets(io) {
     }
 
     if (partida) {
-      const vidaActual =
-        idJugador == 1 ? partida.jugadores[1].vida : partida.jugadores[0].vida;
+      const vidaActual = idJugador == 1 ? partida.jugadores[0].vida : partida.jugadores[1].vida;
       const nuevaVida = Math.max(0, vidaActual - cantidad);
       let sala = salas.find((sala) => sala.id_sala == partida.idSala);
 
-      partida.jugadores[idJugador].vida = nuevaVida;
-
-      io.to(sala.owner).emit("getPartidas", partidas);
-      for (let i = 0; i < partida.jugadores.length; i++) {
-        io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
-          vida: nuevaVida,
-          jugador: idJugador == 1 ? 0 : 1,
-        });
-      }
-
-      if (nuevaVida == 0) {
-        partida.status = "finish";
-        io.to(sala.owner).emit("getPartidas", partidas);
+      partida.jugadores[idJugador == 1 ? 0 : 1].vida = nuevaVida;
+      if (sala) {
+        sendPartidas(sala.owner, sala.id_sala, io);
         for (let i = 0; i < partida.jugadores.length; i++) {
-          io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
+          io.to(partida.jugadores[i].idSocket).emit("actualizarVida", {
+            vida: nuevaVida,
+            jugador: idJugador == 1 ? 0 : 1,
+          });
+        }
+
+        if (nuevaVida == 0) {
+          partida.status = "finish";
+          sendPartidas(sala.owner, sala.id_sala, io);
+          for (let i = 0; i < partida.jugadores.length; i++) {
+            io.to(partida.jugadores[i].idSocket).emit("enviaJson", partida);
+          }
         }
       }
     }
@@ -408,7 +470,7 @@ function sockets(io) {
     const sala = salas.find((sala) => sala.id_sala == user.id_sala);
     if (sala != undefined) {
       if (partidas[idPartidaIndex].jugadores.length == 2) {
-        sendPartidasOwner(sala.owner, user.id_sala, io);
+        sendPartidas(sala.owner, user.id_sala, io);
       }
     } else {
       console.log("owner undefined");
@@ -453,9 +515,12 @@ function sockets(io) {
       }
     }
 
-
-    let partidaIndex = partidas.findIndex((partida) => partida.idPartida == partidaId);
-    let idJugador = partidas[partidaIndex].jugadores.findIndex((jugador) => jugador.idSocket == socket.id);
+    let partidaIndex = partidas.findIndex(
+      (partida) => partida.idPartida == partidaId
+    );
+    let idJugador = partidas[partidaIndex].jugadores.findIndex(
+      (jugador) => jugador.idSocket == socket.id
+    );
 
     getOperation(partidaId, idJugador, 1);
 
