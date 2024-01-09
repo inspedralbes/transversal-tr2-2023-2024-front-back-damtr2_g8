@@ -5,17 +5,21 @@ const port = 3751;
 const cors = require("cors");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
-const { Server } = require("socket.io");
 const http = require("http");
-const { join } = require('path');
 const server = http.createServer(app);
+const { sockets } = require("./sockets.js");
+const {
+  createClass,
+  editClass,
+  deleteClass,
+  getClassByUserId,
+  getUserById,
+  login,
+  register,
+  changePassword,
+} = require("./endpointFuncions.js");
+const { Server } = require("socket.io");
 
-//REDIRECCIONAR AL INDEX.HTML
-app.get('/', (req, res) => {
-	res.sendFile(join(__dirname, 'index.html'));
-  });
-
-//PARTE DEL SOCKET.IO
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -23,12 +27,10 @@ const io = new Server(server, {
   },
 });
 
-io.on('connection', (socket) => {
-	console.log('a user connected');
-  });
+sockets(io);
 
-  //PARTE DE LA BASE DE DATOS
-var conn = mysql.createPool({
+//PARTE DE LA BASE DE DATOS
+let conn = mysql.createPool({
   host: "dam.inspedralbes.cat",
   user: "a22oscmungar_proyecto2",
   password: "Proyecto2",
@@ -57,119 +59,105 @@ app.use(bodyParser.json());
 
 //PARTE DE LAS RUTAS
 
-//ruta para obtener todos los usuarios de una clase
-app.get("/classe/:idClasse", (req, res) => {
-  const sql = "SELECT * FROM USUARIS WHERE idClasse = ?";
-  const VALUES = [req.params.idClasse];
+//ruta para crear classes
+app.post("/crearClasse", async (req, res) => {
+  await createClass(req.body.nomClasse, req.body.idUsu)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
 
-  conn.query(sql, VALUES, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.json(result);
-    }
-  });
+//ruta para editar clases
+app.post("/editarClasse", async (req, res) => {
+  await editClass(req.body.nomClasse, req.body.idClasse)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para eliminar clases
+app.post("/eliminarClasse", async (req, res) => {
+  await deleteClass(req.body.idClasse)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para obtener todos los usuarios de una clase
+app.get("/classe/:idClasse", async (req, res) => {
+  await getUserByClassId(req.params.idProfe)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para obtener las classes de un profesor
+app.get("/classeProfe/:idProfe", async (req, res) => {
+  await getClassByUserId(req.params.idProfe)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 //ruta para obtener un usuario en concreto
-app.get("/usuario/:idUsuari", (req, res) => {
-  const sql = "SELECT * FROM USUARIS WHERE idUsu = ?";
-  const VALUES = [req.params.idUsuari];
-
-  conn.query(sql, VALUES, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.json(result);
-    }
-  });
+app.get("/usuario/:idUsuari", async (req, res) => {
+  await getUserById(req.params.idUsuari)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
-//ruta para generar una operacion de nivel facil
-app.get("/operacioFacil", (req, res) => {
-  const num1 = Math.floor(Math.random() * 100) + 1;
-  const num2 = Math.floor(Math.random() * 100) + 1;
-
-  const operators = ["+", "-"];
-  const operator = operators[Math.floor(Math.random() * operators.length)];
-
-  const operation = {
-    num1: num1,
-    num2: num2,
-    operator: operator,
-  };
-
-  res.send(JSON.stringify(operation, null, 2));
+//ruta para hacer login
+app.post("/login", async (req, res) => {
+  await login(req.body.email, req.body.password)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
-//ruta para generar una operacion de nivel medio
-app.get("/operacioMitg", (req, res) => {
-  const num1 = Math.floor(Math.random() * 10) + 1;
-  let num2 = Math.floor(Math.random() * (num1 / 2)) + 1;
-
-  const operators = ["+", "-", "*", "/"];
-  const operator = operators[Math.floor(Math.random() * operators.length)];
-
-  const operation = {
-    num1: num1,
-    num2: num2,
-    operator: operator,
-  };
-
-  res.send(JSON.stringify(operation, null, 2));
-});
-//ruta para generar una operacion de nivel dificil
-app.get("/operacioDificil", (req, res) => {
-  const num1 = Math.floor(Math.random() * 10) + 1;
-  let num2 = Math.floor(Math.random() * (num1 / 2)) + 1;
-
-  const operators = ["+", "-", "*", "/", "^", "√"];
-  const operator = operators[Math.floor(Math.random() * operators.length)];
-
-  if (operator == "^") {
-    num2 = 2;
-  } else if (operator == "√") {
-    num2 = null;
-  }
-  const operation = {
-    num1: num1,
-    num2: num2,
-    operator: operator,
-  };
-
-  res.send(JSON.stringify(operation, null, 2));
+//ruta para registrar un usuario
+app.post("/register", async (req, res) => {
+  await register(req.body.email, req.body.password, req.body.nom, req.body.cognom)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
-//ruta para resolver una operacion, le pasaremos los dos numeros y el operador
-app.get("/resoldre/:num1/:num2/:operator", (req, res) => {
-  const num1 = req.params.num1;
-  const num2 = req.params.num2;
-  const operator = req.params.operator;
-
-  let result = 0;
-  switch (operator) {
-    case "+":
-      result = parseInt(num1) + parseInt(num2);
-      break;
-    case "-":
-      result = parseInt(num1) - parseInt(num2);
-      break;
-    case "*":
-      result = parseInt(num1) * parseInt(num2);
-      break;
-    case "/":
-      result = parseInt(num1) / parseInt(num2);
-      break;
-    case "^":
-      result = Math.pow(parseInt(num1), parseInt(num2));
-      break;
-    default: //para la raiz cuadrada le pasaremos solo el primer numero y null como segundo y como operador lo mismo
-      result = Math.sqrt(parseInt(num1));
-      break;
-  }
-  res.send(JSON.stringify(result, null, 2));
+//ruta para cambiar la contraseña de un usuario
+app.post("/changePassword", async (req, res) => {
+  await changePassword(req.body.email, req.body.password)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running at PORT: ${port}`);
 });

@@ -11,7 +11,7 @@
 	<div id="status"></div>
 
 	<script>
-    	const socket = io.connect('http://localhost:3751'); 
+    	const socket = io.connect(import.meta.env.VITE_NODE_ROUTE); 
 
     	socket.on('connect', () => {
         	console.log('Conectado al servidor Socket.io');
