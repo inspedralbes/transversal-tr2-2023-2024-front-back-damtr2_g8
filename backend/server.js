@@ -17,6 +17,7 @@ const {
   deleteClass,
   getClassByUserId,
   getUserIdByClassId,
+  getClassNameByClassId,
   joinClasse,
   getUserById,
   login,
@@ -174,12 +175,26 @@ app.post("/changePassword", async (req, res) => {
     });
 });
 
-//Recibir la imagen de la estadistica
+//Recibir la imagen de la estadistica dificultatRespostes
 app.get("/getImatgeEstadistiques/dificultatRespostes/:idClasse", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
       res.sendFile(path.resolve("stats/dificultatRespostes.png"));
+      console.log(data);
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err);
+    });
+});
+
+//Recibir la imagen de la estadistica puntsRespostes
+app.get("/getImatgeEstadistiques/puntsRespostes/:idClasse", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas(req.params.idClasse)
+    .then((data) => {
+      res.sendFile(path.resolve("stats/puntsRespostes.png"));
       console.log(data);
     })
     .catch((err) => {
@@ -225,22 +240,28 @@ function ejecutarEstadisticas(idClasse) {
 
   createDirectory("stats");
   createFile("./stats/dificultatRespostes.png", "");
+  createFile("./stats/puntsRespostes.png", "");
 
   return new Promise( async (resolve, reject) => {
     let arrayUsuarios = [];
+    let nomClasse = "";
 
     await getUserIdByClassId(idClasse).then((data) => {
       arrayUsuarios = idClasse ? data.map((item) => item.idUsu) : [];
     });
 
-    let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios)]);
+    await getClassNameByClassId(idClasse).then((data) => {
+      nomClasse = data[0].nomClasse;
+    });
+
+    let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
 
     const handleData = (data) => {
       resolve(data.toString());
     };
 
     const handleError = () => {
-      pythonProcess = spawn("python", ["./stats.py", JSON.stringify(arrayUsuarios)]);
+      pythonProcess = spawn("python", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
       pythonProcess.stdout.on("data", handleData);
     };
 

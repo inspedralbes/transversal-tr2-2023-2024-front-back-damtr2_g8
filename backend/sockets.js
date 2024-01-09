@@ -21,7 +21,6 @@ function sendPartidas(owner, id, io) {
   const partidasSala = partidas.filter((partida) => partida.idSala == id);
 
   if (partidasSala) {
-    console.log(partidasSala);
     io.to(owner).emit("getPartidas", partidasSala);
     let sala = salas.filter((sala) => sala.id_sala == id);
     if (sala[0]) {

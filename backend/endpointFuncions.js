@@ -106,6 +106,20 @@ function getUserIdByClassId(idClass) {
   });
 }
 
+function getClassNameByClassId(idClass) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT nomClasse FROM CLASSE WHERE idClasse = ?";
+    const VALUES = [idClass];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function joinClasse(idClass, idUsu) {
   return new Promise((resolve, reject) => {
     const sql = "INSERT INTO `PERTANY` (`idClasse`, `idUsu`) VALUES (?, ?);";
@@ -199,6 +213,7 @@ module.exports = {
   deleteClass,
   getClassByUserId,
   getUserIdByClassId,
+  getClassNameByClassId,
   joinClasse,
   getUserById,
   login,
