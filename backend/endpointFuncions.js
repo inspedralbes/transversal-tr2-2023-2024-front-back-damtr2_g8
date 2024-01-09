@@ -219,7 +219,7 @@ function changePassword(email, password) {
 
 function getDificultats(idProfe){
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM DIFICULTAT WHERE idProfe = ?";
+    const sql = "SELECT idDificultat, nomDificultat FROM DIFICULTAT WHERE idProfe = (?) or nomDificultat = 'Per defecte'";
     const VALUES = [idProfe];
     conn.query(sql, VALUES, (err, result) => {
       if (err) {
