@@ -183,6 +183,9 @@
                         v-model="selectedDificultats[classe.idClasse]"
                         item-title="nomDificultat"
                         item-text="nomDificultat"
+                        class="pt-2"
+                        density="compact"
+                        variant="outlined"
                         :items="this.dificultats"
                         @update:modelValue="
                           checkDefaultDifficulty(

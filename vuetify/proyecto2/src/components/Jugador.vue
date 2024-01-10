@@ -49,8 +49,9 @@ export default {
 } */
 
 .winner {
-    position: absolute;
+    position: relative;
     margin-left: 10px;
+    margin-bottom: -30px;
     background-color: rgb(255, 255, 93);
     width: 50px;
     height: 30px;
@@ -58,7 +59,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    z-index: 20;
 }
 
 .winner p {

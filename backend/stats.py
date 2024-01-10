@@ -120,7 +120,7 @@ def dificultatRespostes():
 
     df = pd.DataFrame(resultados, columns=["_id", "count"])
     df = df.sort_values("_id")
-    filename = "./stats/dificultatRespostes.png"
+    filename = "./stats/dificultatRespostes_{sys.argv[2]}.png"
     graficar_respuestas_correctas_por_dificultad(df, filename)
 
 
@@ -131,7 +131,7 @@ def puntsRespostes():
 
     df = pd.DataFrame(resultados, columns=["_id", "puntos"])
     df = df.sort_values("_id")
-    filename = "./stats/puntsRespostes.png"
+    filename = "./stats/puntsRespostes_{sys.argv[2]}.png"
     graficar_puntos_por_usuario(df, filename)
 
 

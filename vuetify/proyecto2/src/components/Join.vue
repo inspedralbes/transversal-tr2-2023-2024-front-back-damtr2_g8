@@ -80,6 +80,7 @@ export default {
       backspace: 8,
       arrowLeft: 37,
       arrowRight: 39,
+      enter: 13,
     };
 
     function handleInput(e) {
@@ -151,6 +152,7 @@ export default {
         }, 0);
       });
 
+      const self = this;
       input.addEventListener("keydown", (e) => {
         switch (e.keyCode) {
           case KEYBOARDS.backspace:
@@ -161,6 +163,9 @@ export default {
             break;
           case KEYBOARDS.arrowRight:
             handleArrowRight(e);
+            break;
+          case KEYBOARDS.enter:
+            self.onSubmit();
             break;
           default:
         }

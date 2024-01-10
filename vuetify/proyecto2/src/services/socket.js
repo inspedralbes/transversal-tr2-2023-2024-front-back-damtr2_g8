@@ -20,6 +20,7 @@ export const state = reactive({
         operacion: "",
       },
     ],
+    status: "",
   },
   joinedSala: null,
   play: false,
@@ -46,7 +47,6 @@ socket.on("join", (data) => {
 });
 
 socket.on("startGame", (startInfo) => {
-  console.log(startInfo.play);
   state.play = startInfo.play;
   state.sala = startInfo.idSala;
   state.partida.status = "waiting";
@@ -54,5 +54,9 @@ socket.on("startGame", (startInfo) => {
 
 socket.on("getPartidas", (data) => {
   state.partidas = data;
+});
+
+socket.on("finishGame", (data) => {
+  state.partida.status = "error";
 });
 
