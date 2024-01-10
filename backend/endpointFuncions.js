@@ -106,6 +106,20 @@ function getUserIdByClassId(idClass) {
   });
 }
 
+function getClassNameByClassId(idClass) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT nomClasse FROM CLASSE WHERE idClasse = ?";
+    const VALUES = [idClass];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function joinClasse(idClass, idUsu) {
   return new Promise((resolve, reject) => {
     const sql = "INSERT INTO `PERTANY` (`idClasse`, `idUsu`) VALUES (?, ?);";
@@ -193,15 +207,31 @@ function changePassword(email, password) {
   })
 }
 
+function getDificultats(idProfe){
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT idDificultat, nomDificultat FROM DIFICULTAT WHERE idProfe = (?) or nomDificultat = 'Per defecte'";
+    const VALUES = [idProfe];
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 module.exports = {
   createClass,
   editClass,
   deleteClass,
   getClassByUserId,
   getUserIdByClassId,
+  getClassNameByClassId,
   joinClasse,
   getUserById,
   login,
   register,
   changePassword,
+  getDificultats
 };

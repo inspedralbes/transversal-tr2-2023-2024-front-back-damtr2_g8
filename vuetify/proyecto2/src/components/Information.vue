@@ -8,7 +8,7 @@
                 <v-dialog v-model="dialog" activator="info-svg">
                     <v-card>
                         <v-card-title>
-                            <span class="text-h5">Como jugar</span>
+                            <span class="text-h5">Com jugar</span>
                         </v-card-title>
                         <v-card-text>
                             <v-container>

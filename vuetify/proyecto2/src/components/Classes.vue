@@ -34,7 +34,7 @@
                 <v-row>
                   <v-col>
                     <v-btn block type="submit" class="pa-5" color="primary"
-                      >Aceptar</v-btn
+                      >Acceptar</v-btn
                     >
                   </v-col>
                   <v-col>
@@ -165,7 +165,7 @@
                 {{ classe.numeroUsuarios }}
               </v-chip>
               <div>
-                <v-row >
+                <v-row>
                   <v-col>
                     <v-sheet>
                       <v-btn
@@ -179,13 +179,122 @@
                   <v-col>
                     <v-sheet>
                       <v-select
-                        label="Dificultat predeterminada" density="compact" class="mt-2"
-                        :items="[
-                          'Crea una dificultat',
-                        ]"
+                        label="dificultat"
+                        v-model="selectedDificultats[classe.idClasse]"
+                        item-title="nomDificultat"
+                        item-text="nomDificultat"
+                        class="pt-2"
+                        density="compact"
                         variant="outlined"
+                        :items="this.dificultats"
+                        @update:modelValue="
+                          checkDefaultDifficulty(
+                            selectedDificultats[classe.idClasse],
+                            classe.idClasse
+                          )
+                        "
                       ></v-select>
                     </v-sheet>
+                    <v-dialog
+                      v-model="this.mostrarCrearDificultat"
+                      max-width="500"
+                    >
+                      <v-card>
+                        <v-card-title class="text-h5"
+                          >Crear nova dificultat</v-card-title
+                        >
+                        <v-card-text>
+                          <v-form @submit.prevent="crearNuevaDificultat">
+                            <v-text-field
+                              v-model="nuevaDificultatNombre"
+                              label="Nombre de la Nueva Dificultat"
+                              required
+                            ></v-text-field>
+                            <v-row>
+                              <v-btn
+                                @click="
+                                  this.mostrarOperaciones =
+                                    !this.mostrarOperaciones
+                                "
+                                color="primary"
+                                >Següent</v-btn
+                              >
+                              <v-btn @click="cancelarCrearDificultat"
+                                >Cancelar</v-btn
+                              >
+                            </v-row>
+                          </v-form>
+                        </v-card-text>
+                      </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="mostrarOperaciones" max-width="500">
+                      <v-card>
+                        <v-card-title class="text-h5"
+                          >Afegir operacions</v-card-title
+                        >
+                        <v-card-text>
+                          <v-row>
+                            <v-col>
+															<v-select
+                                label="Dificultat"
+																v-model="this.operacio.dificultat"
+                                :items="['Fàcil', 'Mitjà', 'Difícil']"
+                              >
+                              </v-select>
+                              <v-col>
+                                <v-row>
+                                  <v-text-field label="num1Min" type="numeric" v-model="this.operacio.num1Min">
+                                  </v-text-field>
+                                  <v-text-field label="num1Max" type="numeric" v-model="this.operacio.num1Max">
+                                  </v-text-field>
+                                </v-row>
+                              </v-col>
+
+                              <v-col>
+                                <v-select
+                                  label="Operador"
+																	v-model="this.operacio.operador"
+                                  :items="['+', '-', '*', '/', '^']"
+                                >
+                                </v-select>
+                              </v-col>
+                              <v-col>
+                                <v-col>
+                                  <v-row>
+                                    <v-text-field
+                                      label="num2Min"
+                                      type="numeric"
+																			v-model="this.operacio.num2Min"
+                                    >
+                                    </v-text-field>
+                                    <v-text-field
+                                      label="num2Max"
+                                      type="numeric"
+																			v-model="this.operacio.num2Max"
+                                    >
+                                    </v-text-field>
+                                  </v-row>
+                                </v-col>
+                              </v-col>
+                            </v-col>
+														
+														
+                          </v-row>
+                          <v-row>
+                            <v-btn
+														@click="afegirOperacio()"
+														style="background-color: greenyellow; margin: 15px;"
+														
+														>Afegir</v-btn>
+                            <v-btn
+                              @click="cerrarOperaciones()"
+															style="background-color: red; margin: 15px;"
+                              >Sortir</v-btn
+                            >
+                          </v-row>
+                        </v-card-text>
+                      </v-card>
+                    </v-dialog>
                   </v-col>
                 </v-row>
               </div>
@@ -203,6 +312,7 @@ import {
   createClasse,
   editClasse,
   deleteClasse,
+  getDificultatsFetch,
 } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
@@ -216,7 +326,26 @@ export default {
       nombreNuevaClase: "",
       mostrarPopUpEditar: false,
       classeEditar: null,
+      mostrarCrearDificultat: false,
+      mostrarOperaciones: false,
       store: useAppStore(),
+      showDefaultDifficultyDialog: {},
+      dificultats: [
+        {
+          idDificultat: null,
+          nomDificultat: null,
+          idProfe: null,
+        },
+      ],
+      selectedDificultats: {},
+			operacio:{
+				dificultat: null,
+				num1Min: null,
+				num1Max: null,
+				num2Min: null,
+				num2Max: null,
+				operador: null,
+			}
     };
   },
   methods: {
@@ -239,6 +368,7 @@ export default {
         );
 
         if (!response.ok) {
+          console.log(`Error al crear la clase`);
         } else {
           this.mostrarPopUp = false;
           this.nombreNuevaClase = "";
@@ -273,11 +403,64 @@ export default {
         this.getClasses();
       }
     },
-  },
+    async getDificultats() {
+      console.log(`idProfe: `, this.idProfe);
+      const response = await getDificultatsFetch(this.idProfe);
+      if (!response.ok) {
+        window.alert("Error al carregar les dificultats");
+      } else {
+        const data = await response.json();
+        this.dificultats = data;
+        console.log(`Dificultats: `, this.dificultats);
+        var crearDificultat = {
+          idDificultat: null,
+          nomDificultat: "Crear dificultat",
+          idProfe: null,
+        };
+        this.dificultats.push(crearDificultat);
+      }
+
+      // Inicializa selectedDificultats para cada clase
+      this.classes.forEach((classe) => {
+        this.selectedDificultats[classe.idClasse] = {
+          idDificultat: null,
+          nomDificultat: null,
+          idProfe: null,
+        };
+      });
+    },
+    checkDefaultDifficulty(selectedDificultat, classeId) {
+      console.log(selectedDificultat, " ", classeId);
+      const isDefaultDifficulty = selectedDificultat == "Crear dificultat";
+      console.log(isDefaultDifficulty);
+
+      if (isDefaultDifficulty) {
+        this.showDefaultDifficultyDialog[classeId] = true;
+        console.log(`mostrarCrearDificultad: `, this.mostrarCrearDificultat);
+        this.mostrarCrearDificultat = true;
+      }
+    },
+
+    cancelarCrearDificultat() {
+      if (this.mostrarCrearDificultat) {
+        this.mostrarCrearDificultat = false;
+      }
+    },
+
+		afegirOperacio(){
+			console.log('se añade operacion');
+			console.log('operacio: ', this.operacio);
+		},
+		cerrarOperaciones(){
+			this.mostrarOperaciones = false;
+			this.mostrarCrearDificultat = false;
+		}
+	},
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.idProfe = this.store.usuari.id;
     this.getClasses();
+    this.getDificultats();
   },
 };
 </script>
