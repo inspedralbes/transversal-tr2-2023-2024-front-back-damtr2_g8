@@ -182,7 +182,7 @@ app.get("/getImatgeEstadistiques/dificultatRespostes/:idClasse", async (req, res
   res.header("Access-Control-Allow-Origin", "*");
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
-      res.sendFile(path.resolve("stats/dificultatRespostes.png"));
+      res.sendFile(path.resolve("stats/dificultatRespostes_" + req.params.idClasse + ".png"));
       console.log(data);
     })
     .catch((err) => {
@@ -196,7 +196,7 @@ app.get("/getImatgeEstadistiques/puntsRespostes/:idClasse", async (req, res) => 
   res.header("Access-Control-Allow-Origin", "*");
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
-      res.sendFile(path.resolve("stats/puntsRespostes.png"));
+      res.sendFile(path.resolve("stats/puntsRespostes_" + req.params.idClasse + ".png"));
       console.log(data);
     })
     .catch((err) => {
@@ -254,8 +254,8 @@ function ejecutarEstadisticas(idClasse) {
   }
 
   createDirectory("stats");
-  createFile("./stats/dificultatRespostes.png", "");
-  createFile("./stats/puntsRespostes.png", "");
+  createFile("./stats/dificultatRespostes_"+idClasse+".png", "");
+  createFile("./stats/puntsRespostes_"+idClasse+".png", "");
 
   return new Promise( async (resolve, reject) => {
     let arrayUsuarios = [];
