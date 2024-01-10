@@ -266,7 +266,7 @@ function ejecutarEstadisticas(idClasse) {
 
     await getClassNameByClassId(idClasse).then((data) => {
       console.log(data);
-      data.err == null ? nomClasse = data[0].nomClasse : null
+      //data.err == null ? nomClasse = data[0].nomClasse : null
     });
     let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse, idClasse]);
     pythonProcess.stdout.on("data", (data) => resolve(data.toString()));
