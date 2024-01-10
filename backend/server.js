@@ -233,7 +233,7 @@ app.get("/getDificultats", async (req, res) => {
 });
 
 function ejecutarEstadisticas(idClasse) {
-
+  console.log("hola");
   function createDirectory(dirName) {
     if (!fs.existsSync(dirName)) {
       fs.mkdir(path.join(__dirname, dirName), (err) => {
