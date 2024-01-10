@@ -22,7 +22,7 @@ export default {
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.conectar();
-    
+
     this.setPartida;
     const self = this;
     document
@@ -62,6 +62,11 @@ export default {
   },
   computed: {
     setPartida() {
+      if (state.partida.status == "error") {
+        state.partida.status = "";
+        this.$router.push("/sala");
+      }
+
       this.idPlayer =
         state.partida.jugadores.findIndex(
           (jugador) => jugador.idSocket == socket.id
@@ -122,16 +127,10 @@ export default {
       <v-row class="px-12 py-5" style="margin: 0">
         <v-col>
           <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
-          <div
-            class="PS-container"
-            :class="{ shake: hit == 0, damageAnimation: hit == 0 }"
-          >
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[idPlayer].vida + '%',
-              }"
-            >
+          <div class="PS-container" :class="{ shake: hit == 0, damageAnimation: hit == 0 }">
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[idPlayer].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
             </div>
           </div>
@@ -139,17 +138,10 @@ export default {
         <v-col align="right">
           <h2 v-if="hit == 1"></h2>
           <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-          <div
-            class="PS-container"
-            :class="{ shake: hit == 1, damageAnimation: hit == 1 }"
-            align="left"
-          >
-            <div
-              class="PS"
-              v-bind:style="{
-                width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
-              }"
-            >
+          <div class="PS-container" :class="{ shake: hit == 1, damageAnimation: hit == 1 }" align="left">
+            <div class="PS" v-bind:style="{
+              width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
+            }">
               <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
             </div>
           </div>
@@ -160,28 +152,20 @@ export default {
       <v-row>
         <v-col cols="3">
           <div class="avatar-container no-bottom-lg ">
-            <img
-              :src="
-                'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer].avatar +
-                '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
-              "
-              :class="{ shake: hit == 0 }"
-              alt="Avatar"
-              style="width: 300px; max-width:500px"
-            />
+            <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+              setPartida.jugadores[idPlayer].avatar +
+              '&scale=80&flip=false&eyes=angry&mouth=teethSmile'
+              " :class="{ shake: hit == 0 }" alt="Avatar" style="width: 300px; max-width:500px" />
           </div>
         </v-col>
         <v-col cols="6">
           <div class="input-container">
             <div class="operation-box">
-              <span class="operation-label"
-                ><b>{{
-                  setPartida.jugadores[idPlayer].operacion[dificultad] == ""
-                    ? "Escull una dificultat"
-                    : setPartida.jugadores[idPlayer].operacion[dificultad]
-                }}</b></span
-              >
+              <span class="operation-label"><b>{{
+                setPartida.jugadores[idPlayer].operacion[dificultad] == ""
+                ? "Escull una dificultat"
+                : setPartida.jugadores[idPlayer].operacion[dificultad]
+              }}</b></span>
             </div>
             <div class="input-operation">
               <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
@@ -191,44 +175,26 @@ export default {
         </v-col>
         <v-col cols="3">
           <div class="avatar-container no-bottom-lg ">
-            <img
-              :src="
-                'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
-                '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
-              "
-              :class="{ shake: hit == 1 }"
-              alt="Avatar"
-              style="width: 300px; max-width:500px"
-            />
+            <img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+              setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
+              '&scale=80&flip=true&eyes=angry&mouth=teethSmile'
+              " :class="{ shake: hit == 1 }" alt="Avatar" style="width: 300px; max-width:500px" />
           </div>
         </v-col>
         <v-col sm="4" lg="12" md="6" cols="2" class="bottom-aligned-col">
           <v-sheet align="center" class="bg-transparent">
             <v-row class="dificulty-container">
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #7ed776"
-                  @click="changeDificulty(0)"
-                  >Facil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #7ed776"
+                  @click="changeDificulty(0)">Facil</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #768ed7"
-                  @click="changeDificulty(1)"
-                  >Medio</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #768ed7"
+                  @click="changeDificulty(1)">Medio</v-btn>
               </v-col>
               <v-col align="center">
-                <v-btn
-                  class="dificulty-option rounded-lg"
-                  style="background-color: #d77676"
-                  @click="changeDificulty(2)"
-                  >Dificil</v-btn
-                >
+                <v-btn class="dificulty-option rounded-lg" style="background-color: #d77676"
+                  @click="changeDificulty(2)">Dificil</v-btn>
               </v-col>
             </v-row>
           </v-sheet>
