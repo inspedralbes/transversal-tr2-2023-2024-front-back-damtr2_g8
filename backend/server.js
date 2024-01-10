@@ -233,7 +233,6 @@ app.get("/getDificultats", async (req, res) => {
 });
 
 function ejecutarEstadisticas(idClasse) {
-  console.log("hola");
   function createDirectory(dirName) {
     if (!fs.existsSync(dirName)) {
       fs.mkdir(path.join(__dirname, dirName), (err) => {
@@ -268,7 +267,7 @@ function ejecutarEstadisticas(idClasse) {
     await getClassNameByClassId(idClasse).then((data) => {
       nomClasse = data[0].nomClasse;
     });
-
+    console.log("nod: "+idClasse);
     let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse, idClasse]);
     pythonProcess.stdout.on("data", (data) => resolve(data.toString()));
 
