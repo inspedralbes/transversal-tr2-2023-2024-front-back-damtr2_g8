@@ -14,11 +14,16 @@ export default {
             playing: false,
             partidasFiltradas: [],
             playProf: false,
+            canPlay: false,
         };
     },
     methods: {
         startGame() {
             this.owner = true;
+            if(this.sala.jugadores.length % 2 != 0 && this.playProf == false) {
+                this.canPlay = true;
+                return;
+            }
             socket.emit("startGame", { idClasse: this.store.usuari.classe, playProf: this.playProf });
         },
         leaveSala() {
@@ -148,7 +153,7 @@ export default {
         <div class="user-row" v-if="partidasFiltradas.length != 0">
             <div>
                 <div class="playing-container">
-                    <div class="partida-container" v-for="partida in partidasFiltradas">
+                    <div class="partida-container" v-for="(partida, index) in partidasFiltradas" :key="index">
                         <PlayersVS :partida="partida" />
                     </div>
                 </div>
@@ -159,11 +164,22 @@ export default {
             <div class="jugadors-container">
                 <h1>Jugadors esperant</h1>
                 <div class="jugadors-list">
-                    <div class="user-item" v-for="jugador in sala.jugadores">
+                    <div class="user-item" v-for="(jugador, index) in sala.jugadores" :key="index">
                         <Jugador :jugador="jugador" />
                     </div>
                 </div>
             </div>
+            <v-snackbar v-model="canPlay" :timeout="2000" color="error" class="text-center">
+            El número de jugadors es imparell!
+            <template v-slot:actions>
+              <v-btn color="white" variant="text" @click="canPlay = false">
+                <svg fill="white" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18">
+                  <path
+                    d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                </svg>
+              </v-btn>
+            </template>
+          </v-snackbar>
         </div>
     </div>
     <div class="full-container justify-center" v-else ref="elseBlock">
