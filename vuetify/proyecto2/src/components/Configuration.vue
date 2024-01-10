@@ -158,10 +158,6 @@ export default {
                   return true;
               }*/
 
-            console.log("Dentro");
-            console.log("Contraseña 1", this.password1);
-            console.log("Contraseña 2", this.password2);
-
             // If Not same return False.     
             if (this.password1 != this.password2) {
                 //this.errorMessage = "Les contrassenyes no coincideixen";
@@ -185,12 +181,10 @@ export default {
             this.avatarModal = false;
         },
         handleAvatarClick(avatarId) {
-            //Aqui haremos para guardar el avatar en bd
-            console.log(`Avatar ${avatarId} clicado`);
             this.avatar = avatarId;
             let store = useAppStore();
             store.usuari.avatar = this.avatar;
-
+            this.avatarModal = false;
         },
         handleMouseEnter(event) {
             event.target.style.transform = 'scale(1.1)';

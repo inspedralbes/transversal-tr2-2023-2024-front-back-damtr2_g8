@@ -15,6 +15,7 @@ export default {
             partidasFiltradas: [],
             playProf: false,
             canPlay: false,
+            canPlayModal: false,
         };
     },
     methods: {
@@ -22,6 +23,7 @@ export default {
             this.owner = true;
             if(this.sala.jugadores.length % 2 != 0 && this.playProf == false) {
                 this.canPlay = true;
+                this.canPlayModal = true;
                 return;
             }
             socket.emit("startGame", { idClasse: this.store.usuari.classe, playProf: this.playProf });
@@ -148,7 +150,7 @@ export default {
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
         <h2 v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</h2>
         <div v-if="myId == sala.owner && playing == false">
-            <v-checkbox label="Vols unir-te a la partida?" color="blue" @click="changePlayProf"></v-checkbox>
+            <v-checkbox label="Vols unir-te a la partida?" class="rounded mt-3" :class="{highlight: canPlay}" color="blue" @click="changePlayProf"></v-checkbox>
         </div>
         <div class="user-row" v-if="partidasFiltradas.length != 0">
             <div>
@@ -169,10 +171,10 @@ export default {
                     </div>
                 </div>
             </div>
-            <v-snackbar v-model="canPlay" :timeout="2000" color="error" class="text-center">
-            El número de jugadors es imparell!
+            <v-snackbar v-model="canPlayModal" :timeout="2000" color="error" class="text-center">
+            <p class="text-center">El número de jugadors es imparell</p><p class="text-center font-weight-bold">Uneix-te!</p>
             <template v-slot:actions>
-              <v-btn color="white" variant="text" @click="canPlay = false">
+              <v-btn color="white" variant="text" @click="canPlayModal = false">
                 <svg fill="white" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18">
                   <path
                     d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
@@ -239,6 +241,9 @@ body {
 
 .jugadors-container {
     width: 70%;
+    min-height: 200px;
+    max-height: 200px;
+    overflow-x: auto;
     margin: auto;
 }
 
@@ -248,7 +253,6 @@ body {
     justify-content: center;
     padding-top: 10px;
 }
-
 .my-button {
     display: flex;
     justify-content: center;
@@ -291,9 +295,26 @@ body {
     }
 }
 
+.highlight {
+    animation: highlight 2s ease-in-out infinite;
+}
+
+@keyframes highlight {
+    0% {
+        box-shadow: 0 0 0 0px rgba(49, 156, 189, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 0 10px rgba(49, 156, 189, 0);
+    }
+}
+
 .playing-container {
+    justify-content: center;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    max-height: 440px;
+    overflow-y: auto;
 }
 </style>

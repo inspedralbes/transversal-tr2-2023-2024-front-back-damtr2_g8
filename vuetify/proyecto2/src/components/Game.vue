@@ -87,7 +87,7 @@ export default {
         const vidaRestada =
           state.partida.jugadores[this.idPlayer].vida -
           this.usuaris.vidaAnterior1;
-        console.log(vidaRestada);
+        console.log(this.hit);
         this.usuaris.vidaAnterior1 =
           state.partida.jugadores[this.idPlayer].vida;
         setTimeout(() => {
@@ -103,7 +103,7 @@ export default {
         const vidaRestada =
           state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida -
           this.usuaris.vidaAnterior2;
-        console.log(vidaRestada);
+        console.log(this.hit);
         this.usuaris.vidaAnterior2 =
           state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
         setTimeout(() => {
