@@ -53,12 +53,9 @@ function sockets(io) {
       changeDificulty(idPartida, idJugador, dificultad);
     });
 
-    socket.on(
-      "solveOperation",
-      ({ idPartida, idJugador, idUsuari, idClasse, result }) => {
-        solveOperation(idPartida, idJugador, idUsuari, idClasse, result);
-      }
-    );
+    socket.on("solveOperation", ({ idPartida, idJugador, idUsuari, idClasse, result }) => {
+      solveOperation(idPartida, idJugador, idUsuari, idClasse, result, socket.id);
+    });
 
     socket.on("createSala", (idClasse, idUser) => {
       crearSala(idClasse, socket.id, idUser);
@@ -273,30 +270,35 @@ function sockets(io) {
     return codigo;
   }
 
-  function solveOperation(idPartida, idJugador, idUsuari, idClasse, result) {
+  function solveOperation(idPartida, idJugador, idUsuari, idClasse, result, idSocket) {
     let correcto = false;
     const partida = partidas.find((p) => p.idPartida == idPartida);
     let realResult = null;
-    let dificultad = partida.jugadores[idJugador].dificultad;
 
-    if (result != null) {
-      try {
-        realResult = parseFloat(
-          eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
-        );
-      } catch (e) {}
-      console.log(realResult);
-      if (realResult == result) {
-        correcto = true;
-        disminuirVida(idPartida, idJugador, dificultad);
-        getOperation(idPartida, idJugador, dificultad);
-        saveGameData(idUsuari, idClasse, dificultad);
+    if (partida != undefined) {
+      let dificultad = partida.jugadores[idJugador].dificultad;
+
+      if (result != null) {
+        try {
+          realResult = parseFloat(
+            eval(partida.jugadores[idJugador].operacion[dificultad]).toFixed(2)
+          );
+        } catch (e) { }
+        console.log(realResult);
+        if (realResult == result) {
+          correcto = true;
+          disminuirVida(idPartida, idJugador, dificultad);
+          getOperation(idPartida, idJugador, dificultad);
+          saveGameData(idUsuari, idClasse, dificultad);
+        }
       }
-    }
 
-    io.to(partida.jugadores[idJugador].idSocket).emit("evaluacionResultado", {
-      result: correcto,
-    });
+      io.to(partida.jugadores[idJugador].idSocket).emit("evaluacionResultado", {
+        result: correcto,
+      });
+    } else {
+      io.to(idSocket).emit("finishGame", {});
+    }
   }
 
   function changeDificulty(idPartida, idJugador, dificultad) {
