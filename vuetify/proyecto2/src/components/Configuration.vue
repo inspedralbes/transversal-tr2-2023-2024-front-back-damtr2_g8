@@ -215,11 +215,11 @@ export default {
 
             });
             if (!response.ok) {
-                window.alert("Error al canviar la contrasenya");
+                window.alert("Error: les dades no s'han pogut guardar");
                 this.dialog = false;
                 console.log(response);
             } else {
-                window.alert("Contrasenya canviada correctament");
+                window.alert("Dades canviades correctament");
                 this.dialog = false;
             }
         }
