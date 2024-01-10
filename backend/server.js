@@ -269,7 +269,7 @@ function ejecutarEstadisticas(idClasse) {
       nomClasse = data[0].nomClasse;
     });
 
-    let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
+    let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse, idClasse]);
     pythonProcess.stdout.on("data", (data) => resolve(data.toString()));
 
   });
