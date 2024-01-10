@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style scoped>
-*{
+* {
   background-color: lightblue;
 }
 
@@ -81,7 +81,7 @@ export default {
 }
 
 .button-landing:active {
-  transform: translateY(0px);
+  transform: translateY(4px);
   box-shadow: none;
   background-image: linear-gradient(to bottom right, rgb(93, 158, 180), rgb(2, 123, 163));
 }
@@ -94,8 +94,6 @@ export default {
 }
 
 .button-landing:before {
-  top: -3px;
-  left: -3px;
   border-radius: 40px;
   border-top: 3px solid #fff;
   border-left: 3px solid #fff;
@@ -107,7 +105,7 @@ export default {
   border-radius: 40px;
   border-bottom: 3px solid #fff;
   border-right: 3px solid #fff;
-} 
+}
 </style>
 
 <script setup>
