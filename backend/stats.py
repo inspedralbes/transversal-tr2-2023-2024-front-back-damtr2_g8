@@ -117,10 +117,9 @@ def graficar_puntos_por_usuario(df, filename):
 def dificultatRespostes():
     conexion = establecer_conexion()
     resultados = obtener_respuestas_correctas_por_usuario_y_dificultad(conexion)
-    print("python:" + sys.argv[4])
     df = pd.DataFrame(resultados, columns=["_id", "count"])
     df = df.sort_values("_id")
-    filename = "./stats/dificultatRespostes_" + sys.argv[4] + ".png"
+    filename = "./stats/dificultatRespostes_" + sys.argv[3] + ".png"
     graficar_respuestas_correctas_por_dificultad(df, filename)
 
 
@@ -131,7 +130,7 @@ def puntsRespostes():
 
     df = pd.DataFrame(resultados, columns=["_id", "puntos"])
     df = df.sort_values("_id")
-    filename = "./stats/puntsRespostes__" + sys.argv[4] + ".png"
+    filename = "./stats/puntsRespostes__" + sys.argv[3] + ".png"
     graficar_puntos_por_usuario(df, filename)
 
 

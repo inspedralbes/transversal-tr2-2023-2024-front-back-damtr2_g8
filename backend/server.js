@@ -267,7 +267,7 @@ function ejecutarEstadisticas(idClasse) {
     await getClassNameByClassId(idClasse).then((data) => {
       nomClasse = data[0].nomClasse;
     });
-    console.log("nod: "+idClasse);
+    console.log("node: "+idClasse);
     let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse, idClasse]);
     pythonProcess.stdout.on("data", (data) => resolve(data.toString()));
 
