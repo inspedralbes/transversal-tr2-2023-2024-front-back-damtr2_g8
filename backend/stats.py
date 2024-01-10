@@ -126,7 +126,6 @@ def dificultatRespostes():
 def puntsRespostes():
     conexion = establecer_conexion()
     resultados = obtener_puntos_de_respuestas_correctas_por_usuario(conexion)
-    print(resultados)
 
     df = pd.DataFrame(resultados, columns=["_id", "puntos"])
     df = df.sort_values("_id")
