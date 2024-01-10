@@ -4,6 +4,8 @@ import { useAppStore } from "@/store/app";
 </script>
 
 <script>
+import party from 'party-js';
+
 export default {
   data() {
     return {
@@ -70,7 +72,9 @@ export default {
       this.emptyGameData = false;
       this.idPlayer = state.partida.jugadores.findIndex((jugador) => jugador.idSocket == socket.id) == 0 ? 0 : 1;
       if (state.partida.status == "finish") {
-        this.$router.push("/sala");
+        setTimeout(() => {
+          this.$router.push("/sala");
+        }, 2000);
       }
 
       if (state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1) {
@@ -84,10 +88,16 @@ export default {
 
         this.mouthPlayer1="unimpressed";
 
-        if(this.usuaris.vidaAnterior1 <= 10){
+        if(state.partida.jugadores[this.idPlayer].vida == 100){
+          this.mouthPlayer1="teethSmile&skinColor=efcc9f";
+        }else if(this.usuaris.vidaAnterior1 <= 10){
           this.mouthPlayer1="unimpressed&skinColor=F44336";
         }else if (this.usuaris.vidaAnterior1 == 0){
-        this.mouthPlayer2 ="openedSmile";
+          this.mouthPlayer2 ="openedSmile";
+          party.confetti();
+          party.sparkles();
+        }else{
+          this.mouthPlayer1="unimpressed";
         }
       }
 
@@ -97,12 +107,18 @@ export default {
         console.log(vidaRestada);
         this.usuaris.vidaAnterior2 = state.partida.jugadores[this.idPlayer == 1 ? 0 : 1].vida;
         //this.mouth = "unimpressed";
-        this.mouthPlayer2="unimpressed";
+        
 
-        if(this.usuaris.vidaAnterior2 <= 10){
+        if(state.partida.jugadores[this.idPlayer].vida == 100){
+          this.mouthPlayer2="teethSmile&skinColor=efcc9f";
+        }else if(this.usuaris.vidaAnterior2 <= 10){
           this.mouthPlayer2="unimpressed&skinColor=F44336";
         }else if (this.usuaris.vidaAnterior2 == 0){
-        this.mouthPlayer1 ="openedSmile";
+          this.mouthPlayer1 ="openedSmile";
+          party.confetti();
+          party.sparkles();
+        }else{
+          this.mouthPlayer2="unimpressed";
         }
 
         setTimeout(() => {
