@@ -91,10 +91,10 @@ export default {
         state.partida.status == "finish"
       ) {
         console.log("partida acabada");
-        setTimeout(() => {
+        //setTimeout(() => {
           console.log("timeout");
           this.$router.push("/sala");
-        }, 2000);
+        //}, 2000);
       }
 
       if (
