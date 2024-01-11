@@ -152,7 +152,7 @@ export default {
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
         <h2 v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</h2>
         <div v-if="myId == sala.owner && playing == false">
-            <v-checkbox label="Vols unir-te a la partida?" class="rounded mt-3" :class="{ highlight: canPlay }" color="blue"
+            <v-checkbox label="Vols unir-te a la partida?" class="rounded mt-3 pr-2" :class="{ highlight: canPlay }" color="blue"
                 @click="changePlayProf"></v-checkbox>
         </div>
         <div class="user-row" v-if="partidasFiltradas.length != 0">
@@ -314,7 +314,7 @@ body {
 
 @keyframes highlight {
     0% {
-        box-shadow: 0 0 0 0px rgba(49, 156, 189, 0.4);
+        box-shadow: 0 0 0 0px rgba(0, 111, 145, 0.596);
     }
 
     100% {
