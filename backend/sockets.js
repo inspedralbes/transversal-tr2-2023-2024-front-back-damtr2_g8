@@ -390,8 +390,10 @@ function sockets(io) {
     let num2 = 0;
 
     if (operator == "-" || operator == "+") {
-      num1 = Math.floor(Math.random() * 90) + 10;
-      num2 = Math.floor(Math.random() * 90) + 10;
+      do {
+      num1 = Math.floor(Math.random() * 20) + 10;
+      num2 = Math.floor(Math.random() * 20) + 10;
+    } while (num1 <= num2);
     } else if (operator == "*") {
       num1 = Math.floor(Math.random() * 5) + 5;
       num2 = Math.floor(Math.random() * (num1 / 2)) + 3;
@@ -417,13 +419,13 @@ function sockets(io) {
 
     switch (partida.jugadores[idJugador].dificultad) {
       case 0:
-        cantidad = 5;
-        break;
-      case 1:
         cantidad = 10;
         break;
-      case 2:
+      case 1:
         cantidad = 15;
+        break;
+      case 2:
+        cantidad = 20;
         break;
     }
 
