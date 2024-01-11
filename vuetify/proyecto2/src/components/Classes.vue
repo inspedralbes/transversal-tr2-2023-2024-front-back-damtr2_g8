@@ -2,6 +2,12 @@
   <div class="full-container">
     <div class="btnCrear">
       <v-btn
+        variant="tonal"
+        icon="mdi-arrow-left"
+        class="mt-5"
+        @click="this.$router.push('/join')"
+      ></v-btn>
+      <v-btn
         class="my-button create_class-button"
         prepend-icon="mdi-plus"
         @click="this.mostrarPopUp = !this.mostrarPopUp"
@@ -24,6 +30,7 @@
                 <v-text-field
                   label="Nom de la nova classe"
                   variant="outlined"
+                  class="pb-3"
                   :rules="[
                     (value) => !!value || 'Requerit',
                     (value) =>
@@ -121,6 +128,7 @@
                           <v-text-field
                             label="Nom"
                             variant="outlined"
+                            class="pb-3"
                             :rules="[
                               (value) => !!value || 'Requerit',
                               (value) =>
@@ -200,98 +208,85 @@
                       max-width="500"
                     >
                       <v-card>
-                        <v-card-title class="text-h5"
-                          >Crear nova dificultat</v-card-title
+                        <v-card-title
+                          class="text-center pt-5"
+                          style="
+                            padding-bottom: 25px;
+                            font-size: xx-large;
+                            font-weight: bolder;
+                          "
+                          >Crea una nova dificultat</v-card-title
                         >
                         <v-card-text>
                           <v-form @submit.prevent="crearNuevaDificultat">
                             <v-text-field
                               v-model="nuevaDificultatNombre"
-                              label="Nombre de la Nueva Dificultat"
+                              label="Nom de la nova dificultat"
+                              variant="outlined"
                               required
                             ></v-text-field>
-                            <v-row>
-                              <v-btn
-                                @click="
-                                  this.mostrarOperaciones =
-                                    !this.mostrarOperaciones
-                                "
-                                color="primary"
-                                >Següent</v-btn
-                              >
-                              <v-btn @click="cancelarCrearDificultat"
-                                >Cancelar</v-btn
-                              >
+                            <v-card-title
+                              class="text-center"
+                              style="
+                                padding-bottom: 0px;
+                                font-size: x-large;
+                                font-weight: bolder;
+                              "
+                              >Afegir dificultats</v-card-title
+                            >
+                            <v-row class="pt-5">
+                              <v-col>
+                                <v-btn
+                                  block
+                                  style="
+                                    background-color: #7ed776;
+                                    height: 100px;
+                                  "
+                                  @click="this.modalFacil = !this.modalFacil"
+                                  >Fàcil
+                                </v-btn>
+                              </v-col>
+                              <v-col>
+                                <v-btn
+                                  block
+                                  style="
+                                    background-color: #768ed7;
+                                    height: 100px;
+                                  "
+                                  >Mitjà</v-btn
+                                >
+                              </v-col>
+                              <v-col>
+                                <v-btn
+                                  block
+                                  style="
+                                    background-color: #d77676;
+                                    height: 100px;
+                                  "
+                                  >Difícil</v-btn
+                                >
+                              </v-col>
+                            </v-row>
+                            <v-row class="pb-3">
+                              <v-col>
+                                <v-btn
+                                  block
+                                  type="submit"
+                                  class="pa-5"
+                                  color="primary"
+                                  >Desa</v-btn
+                                >
+                              </v-col>
+                              <v-col>
+                                <v-btn
+                                  class="bg-red-lighten-2 pa-5"
+                                  block
+                                  @click="cancelarCrearDificultat"
+                                  >Cancelar</v-btn
+                                >
+                              </v-col>
                             </v-row>
                           </v-form>
-                        </v-card-text>
-                      </v-card>
-                    </v-dialog>
-                    <v-dialog v-model="mostrarOperaciones" max-width="500">
-                      <v-card>
-                        <v-card-title class="text-h5"
-                          >Afegir operacions</v-card-title
-                        >
-                        <v-card-text>
-                          <v-row>
-                            <v-col>
-															<v-select
-                                label="Dificultat"
-																v-model="this.operacio.dificultat"
-                                :items="['Fàcil', 'Mitjà', 'Difícil']"
-                              >
-                              </v-select>
-                              <v-col>
-                                <v-row>
-                                  <v-text-field label="num1Min" type="numeric" v-model="this.operacio.num1Min">
-                                  </v-text-field>
-                                  <v-text-field label="num1Max" type="numeric" v-model="this.operacio.num1Max">
-                                  </v-text-field>
-                                </v-row>
-                              </v-col>
-
-                              <v-col>
-                                <v-select
-                                  label="Operador"
-																	v-model="this.operacio.operador"
-                                  :items="['+', '-', '*', '/', '^']"
-                                >
-                                </v-select>
-                              </v-col>
-                              <v-col>
-                                <v-col>
-                                  <v-row>
-                                    <v-text-field
-                                      label="num2Min"
-                                      type="numeric"
-																			v-model="this.operacio.num2Min"
-                                    >
-                                    </v-text-field>
-                                    <v-text-field
-                                      label="num2Max"
-                                      type="numeric"
-																			v-model="this.operacio.num2Max"
-                                    >
-                                    </v-text-field>
-                                  </v-row>
-                                </v-col>
-                              </v-col>
-                            </v-col>
-														
-														
-                          </v-row>
-                          <v-row>
-                            <v-btn
-														@click="afegirOperacio()"
-														style="background-color: greenyellow; margin: 15px;"
-														
-														>Afegir</v-btn>
-                            <v-btn
-                              @click="cerrarOperaciones()"
-															style="background-color: red; margin: 15px;"
-                              >Sortir</v-btn
-                            >
-                          </v-row>
                         </v-card-text>
                       </v-card>
                     </v-dialog>
@@ -327,7 +322,9 @@ export default {
       mostrarPopUpEditar: false,
       classeEditar: null,
       mostrarCrearDificultat: false,
-      mostrarOperaciones: false,
+      modalFacil: false,
+      modalMitja: false,
+      modalDificil: false,
       store: useAppStore(),
       showDefaultDifficultyDialog: {},
       dificultats: [
@@ -338,14 +335,14 @@ export default {
         },
       ],
       selectedDificultats: {},
-			operacio:{
-				dificultat: null,
-				num1Min: null,
-				num1Max: null,
-				num2Min: null,
-				num2Max: null,
-				operador: null,
-			}
+      operacio: {
+        dificultat: null,
+        num1Min: null,
+        num1Max: null,
+        num2Min: null,
+        num2Max: null,
+        operador: null,
+      },
     };
   },
   methods: {
@@ -447,15 +444,15 @@ export default {
       }
     },
 
-		afegirOperacio(){
-			console.log('se añade operacion');
-			console.log('operacio: ', this.operacio);
-		},
-		cerrarOperaciones(){
-			this.mostrarOperaciones = false;
-			this.mostrarCrearDificultat = false;
-		}
-	},
+    afegirOperacio() {
+      console.log("se añade operacion");
+      console.log("operacio: ", this.operacio);
+    },
+    cerrarOperaciones() {
+      this.modalFacil = false;
+      this.mostrarCrearDificultat = false;
+    },
+  },
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
     this.idProfe = this.store.usuari.id;
@@ -494,7 +491,8 @@ export default {
 .btnCrear {
   display: flex;
   justify-content: flex-start;
-  padding: 15px;
+  padding: 17px;
+  padding-left: 40px;
 }
 
 .botonesPopUp {
