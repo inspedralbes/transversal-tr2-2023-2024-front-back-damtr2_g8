@@ -10,12 +10,10 @@ export default {
   data() {
     return {
       result: null,
-      emptyGameData: true,
       store: useAppStore(),
       idPlayer: null,
-      avatar: null,
-      flip: true,
       hit: null,
+      dificultad: 1,
       mouthPlayer1: "teethSmile",
       mouthPlayer2: "teethSmile",
       //vidaRestada: null,
@@ -25,16 +23,15 @@ export default {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
       },
+      playing: false,
     };
   },
   mounted() {
     this.store.usuari.id == null ? this.$router.push("/inici") : null;
-    this.avatar = this.store.usuari.avatar;
     this.conectar();
+
     this.setPartida;
-
     const self = this;
-
     document
       .getElementById("result")
       .addEventListener("keypress", function (e) {
@@ -44,14 +41,6 @@ export default {
       });
   },
   methods: {
-    getOperation(dificultad) {
-      socket.emit("getOperation", {
-        idPartida: state.partida.idPartida,
-        idJugador: this.idPlayer,
-        dificultad: dificultad,
-      });
-      this.result = "";
-    },
     conectar() {
       socket.emit("conectarUsuario", {
         username: this.store.usuari.nom,
@@ -59,12 +48,20 @@ export default {
         id_sala: state.sala,
       });
     },
+    changeDificulty(dificultad) {
+      this.dificultad = dificultad;
+      socket.emit("changeDificulty", {
+        idPartida: state.partida.idPartida,
+        idJugador: this.idPlayer,
+        dificultad: dificultad,
+      });
+    },
     solveOperation() {
-      console.log(this.result);
-
       socket.emit("solveOperation", {
         idPartida: state.partida.idPartida,
         idJugador: this.idPlayer,
+        idUsuari: this.store.usuari.id,
+        idClasse: state.joinedSala.id_classe,
         result: this.result,
       });
       this.result = "";
@@ -72,12 +69,29 @@ export default {
   },
   computed: {
     setPartida() {
-      this.emptyGameData = false;
-      this.idPlayer = state.partida.jugadores.findIndex((jugador) => jugador.idSocket == socket.id) == 0 ? 0 : 1;
-      if (state.partida.status == "finish") {
+      if (state.partida.status == "error") {
+        state.partida.status = "";
         setTimeout(() => {
           this.$router.push("/sala");
         }, 2000);
+      }
+
+      this.idPlayer =
+        state.partida.jugadores.findIndex(
+          (jugador) => jugador.idSocket == socket.id
+        ) == 0
+          ? 0
+          : 1;
+
+      if (state.partida.idPartida != 0) {
+        this.playing = true;
+      }
+
+      if (
+        (this.playing == true && state.partida.idPartida == 0) ||
+        state.partida.status == "finish"
+      ) {
+        this.$router.push("/sala");
       }
 
       if (state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1) {
@@ -133,7 +147,6 @@ export default {
           this.hit = null;
         }, 100);
       }
-
       return state.partida;
       }
   },
@@ -142,7 +155,7 @@ export default {
 
 <template>
   <v-app class="my-app-background">
-    <div class="game-container">
+    <div class="game-container" v-if="setPartida">
       <div class="content-wrap bg-transparent">
         <v-row class="px-12 py-5" style="margin: 0" v-if="!emptyGameData">
           <v-col>
@@ -169,14 +182,14 @@ export default {
           <v-col cols="3">
             <v-container class="avatar-container no-bottom-lg " id="avatar-one">
               <v-img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer].avatar + '&scale=100&flip=false&eyes=angry&mouth=' + mouthPlayer1" alt="Avatar" style="width: 300px" />
+                setPartida.jugadores[idPlayer].avatar + '&scale=100&flip=false&eyes=angry&mouth=' + mouthPlayer1" alt="Avatar" style="width: 300px; max-width:500px; height: 300px;" />
               <!-- <span class="damage-container1">{{ vidaRestada1 }}</span> -->
             </v-container>
           </v-col>
           <v-col cols="6">
             <v-container class="input-container">
               <v-container class="operation-box">
-                <span class="operation-label"><b>{{ setPartida.jugadores[idPlayer].operacion == "" ? "Escull una dificultat" : setPartida.jugadores[idPlayer].operacion }}</b></span>
+                <span class="operation-label"><b>{{ setPartida.jugadores[idPlayer].operacion[dificultad] == "" ? "Escull una dificultat" : setPartida.jugadores[idPlayer].operacion[dificultad] }}</b></span>
               </v-container>
               <v-container class="input-operation">
                 <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
@@ -190,7 +203,7 @@ export default {
               <v-img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
                 setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
                 '&scale=100&flip=true&eyes=angry&mouth=' + mouthPlayer2
-                " alt="Avatar" style="width: 300px" />
+                " alt="Avatar" style="width: 300px; max-width:500px; height: 300px;" />
             </v-container>
           </v-col>
           <v-col sm="12" lg="12" md="12" cols="2" class="bottom-aligned-col">
@@ -198,15 +211,15 @@ export default {
               <v-row class="dificulty-container">
                 <v-col align="center">
                   <v-btn class="dificulty-option rounded-lg" style="background-color: #7ed776"
-                    @click="getOperation(1)">Fàcil</v-btn>
+                    @click="changeDificulty(0)">Fàcil</v-btn>
                 </v-col>
                 <v-col align="center">
                   <v-btn class="dificulty-option rounded-lg" style="background-color: #768ed7"
-                    @click="getOperation(2)">Mitjà</v-btn>
+                    @click="changeDificulty(1)">Mitjà</v-btn>
                 </v-col>
                 <v-col align="center">
                   <v-btn class="dificulty-option rounded-lg" style="background-color: #d77676"
-                    @click="getOperation(3)">Difícil</v-btn>
+                    @click="changeDificulty(2)">Difícil</v-btn>
                 </v-col>
               </v-row>
             </v-sheet>
@@ -332,6 +345,7 @@ export default {
 .dificulty-container {
   display: flex;
   justify-content: center;
+  margin-top: 40px;
 }
 
 .game-bar {
@@ -367,7 +381,6 @@ export default {
     width: 450px;
     height: 80px;
     margin-top: 40px;
-    background-color: blueviolet;
   }
 
   .input-operation {

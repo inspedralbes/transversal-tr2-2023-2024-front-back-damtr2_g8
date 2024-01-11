@@ -1,7 +1,9 @@
 import io from "socket.io-client";
 import { reactive } from "vue";
+import _ from 'lodash';
 
 export const socket = io(import.meta.env.VITE_NODE_ROUTE);
+let num = 0;
 
 export const state = reactive({
   partida: {
@@ -18,6 +20,7 @@ export const state = reactive({
         operacion: "",
       },
     ],
+    status: "",
   },
   joinedSala: null,
   play: false,
@@ -43,12 +46,17 @@ socket.on("join", (data) => {
   state.play = false;
 });
 
-socket.on("startGame", (idSala) => {
-  state.play = true;
-  state.sala = idSala;
+socket.on("startGame", (startInfo) => {
+  state.play = startInfo.play;
+  state.sala = startInfo.idSala;
   state.partida.status = "waiting";
 });
 
 socket.on("getPartidas", (data) => {
   state.partidas = data;
 });
+
+socket.on("finishGame", (data) => {
+  state.partida.status = "error";
+});
+

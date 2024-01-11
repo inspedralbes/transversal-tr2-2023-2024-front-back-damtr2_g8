@@ -2,6 +2,7 @@
 import { socket, state } from "@/services/socket";
 import { useAppStore } from "@/store/app";
 import PlayersVS from "@/components/PlayersVS.vue";
+import Jugador from "@/components/Jugador.vue";
 
 export default {
     data() {
@@ -11,20 +12,56 @@ export default {
             kick: false,
             store: useAppStore(),
             playing: false,
+            partidasFiltradas: [],
+            playProf: false,
+            canPlay: false,
+            canPlayModal: false,
         };
     },
     methods: {
         startGame() {
             this.owner = true;
-            socket.emit("startGame", this.store.usuari.classe);
+            if (this.sala.jugadores.length % 2 != 0 && this.playProf == false) {
+                this.canPlay = true;
+                this.canPlayModal = true;
+                return;
+            }
+            socket.emit("startGame", { idClasse: this.store.usuari.classe, playProf: this.playProf });
         },
         leaveSala() {
-            socket.emit("leaveSala", {});
-            this.$router.push("/join");
+            if (this.myId == this.sala.owner) {
+                socket.emit("leaveAllSala", {});
+                this.$router.push("/classes");
+            } else {
+                socket.emit("leaveSala", {});
+                this.$router.push("/join");
+            }
         },
+        changePlayProf() {
+            this.playProf = !this.playProf;
+        },
+        filterWins(partidas) {
+            if (partidas) {
+                let partidasFinalizadas = partidas.filter(partida => partida.status == "finish");
+                if (partidasFinalizadas.length && this.sala != undefined) {
+                    this.sala.jugadores.forEach(jugadorSala => {
+                        jugadorSala.wins = 0;
+                        partidasFinalizadas.forEach(partida => {
+                            for (let i = 0; i < partida.jugadores.length; i++) {
+                                if (partida.jugadores[i].idSocket == jugadorSala.id_jugador && partida.jugadores[i].vida != 0) {
+                                    jugadorSala.wins++;
+                                    i = partida.jugadores.length;
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+        }
     },
     components: {
         PlayersVS,
+        Jugador,
     },
     watch: {
         'sala': function (nuevoValor, antiguoValor) {
@@ -47,9 +84,7 @@ export default {
             }
         },
         'play': function (nuevoValor, antiguoValor) {
-            console.log(nuevoValor);
-            if (nuevoValor == true && this.owner == false) {
-                console.log("He llegado aquí " + nuevoValor);
+            if (nuevoValor == true && this.owner == false || nuevoValor == true && this.playProf == true) {
                 this.$router.push("/game");
             }
         },
@@ -57,7 +92,7 @@ export default {
         },
         'store.usuari.avatar': function () {
             socket.emit("changeAvatar", this.sala.id_sala, this.store.usuari.avatar);
-        }
+        },
     },
     computed: {
         sala() {
@@ -68,8 +103,7 @@ export default {
             return state.play;
         },
         partidas() {
-            console.log(state.partidas);
-            let partidasFiltradas = state.partidas;
+            let partidasFiltro = state.partidas;
 
             if (state.partidas) {
                 if (state.partidas.every(partida => partida.status == "finish")) {
@@ -77,25 +111,30 @@ export default {
                 } else {
                     this.playing = true;
                 }
-                partidasFiltradas = partidasFiltradas.filter(partida => partida.status != "finish");
+                partidasFiltro = partidasFiltro.filter(partida => partida.status != "finish");
+                this.filterWins(state.partidas);
             } else {
                 this.playing = false;
             }
 
-            if (partidasFiltradas == null) {
-                partidasFiltradas = [];
+            if (partidasFiltro == null) {
+                partidasFiltro = [];
             }
-            return partidasFiltradas;
+
+            this.partidasFiltradas = partidasFiltro;
+
+            return state.partidas;
         },
     },
     mounted() {
-        console.log(this.play);
         this.myId = socket.id;
         if (this.sala == null || this.sala == false) {
             socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
         } else {
-            if (this.sala.id_classe != this.store.usuari.classe) {
-                socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+            if (this.store.usuari.classe != "") {
+                if (this.sala.id_classe != this.store.usuari.classe) {
+                    socket.emit("getSala", this.store.usuari.id, this.store.usuari.classe);
+                }
             }
         }
     },
@@ -104,24 +143,22 @@ export default {
 
 <template>
     <div class="full-container" v-if="sala && kick == false">
-        <div class="btnBack">
-            <button @click="leaveSala()"><svg width="50px" height="50px" viewBox="0 0 24 24" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M4 10L3.29289 10.7071L2.58579 10L3.29289 9.29289L4 10ZM21 18C21 18.5523 20.5523 19 20 19C19.4477 19 19 18.5523 19 18L21 18ZM8.29289 15.7071L3.29289 10.7071L4.70711 9.29289L9.70711 14.2929L8.29289 15.7071ZM3.29289 9.29289L8.29289 4.29289L9.70711 5.70711L4.70711 10.7071L3.29289 9.29289ZM4 9L14 9L14 11L4 11L4 9ZM21 16L21 18L19 18L19 16L21 16ZM14 9C17.866 9 21 12.134 21 16L19 16C19 13.2386 16.7614 11 14 11L14 9Z"
-                        fill="#ffffff" />
-                </svg>
-            </button>
+        <div class="button_leave">
+            <v-btn variant="tonal" icon="mdi-arrow-left" @click="leaveSala()"></v-btn>
         </div>
-        <h2 class="pt-5 my-5">Sala d'espera</h2>
+        <h2 class="pt-16">Sala d'espera</h2>
         <h1 class="text-h1 font-weight-black" v-if="myId == sala.owner">Codi sala: {{ sala.codi }}</h1>
         <h2 class="text-h2 font-weight-black" v-else>Espera a que el professor comenci la partida</h2>
         <v-btn class="my-button" @click="startGame()" v-if="myId == sala.owner && playing == false">COMENÇA</v-btn>
         <h2 v-else-if="myId == sala.owner && playing == true">S'estan jugant les partides</h2>
-        <div class="user-row" v-if="partidas.length != 0">
+        <div v-if="myId == sala.owner && playing == false">
+            <v-checkbox label="Vols unir-te a la partida?" class="rounded mt-3" :class="{ highlight: canPlay }" color="blue"
+                @click="changePlayProf"></v-checkbox>
+        </div>
+        <div class="user-row" v-if="partidasFiltradas.length != 0">
             <div>
                 <div class="playing-container">
-                    <div class="partida-container" v-for="partida in partidas">
+                    <div class="partida-container" v-for="(partida, index) in partidasFiltradas" :key="index">
                         <PlayersVS :partida="partida" />
                     </div>
                 </div>
@@ -129,21 +166,30 @@ export default {
         </div>
         <div class="loader" v-else></div>
         <div class="footer">
-            <div class="user-col">
-                <div>
-                    <h1>Jugadors esperant</h1>
-                    <div class="user-row">
-                        <div class="user-item" v-for="jugador in sala.jugadores">
-                            <v-img class="img-avatar"
-                                :src='"https://api.dicebear.com/7.x/big-smile/svg?seed=" + jugador.id_avatar' />
-                            <h3>{{ jugador.nombre }}</h3>
-                        </div>
+            <div class="jugadors-container">
+                <h1>Jugadors esperant</h1>
+                <div class="jugadors-list">
+                    <div class="user-item" v-for="(jugador, index) in sala.jugadores" :key="index">
+                        <Jugador :jugador="jugador" />
                     </div>
                 </div>
             </div>
+            <v-snackbar v-model="canPlayModal" :timeout="2000" color="error" class="text-center">
+                <p class="text-center">El número de jugadors es imparell</p>
+                <p class="text-center font-weight-bold">Uneix-te!</p>
+                <template v-slot:actions>
+                    <v-btn color="white" variant="text" @click="canPlayModal = false">
+                        <svg fill="white" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960"
+                            width="18">
+                            <path
+                                d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                        </svg>
+                    </v-btn>
+                </template>
+            </v-snackbar>
         </div>
     </div>
-    <div class="full-container justify-center" v-else>
+    <div class="full-container justify-center" v-else ref="elseBlock">
         <h2 class="text-h2 font-weight-black">El Professor ha tancat la Sala</h2>
         <div class="progress-loader">
             <div class="progress"></div>
@@ -179,29 +225,6 @@ body {
     margin-top: 20px;
 }
 
-.user-item {
-    width: calc(20% - 10px);
-    margin: 5px;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box;
-    text-align: center;
-
-}
-
-.img-avatar {
-    display: block;
-    margin: 0 auto;
-    width: 300px;
-}
-
-/* Cuando sea md se hará esto (portatil) */
-@media only screen and (min-width: 960px) and (max-width: 1919px) {
-    .img-avatar {
-        width: 200px;
-    }
-}
-
 .full-container {
     height: 100vh;
     background-color: #add8e6;
@@ -209,6 +232,13 @@ body {
     flex-direction: column;
     text-align: center;
     align-items: center;
+}
+
+.button_leave {
+    margin-top: 20px;
+    position: absolute;
+    top: 17px;
+    left: 40px;
 }
 
 .footer {
@@ -219,16 +249,27 @@ body {
     left: 0;
     bottom: 0;
     width: 100%;
-
-
 }
 
+.jugadors-container {
+    width: 70%;
+    min-height: 200px;
+    max-height: 200px;
+    overflow-x: auto;
+    margin: auto;
+}
+
+.jugadors-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 10px;
+}
 
 .my-button {
     display: flex;
     justify-content: center;
     align-items: center;
-
     margin-top: 10px;
     width: fit-content;
     border-radius: 2px;
@@ -267,9 +308,26 @@ body {
     }
 }
 
+.highlight {
+    animation: highlight 2s ease-in-out infinite;
+}
+
+@keyframes highlight {
+    0% {
+        box-shadow: 0 0 0 0px rgba(49, 156, 189, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 0 10px rgba(49, 156, 189, 0);
+    }
+}
+
 .playing-container {
+    justify-content: center;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    max-height: 440px;
+    overflow-y: auto;
 }
 </style>

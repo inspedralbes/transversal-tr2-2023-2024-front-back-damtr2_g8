@@ -3,6 +3,9 @@ const express = require("express");
 const app = express();
 const port = 3751;
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const http = require("http");
@@ -13,12 +16,17 @@ const {
   editClass,
   deleteClass,
   getClassByUserId,
+  getUserIdByClassId,
+  getClassNameByClassId,
+  joinClasse,
   getUserById,
   login,
   register,
   changePassword,
+  getDificultats
 } = require("./endpointFuncions.js");
 const { Server } = require("socket.io");
+const { log } = require("console");
 
 const io = new Server(server, {
   cors: {
@@ -29,7 +37,7 @@ const io = new Server(server, {
 
 sockets(io);
 
-//PARTE DE LA BASE DE DATOS
+//PARTE DE LA BASE DE DATOS MYSQL
 let conn = mysql.createPool({
   host: "dam.inspedralbes.cat",
   user: "a22oscmungar_proyecto2",
@@ -114,6 +122,17 @@ app.get("/classeProfe/:idProfe", async (req, res) => {
     });
 });
 
+//ruta para unir a un alumno a una classe
+app.post("/joinClasse", async (req, res) => {
+  await joinClasse(req.body.idClasse, req.body.idUsu)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
 //ruta para obtener un usuario en concreto
 app.get("/usuario/:idUsuari", async (req, res) => {
   await getUserById(req.params.idUsuari)
@@ -157,6 +176,117 @@ app.post("/changePassword", async (req, res) => {
       res.send(err);
     });
 });
+
+//Recibir la imagen de la estadistica dificultatRespostes
+app.get("/getImatgeEstadistiques/dificultatRespostes/:idClasse", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas(req.params.idClasse)
+    .then((data) => {
+      res.sendFile(path.resolve("stats/dificultatRespostes.png"));
+      console.log(data);
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err);
+    });
+});
+
+//Recibir la imagen de la estadistica puntsRespostes
+app.get("/getImatgeEstadistiques/puntsRespostes/:idClasse", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas(req.params.idClasse)
+    .then((data) => {
+      res.sendFile(path.resolve("stats/puntsRespostes.png"));
+      console.log(data);
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err);
+    });
+});
+
+//Recibir la imagen de la estadistica
+app.get("/getImatgeEstadistiques/", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  await ejecutarEstadisticas()
+    .then((data) => {
+      res.sendFile(path.resolve("stats/numRespostes.png"));
+      console.log(data);
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err);
+    });
+});
+
+//Ruta para obtener las dificultades
+app.get("/getDificultats", async (req, res) => {
+  const idProfe = req.query.idProfe;
+  console.log(`idProfe: `,idProfe);
+  await getDificultats(idProfe)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+function ejecutarEstadisticas(idClasse) {
+
+  function createDirectory(dirName) {
+    if (!fs.existsSync(dirName)) {
+      fs.mkdir(path.join(__dirname, dirName), (err) => {
+      });
+    }
+  }
+
+  function createFile(fileName, write) {
+    if (!fs.existsSync(fileName)) {
+      fs.writeFile(fileName, write, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // console.log("S'ha escrit");
+        }
+      });
+    }
+  }
+
+  createDirectory("stats");
+  createFile("./stats/dificultatRespostes.png", "");
+  createFile("./stats/puntsRespostes.png", "");
+
+  return new Promise( async (resolve, reject) => {
+    let arrayUsuarios = [];
+    let nomClasse = "";
+
+    await getUserIdByClassId(idClasse).then((data) => {
+      arrayUsuarios = idClasse ? data.map((item) => item.idUsu) : [];
+    });
+
+    await getClassNameByClassId(idClasse).then((data) => {
+      nomClasse = data[0].nomClasse;
+    });
+
+    let pythonProcess = spawn("python3", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
+
+    const handleData = (data) => {
+      resolve(data.toString());
+    };
+
+    const handleError = () => {
+      pythonProcess = spawn("python", ["./stats.py", JSON.stringify(arrayUsuarios), nomClasse]);
+      pythonProcess.stdout.on("data", handleData);
+    };
+
+    pythonProcess.on('exit', (code) => {
+      if (code !== 0) {
+        handleError();
+      }
+    });
+  });
+}
 
 server.listen(port, () => {
   console.log(`Server running at PORT: ${port}`);
