@@ -65,13 +65,14 @@ export default {
         result: this.result,
       });
       this.result = "";
+
+
     },
   },
   computed: {
     setPartida() {
       if (state.partida.status == "error") {
         state.partida.status = "";
-        console.log("se va por error");
         this.$router.push("/sala");
       }
 
@@ -101,6 +102,7 @@ export default {
         state.partida.jugadores[this.idPlayer].vida < this.usuaris.vidaAnterior1
       ) {
         this.hit = 0;
+
         //this.vidaRestada = state.partida.jugadores[this.idPlayer].vida - this.usuaris.vidaAnterior1;
         this.vidaRestada1 =
           state.partida.jugadores[this.idPlayer].vida -
