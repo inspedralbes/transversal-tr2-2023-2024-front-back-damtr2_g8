@@ -74,8 +74,8 @@
                 >{{ classe.nomClasse }}
                 <v-btn class="editBtn" @click="setClasseEditar(classe)">
                   <svg
-                    width="40px"
-                    height="40px"
+                    width="30px"
+                    height="30px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -236,34 +236,30 @@
                             >
                             <v-row class="pt-5">
                               <v-col>
-                                <v-btn
-                                  block
-                                  style="
-                                    background-color: #7ed776;
-                                    height: 100px;
-                                  "
-                                  @click="this.modalFacil = !this.modalFacil"
-                                  >Fàcil
-                                </v-btn>
+                                
                               </v-col>
                               <v-col>
                                 <v-btn
                                   block
                                   style="
-                                    background-color: #768ed7;
+                                    border: 3px solid #768ed7;
                                     height: 100px;
                                   "
-                                  >Mitjà</v-btn
+                                  >Mitjà
+                                  <p style="text-transform: lowercase">(buit)</p>
+                                  </v-btn
                                 >
                               </v-col>
                               <v-col>
                                 <v-btn
                                   block
                                   style="
-                                    background-color: #d77676;
+                                    border: 3px solid #d77676;
                                     height: 100px;
                                   "
-                                  >Difícil</v-btn
+                                  >Difícil
+                                  <p style="text-transform: lowercase">(buit)</p>
+                                  </v-btn
                                 >
                               </v-col>
                             </v-row>
@@ -314,6 +310,7 @@ import { useAppStore } from "@/store/app";
 
 export default {
   data() {
+    //component addDifficulty
     return {
       idProfe: null,
       classes: [],
@@ -475,8 +472,9 @@ export default {
 
 .editBtn {
   border-radius: 100px;
-  width: 60px;
-  height: 60px !important;
+  min-width: 45px;
+  width: 10px !important;
+  height: 45px !important;
   position: absolute;
   top: 16px;
   right: 16px;
@@ -493,6 +491,10 @@ export default {
   justify-content: flex-start;
   padding: 17px;
   padding-left: 40px;
+}
+
+.v-btn__content {
+  display: grid !important;
 }
 
 .botonesPopUp {

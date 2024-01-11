@@ -16,3 +16,25 @@
 html {
     overflow: hidden;
 }
+
+.v-chip {
+    display: inline;
+}
+
+.v-chip.v-chip--size-default {
+    margin-top: 100px !important;
+    padding: 5px 15px;
+}
+
+.v-btn__content {
+    display: block;
+    width: 100%;
+}
+
+.v-chip__append {
+    padding-top: 5px;
+}
+
+.v-chip__filter, .v-chip__prepend, .v-chip__append, .v-chip__close {
+    display: inline;
+}

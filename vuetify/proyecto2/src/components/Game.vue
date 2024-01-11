@@ -92,8 +92,8 @@ export default {
       ) {
         console.log("partida acabada");
         //setTimeout(() => {
-          console.log("timeout");
-          this.$router.push("/sala");
+        console.log("timeout");
+        this.$router.push("/sala");
         //}, 2000);
       }
 
@@ -228,7 +228,7 @@ export default {
           </v-col>
           <v-col cols="6">
             <v-container class="input-container">
-              <v-container class="operation-box">
+              <v-container class="operation-box" :class="dificultad === 0 ? 'easy-border-color' : dificultad === 1 ? 'medium-border-color' : 'hard-border-color'">
                 <span class="operation-label"
                   ><b>{{
                     setPartida.jugadores[idPlayer].operacion[dificultad] == ""
@@ -272,25 +272,42 @@ export default {
                 <v-col align="center">
                   <v-btn
                     class="dificulty-option rounded-lg"
-                    style="background-color: #7ed776"
+                    :class="dificultad == 0 ? 'focus-border-color' : ''"
+                    style="background-color: #7ed776;"
                     @click="changeDificulty(0)"
-                    >Fàcil</v-btn
-                  >
+                    >Fàcil
+                    <br>
+                    <v-chip color="amber-darken-2" class="mt-2 chip-attack" variant="elevated" append-icon="mdi-sword-cross">
+                      10
+                    </v-chip>
+                  </v-btn>
                 </v-col>
                 <v-col align="center">
                   <v-btn
                     class="dificulty-option rounded-lg"
+                    :class="dificultad == 1 ? 'focus-border-color' : ''"
                     style="background-color: #768ed7"
                     @click="changeDificulty(1)"
-                    >Mitjà</v-btn
+                    >Mitjà
+                    <br>
+                    <v-chip color="amber-darken-2" class="mt-2 chip-attack" variant="elevated" append-icon="mdi-sword-cross">
+                      15
+                    </v-chip>
+                    </v-btn
                   >
                 </v-col>
                 <v-col align="center">
                   <v-btn
                     class="dificulty-option rounded-lg"
+                    :class="dificultad == 2 ? 'focus-border-color' : ''"
                     style="background-color: #d77676"
                     @click="changeDificulty(2)"
-                    >Difícil</v-btn
+                    >Difícil
+                    <br>
+                    <v-chip color="amber-darken-2" class="mt-5 chip-attack" variant="elevated" append-icon="mdi-sword-cross">
+                      20
+                    </v-chip>
+                    </v-btn
                   >
                 </v-col>
               </v-row>
@@ -319,6 +336,20 @@ export default {
 }
 .avatar-container {
   display: flex;
+}
+
+.easy-border-color {
+  border: 3px solid #7ed776 ;
+}
+.medium-border-color {
+  border: 3px solid #768ed7;
+}
+.hard-border-color {
+  border: 3px solid #d77676;
+}
+
+.focus-border-color {
+  border: 5px solid #00000057;
 }
 
 .damage-container1 {

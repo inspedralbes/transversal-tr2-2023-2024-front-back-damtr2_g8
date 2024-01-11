@@ -24,74 +24,83 @@ export default {
 </script>
 
 <template>
-  <v-dialog v-model="modalFacil" max-width="500">
-    <v-card>
-      <v-card-title
-        class="text-center pt-5"
-        style="padding-bottom: 15px; font-size: xx-large; font-weight: bolder"
-        >Dificultat Fàcil</v-card-title
-      >
-      <v-card-text>
-        <v-row>
-          <v-col>
-            <v-col>
-              <v-row>
-                <v-text-field
-                  label="num1Min"
-                  type="numeric"
-                  v-model="this.operacio.num1Min"
-                >
-                </v-text-field>
-                <v-text-field
-                  label="num1Max"
-                  type="numeric"
-                  v-model="this.operacio.num1Max"
-                >
-                </v-text-field>
-              </v-row>
-            </v-col>
-
-            <v-col>
-              <v-select
-                label="Operador"
-                v-model="this.operacio.operador"
-                :items="['+', '-', '*', '/', '^']"
-              >
-              </v-select>
-            </v-col>
+  <div class="full-container">
+    <v-btn
+      block
+      style="border: 3px solid #7ed776; height: 100px"
+      @click="this.modalFacil = !this.modalFacil"
+      >Fàcil
+      <p style="text-transform: lowercase">(buit)</p>
+    </v-btn>
+    <v-dialog v-model="modalDificultat" max-width="500">
+      <v-card>
+        <v-card-title
+          class="text-center pt-5"
+          style="padding-bottom: 15px; font-size: xx-large; font-weight: bolder"
+          >Dificultat Fàcil</v-card-title
+        >
+        <v-card-text>
+          <v-row>
             <v-col>
               <v-col>
                 <v-row>
                   <v-text-field
-                    label="num2Min"
+                    label="num1Min"
                     type="numeric"
-                    v-model="this.operacio.num2Min"
+                    v-model="this.operacio.num1Min"
                   >
                   </v-text-field>
                   <v-text-field
-                    label="num2Max"
+                    label="num1Max"
                     type="numeric"
-                    v-model="this.operacio.num2Max"
+                    v-model="this.operacio.num1Max"
                   >
                   </v-text-field>
                 </v-row>
               </v-col>
+
+              <v-col>
+                <v-select
+                  label="Operador"
+                  v-model="this.operacio.operador"
+                  :items="['+', '-', '*', '/', '^']"
+                >
+                </v-select>
+              </v-col>
+              <v-col>
+                <v-col>
+                  <v-row>
+                    <v-text-field
+                      label="num2Min"
+                      type="numeric"
+                      v-model="this.operacio.num2Min"
+                    >
+                    </v-text-field>
+                    <v-text-field
+                      label="num2Max"
+                      type="numeric"
+                      v-model="this.operacio.num2Max"
+                    >
+                    </v-text-field>
+                  </v-row>
+                </v-col>
+              </v-col>
             </v-col>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-btn
-            @click="afegirOperacio()"
-            style="background-color: greenyellow; margin: 15px"
-            >Afegir</v-btn
-          >
-          <v-btn
-            @click="cerrarOperaciones()"
-            style="background-color: red; margin: 15px"
-            >Sortir</v-btn
-          >
-        </v-row>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+          </v-row>
+          <v-row>
+            <v-btn
+              @click="afegirOperacio()"
+              style="background-color: greenyellow; margin: 15px"
+              >Afegir</v-btn
+            >
+            <v-btn
+              @click="() => !modalDificultate"
+              style="background-color: red; margin: 15px"
+              >Sortir</v-btn
+            >
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
