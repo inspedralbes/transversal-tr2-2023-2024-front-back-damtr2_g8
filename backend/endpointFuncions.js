@@ -26,6 +26,36 @@ function createClass(nomClasse, idProfe) {
   });
 }
 
+function addDifficulty(nomDificultat, idProfe) {
+  return new Promise((resolve, reject) => {
+    const sql = "INSERT INTO DIFICULTAT SET ?";
+    const VALUES = { nomDificultat: nomDificultat, idProfe: idProfe };
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+function addOperation(num1Min, num1Max, operador, num2Min, num2Max, idDificultat, nivell) {
+  return new Promise((resolve, reject) => {
+    const sql = "INSERT INTO OPERACIO SET ?";
+    const VALUES = { minNum1: num1Min, maxNum1: num1Max, operador: operador, minNum2: num2Min, maxNum2: num2Max, idDificultat: idDificultat, nivell: nivell };
+
+    conn.query(sql, VALUES, (err, result) => {
+      if (err) {
+        reject({ err: err });
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function editClass(nomClasse, idClasse) {
   return new Promise((resolve, reject) => {
     const sql = "UPDATE CLASSE SET nomClasse = ? WHERE idClasse = ?";
@@ -207,7 +237,7 @@ function changePassword(email, password) {
   })
 }
 
-function getDificultats(idProfe){
+function getDificultats(idProfe) {
   return new Promise((resolve, reject) => {
     const sql = "SELECT idDificultat, nomDificultat FROM DIFICULTAT WHERE idProfe = (?) or nomDificultat = 'Per defecte'";
     const VALUES = [idProfe];
@@ -223,6 +253,8 @@ function getDificultats(idProfe){
 
 module.exports = {
   createClass,
+  addDifficulty,
+  addOperation,
   editClass,
   deleteClass,
   getClassByUserId,
