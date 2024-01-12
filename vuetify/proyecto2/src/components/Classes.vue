@@ -5,15 +5,15 @@
         variant="tonal"
         icon="mdi-arrow-left"
         class="mt-5"
-        @click="this.$router.push('/join')"
+        @click="$router.push('/join')"
       ></v-btn>
       <v-btn
         class="my-button create_class-button"
         prepend-icon="mdi-plus"
-        @click="this.mostrarPopUp = !this.mostrarPopUp"
+        @click="mostrarPopUp = !mostrarPopUp"
         >Crear classe
 
-        <v-dialog v-model="this.mostrarPopUp" max-width="500">
+        <v-dialog v-model="mostrarPopUp" max-width="500">
           <v-card class="py-5">
             <v-card-title
               class="text-center"
@@ -26,7 +26,7 @@
               >Crea una nova classe</v-card-title
             >
             <v-card-text>
-              <v-form @submit.prevent="this.crearClase()">
+              <v-form @submit.prevent="crearClase()">
                 <v-text-field
                   label="Nom de la nova classe"
                   variant="outlined"
@@ -48,7 +48,7 @@
                     <v-btn
                       class="bg-red-lighten-2 pa-5"
                       block
-                      @click="this.mostrarPopUp = !this.mostrarPopUp"
+                      @click="mostrarPopUp = !mostrarPopUp"
                       >Cancelar</v-btn
                     >
                   </v-col>
@@ -74,8 +74,8 @@
                 >{{ classe.nomClasse }}
                 <v-btn class="editBtn" @click="setClasseEditar(classe)">
                   <svg
-                    width="40px"
-                    height="40px"
+                    width="30px"
+                    height="30px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +194,7 @@
                         class="pt-2"
                         density="compact"
                         variant="outlined"
-                        :items="this.dificultats"
+                        :items="dificultats"
                         @update:modelValue="
                           checkDefaultDifficulty(
                             selectedDificultats[classe.idClasse],
@@ -204,7 +204,7 @@
                       ></v-select>
                     </v-sheet>
                     <v-dialog
-                      v-model="this.mostrarCrearDificultat"
+                      v-model="mostrarCrearDificultat"
                       max-width="500"
                     >
                       <v-card>
@@ -218,7 +218,7 @@
                           >Crea una nova dificultat</v-card-title
                         >
                         <v-card-text>
-                          <v-form @submit.prevent="crearNuevaDificultat">
+                          <v-form>
                             <v-text-field
                               v-model="nuevaDificultatNombre"
                               label="Nom de la nova dificultat"
@@ -235,36 +235,28 @@
                               >Afegir dificultats</v-card-title
                             >
                             <v-row class="pt-5">
-                              <v-col>
-                                <v-btn
-                                  block
-                                  style="
-                                    background-color: #7ed776;
-                                    height: 100px;
+                              <v-col
+                                ><AddDifficulty
+                                  dificultat="0"
+                                  @afegirDificultat="
+                                    afegirDificultats[0] = $event
                                   "
-                                  @click="this.modalFacil = !this.modalFacil"
-                                  >Fàcil
-                                </v-btn>
+                              /></v-col>
+                              <v-col>
+                                <AddDifficulty
+                                  dificultat="1"
+                                  @afegirDificultat="
+                                    afegirDificultats[1] = $event
+                                  "
+                                />
                               </v-col>
                               <v-col>
-                                <v-btn
-                                  block
-                                  style="
-                                    background-color: #768ed7;
-                                    height: 100px;
+                                <AddDifficulty
+                                  dificultat="2"
+                                  @afegirDificultat="
+                                    afegirDificultats[2] = $event
                                   "
-                                  >Mitjà</v-btn
-                                >
-                              </v-col>
-                              <v-col>
-                                <v-btn
-                                  block
-                                  style="
-                                    background-color: #d77676;
-                                    height: 100px;
-                                  "
-                                  >Difícil</v-btn
-                                >
+                                />
                               </v-col>
                             </v-row>
                             <v-row class="pb-3">
@@ -274,6 +266,7 @@
                                   type="submit"
                                   class="pa-5"
                                   color="primary"
+                                  @click="saveDifficulty()"
                                   >Desa</v-btn
                                 >
                               </v-col>
@@ -282,7 +275,7 @@
                                   class="bg-red-lighten-2 pa-5"
                                   block
                                   @click="cancelarCrearDificultat"
-                                  >Cancelar</v-btn
+                                  >Cancela</v-btn
                                 >
                               </v-col>
                             </v-row>
@@ -307,13 +300,17 @@ import {
   createClasse,
   editClasse,
   deleteClasse,
+  addDificultat,
+  addOperation,
   getDificultatsFetch,
 } from "@/services/communicationManager";
 import { socket } from "@/services/socket";
 import { useAppStore } from "@/store/app";
+import AddDifficulty from "@/components/AddDifficulty.vue";
 
 export default {
   data() {
+    //component addDifficulty
     return {
       idProfe: null,
       classes: [],
@@ -335,15 +332,12 @@ export default {
         },
       ],
       selectedDificultats: {},
-      operacio: {
-        dificultat: null,
-        num1Min: null,
-        num1Max: null,
-        num2Min: null,
-        num2Max: null,
-        operador: null,
-      },
+      nuevaDificultatNombre: "",
+      afegirDificultats: [],
     };
+  },
+  components: {
+    AddDifficulty,
   },
   methods: {
     async getClasses() {
@@ -401,14 +395,12 @@ export default {
       }
     },
     async getDificultats() {
-      console.log(`idProfe: `, this.idProfe);
       const response = await getDificultatsFetch(this.idProfe);
       if (!response.ok) {
         window.alert("Error al carregar les dificultats");
       } else {
         const data = await response.json();
         this.dificultats = data;
-        console.log(`Dificultats: `, this.dificultats);
         var crearDificultat = {
           idDificultat: null,
           nomDificultat: "Crear dificultat",
@@ -427,13 +419,10 @@ export default {
       });
     },
     checkDefaultDifficulty(selectedDificultat, classeId) {
-      console.log(selectedDificultat, " ", classeId);
       const isDefaultDifficulty = selectedDificultat == "Crear dificultat";
-      console.log(isDefaultDifficulty);
 
       if (isDefaultDifficulty) {
         this.showDefaultDifficultyDialog[classeId] = true;
-        console.log(`mostrarCrearDificultad: `, this.mostrarCrearDificultat);
         this.mostrarCrearDificultat = true;
       }
     },
@@ -444,13 +433,41 @@ export default {
       }
     },
 
-    afegirOperacio() {
-      console.log("se añade operacion");
-      console.log("operacio: ", this.operacio);
-    },
-    cerrarOperaciones() {
-      this.modalFacil = false;
-      this.mostrarCrearDificultat = false;
+    async saveDifficulty() {
+      if (this.nuevaDificultatNombre.length == 0) {
+        alert("El nom de la dificultat no pot estar buit");
+      } else {
+        if (this.afegirDificultats.length > 0) {
+          let allDificultatsAreFilled = true;
+          for (let i = 0; i < this.afegirDificultats.length; i++) {
+            if (
+              !this.afegirDificultats[i] ||
+              this.afegirDificultats[i].guardat == undefined
+            ) {
+              console.log(this.afegirDificultats[i].guardat);
+              allDificultatsAreFilled = false;
+            }
+          }
+          if (allDificultatsAreFilled) {
+            let difficultyId = await addDificultat(
+              this.nuevaDificultatNombre,
+              this.idProfe
+            );
+
+            for (let i = 0; i < this.afegirDificultats.length; i++) {
+              await addOperation(
+                this.afegirDificultats[i].num1Min,
+                this.afegirDificultats[i].num1Max,
+                this.afegirDificultats[i].operador,
+                this.afegirDificultats[i].num2Min,
+                this.afegirDificultats[i].num2Max,
+                difficultyId,
+                i
+              );
+            }
+          }
+        }
+      }
     },
   },
   mounted() {
@@ -475,8 +492,9 @@ export default {
 
 .editBtn {
   border-radius: 100px;
-  width: 60px;
-  height: 60px !important;
+  min-width: 45px;
+  width: 10px !important;
+  height: 45px !important;
   position: absolute;
   top: 16px;
   right: 16px;
@@ -493,6 +511,10 @@ export default {
   justify-content: flex-start;
   padding: 17px;
   padding-left: 40px;
+}
+
+.v-btn__content {
+  display: grid !important;
 }
 
 .botonesPopUp {

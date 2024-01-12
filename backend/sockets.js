@@ -113,6 +113,7 @@ function sockets(io) {
     if (sala) {
       for (let i = 0; i < sala.jugadores.length; i++) {
         io.to(sala.jugadores[i].id_jugador).emit("join", null);
+        desconectarPartida(sala.jugadores[i].id_jugador, id, sala.id_sala);
       }
       io.to(sala.owner).emit("join", null);
       sala.owner = null;
@@ -159,6 +160,7 @@ function sockets(io) {
       const indexPartida = partida.jugadores.findIndex(
         (jugador) => jugador.id_jugador == id
       );
+
       partidas.splice(indexPartida, 1);
 
       if (owner != null) {
@@ -391,9 +393,9 @@ function sockets(io) {
 
     if (operator == "-" || operator == "+") {
       do {
-      num1 = Math.floor(Math.random() * 20) + 10;
-      num2 = Math.floor(Math.random() * 20) + 10;
-    } while (num1 <= num2);
+        num1 = Math.floor(Math.random() * 20) + 10;
+        num2 = Math.floor(Math.random() * 20) + 10;
+      } while (num1 <= num2);
     } else if (operator == "*") {
       num1 = Math.floor(Math.random() * 5) + 5;
       num2 = Math.floor(Math.random() * (num1 / 2)) + 3;
