@@ -167,7 +167,7 @@ export default {
         <div class="loader" v-else></div>
         <div class="footer">
             <div class="jugadors-container">
-                <h1>Jugadors esperant</h1>
+                <h1>Jugadors esperant ({{ sala.jugadores.length }})</h1>
                 <div class="jugadors-list">
                     <div class="user-item" v-for="(jugador, index) in sala.jugadores" :key="index">
                         <Jugador :jugador="jugador" />
