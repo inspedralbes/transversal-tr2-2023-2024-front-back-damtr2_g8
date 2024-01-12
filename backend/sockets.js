@@ -305,7 +305,9 @@ function sockets(io) {
 
   function changeDificulty(idPartida, idJugador, dificultad) {
     const partida = partidas.find((p) => p.idPartida == idPartida);
-    partida.jugadores[idJugador].dificultad = dificultad;
+    if (partida) {
+      partida.jugadores[idJugador].dificultad = dificultad;
+    }
   }
 
   function getOperation(idPartida, idJugador, dificultad) {
