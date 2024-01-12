@@ -12,7 +12,7 @@
                         </v-card-title>
                         <v-card-text>
                             <v-container class="private-block">
-                                <svg width="600px" height="500px" viewBox="0 0 24 24" fill="none"
+                                <!-- <svg width="600px" height="500px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg" stroke="#000000">
 
                                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
@@ -26,12 +26,12 @@
                                             stroke-linejoin="round" />
                                     </g>
 
-                                </svg>
+                                </svg> -->
 
-                                <!-- <v-carousel hide-delimiters>
+                                <v-carousel hide-delimiters>
                                     <v-carousel-item v-for="(item, i) in items" :key="i" :src="item.src" cover
                                         height="400px"></v-carousel-item>
-                                </v-carousel> -->
+                                </v-carousel>
                             </v-container>
                         </v-card-text>
                     </v-card>
