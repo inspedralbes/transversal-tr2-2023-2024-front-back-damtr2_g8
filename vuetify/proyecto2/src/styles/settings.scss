@@ -35,6 +35,33 @@ html {
     padding-top: 5px;
 }
 
-.v-chip__filter, .v-chip__prepend, .v-chip__append, .v-chip__close {
+.v-chip__filter,
+.v-chip__prepend,
+.v-chip__append,
+.v-chip__close {
     display: inline;
+}
+
+.v-dialog>.v-overlay__content>.v-card,
+.v-dialog>.v-overlay__content>form>.v-card {
+    overflow: hidden;
+}
+
+.easy-border-color {
+    border: 3px solid #7ed776;
+}
+
+.medium-border-color {
+    border: 3px solid #768ed7;
+}
+
+.hard-border-color {
+    border: 3px solid #d77676;
+}
+
+.operation-box {
+    width: 700px;
+    background-color: white;
+    border-radius: 5px;
+    height: 100px;
 }

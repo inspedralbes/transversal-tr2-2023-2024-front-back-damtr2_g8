@@ -71,20 +71,19 @@ export default {
     },
   },
   watch: {
-    'statusGame': function (nuevoValor, antiguoValor) {
+    statusGame: function (nuevoValor, antiguoValor) {
       if (nuevoValor == null) {
         this.canPlayModal = true;
         setTimeout(() => {
           this.$router.push("/join");
         }, 2000);
       }
-    }
+    },
   },
   computed: {
     setPartida() {
       if (state.partida.status == "error") {
         state.partida.status = "";
-        console.log("se va por error");
         this.$router.push("/sala");
       }
 
@@ -103,9 +102,7 @@ export default {
         (this.playing == true && state.partida.idPartida == 0) ||
         state.partida.status == "finish"
       ) {
-        console.log("partida acabada");
         //setTimeout(() => {
-        console.log("timeout");
         this.$router.push("/sala");
         //}, 2000);
       }
@@ -179,7 +176,7 @@ export default {
     },
     statusGame() {
       return state.joinedSala;
-    }
+    },
   },
 };
 </script>
@@ -191,10 +188,16 @@ export default {
         <v-row class="px-12 py-5" style="margin: 0">
           <v-col>
             <h2>{{ setPartida.jugadores[idPlayer].username }}</h2>
-            <div class="PS-container" :class="{ shake: hit == 0, damageAnimation: hit == 0 }">
-              <div class="PS" v-bind:style="{
-                width: setPartida.jugadores[idPlayer].vida + '%',
-              }">
+            <div
+              class="PS-container"
+              :class="{ shake: hit == 0, damageAnimation: hit == 0 }"
+            >
+              <div
+                class="PS"
+                v-bind:style="{
+                  width: setPartida.jugadores[idPlayer].vida + '%',
+                }"
+              >
                 <p>{{ setPartida.jugadores[idPlayer].vida }}</p>
               </div>
             </div>
@@ -202,10 +205,17 @@ export default {
           <v-col align="right">
             <h2 v-if="hit == 1"></h2>
             <h2>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].username }}</h2>
-            <div class="PS-container" :class="{ shake: hit == 1, damageAnimation: hit == 1 }" align="left">
-              <div class="PS" v-bind:style="{
-                width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
-              }">
+            <div
+              class="PS-container"
+              :class="{ shake: hit == 1, damageAnimation: hit == 1 }"
+              align="left"
+            >
+              <div
+                class="PS"
+                v-bind:style="{
+                  width: setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida + '%',
+                }"
+              >
                 <p>{{ setPartida.jugadores[idPlayer == 1 ? 0 : 1].vida }}</p>
               </div>
             </div>
@@ -216,39 +226,78 @@ export default {
         <v-row>
           <v-col cols="3">
             <v-container class="avatar-container no-bottom-lg" id="avatar-one">
-              <v-img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer].avatar +
-                '&scale=100&flip=false&eyes=angry&mouth=' +
-                mouthPlayer1
-                " alt="Avatar" style="width: 300px; max-width: 500px; height: 300px" />
+              <v-img
+                :src="
+                  'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+                  setPartida.jugadores[idPlayer].avatar +
+                  '&scale=100&flip=false&eyes=angry&mouth=' +
+                  mouthPlayer1
+                "
+                alt="Avatar"
+                style="width: 300px; max-width: 500px; height: 300px"
+              />
               <!-- <span class="damage-container1">{{ vidaRestada1 }}</span> -->
             </v-container>
           </v-col>
           <v-col cols="6">
             <v-container class="input-container">
-              <v-container class="operation-box" :class="dificultad === 0 ? 'easy-border-color' : dificultad === 1 ? 'medium-border-color' : 'hard-border-color'">
+              <v-container
+                class="operation-box"
+                :class="
+                  dificultad === 0
+                    ? 'easy-border-color'
+                    : dificultad === 1
+                    ? 'medium-border-color'
+                    : 'hard-border-color'
+                "
+              >
                 <span class="operation-label"
                   ><b>{{
-                    setPartida.jugadores[idPlayer].operacion[dificultad] == ""
-                      ? "Escull una dificultat"
+                    setPartida.jugadores[idPlayer].operacion == ""
+                      ? ""
+                      : setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].includes("Math.sqrt")
+                      ? setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].replace(/Math\.sqrt\((\d+)\)/g, "√$1")
+                      : setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].includes("**")
+                      ? setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].replace(/\*\*(\d+)/g, "^$1")
                       : setPartida.jugadores[idPlayer].operacion[dificultad]
                   }}</b></span
                 >
               </v-container>
               <v-container class="input-operation">
-                <v-text-field label="?" variant="outlined" id="result" type="number" v-model="result"></v-text-field>
-                <v-btn class="btnSolve" @click="solveOperation()">Resoldre</v-btn>
+                <v-text-field
+                  label="?"
+                  variant="outlined"
+                  id="result"
+                  type="number"
+                  v-model="result"
+                ></v-text-field>
+                <v-btn class="btnSolve" @click="solveOperation()"
+                  >Resoldre</v-btn
+                >
               </v-container>
             </v-container>
           </v-col>
           <v-col cols="3">
             <v-container class="avatar-container no-bottom-lg" id="avatar-two">
               <!-- <span class="damage-container2">{{ vidaRestada2 }}</span> -->
-              <v-img :src="'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
-                setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
-                '&scale=100&flip=true&eyes=angry&mouth=' +
-                mouthPlayer2
-                " alt="Avatar" style="width: 300px; max-width: 500px; height: 300px" />
+              <v-img
+                :src="
+                  'https://api.dicebear.com/7.x/big-smile/svg?seed=' +
+                  setPartida.jugadores[idPlayer == 1 ? 0 : 1].avatar +
+                  '&scale=100&flip=true&eyes=angry&mouth=' +
+                  mouthPlayer2
+                "
+                alt="Avatar"
+                style="width: 300px; max-width: 500px; height: 300px"
+              />
             </v-container>
           </v-col>
           <v-col sm="12" lg="12" md="12" cols="2" class="bottom-aligned-col">
@@ -258,11 +307,16 @@ export default {
                   <v-btn
                     class="dificulty-option rounded-lg"
                     :class="dificultad == 0 ? 'focus-border-color' : ''"
-                    style="background-color: #7ed776;"
+                    style="background-color: #7ed776"
                     @click="changeDificulty(0)"
                     >Fàcil
-                    <br>
-                    <v-chip color="amber-darken-2" class="mt-2 chip-attack" variant="elevated" append-icon="mdi-sword-cross">
+                    <br />
+                    <v-chip
+                      color="amber-darken-2"
+                      class="mt-2 chip-attack"
+                      variant="elevated"
+                      append-icon="mdi-sword-cross"
+                    >
                       10
                     </v-chip>
                   </v-btn>
@@ -274,12 +328,16 @@ export default {
                     style="background-color: #768ed7"
                     @click="changeDificulty(1)"
                     >Mitjà
-                    <br>
-                    <v-chip color="amber-darken-2" class="mt-2 chip-attack" variant="elevated" append-icon="mdi-sword-cross">
+                    <br />
+                    <v-chip
+                      color="amber-darken-2"
+                      class="mt-2 chip-attack"
+                      variant="elevated"
+                      append-icon="mdi-sword-cross"
+                    >
                       15
                     </v-chip>
-                    </v-btn
-                  >
+                  </v-btn>
                 </v-col>
                 <v-col align="center">
                   <v-btn
@@ -288,25 +346,41 @@ export default {
                     style="background-color: #d77676"
                     @click="changeDificulty(2)"
                     >Difícil
-                    <br>
-                    <v-chip color="amber-darken-2" class="mt-5 chip-attack" variant="elevated" append-icon="mdi-sword-cross">
+                    <br />
+                    <v-chip
+                      color="amber-darken-2"
+                      class="mt-5 chip-attack"
+                      variant="elevated"
+                      append-icon="mdi-sword-cross"
+                    >
                       20
                     </v-chip>
-                    </v-btn
-                  >
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-sheet>
           </v-col>
         </v-row>
       </v-container>
-      <v-snackbar v-model="canPlayModal" :timeout="2000" color="error" class="text-center">
+      <v-snackbar
+        v-model="canPlayModal"
+        :timeout="2000"
+        color="error"
+        class="text-center"
+      >
         <p class="text-center">El profesor ha tancat la sala</p>
         <template v-slot:actions>
           <v-btn color="white" variant="text" @click="canPlayModal = false">
-            <svg fill="white" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18">
+            <svg
+              fill="white"
+              xmlns="http://www.w3.org/2000/svg"
+              height="18"
+              viewBox="0 -960 960 960"
+              width="18"
+            >
               <path
-                d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+              />
             </svg>
           </v-btn>
         </template>
@@ -335,16 +409,6 @@ export default {
 
 .avatar-container {
   display: flex;
-}
-
-.easy-border-color {
-  border: 3px solid #7ed776 ;
-}
-.medium-border-color {
-  border: 3px solid #768ed7;
-}
-.hard-border-color {
-  border: 3px solid #d77676;
 }
 
 .focus-border-color {

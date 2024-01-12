@@ -79,6 +79,47 @@ export function createClasse(nombreNuevaClase, idProfe) {
   });
 }
 
+export function addDificultat(nomDificultat, idProfe) {
+  return new Promise((resolve, reject) => {
+    fetch(import.meta.env.VITE_NODE_ROUTE + `/addDificultat/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nomDificultat: nomDificultat,
+        idProfe: idProfe,
+      }),
+    }).then((response) => response.json())
+    .then((data) => {
+      resolve(data.insertId);
+    });
+  });
+}
+
+export function addOperation(num1Min, num1Max, operador, num2Min, num2Max, idDificultat, nivell) {
+  return new Promise((resolve, reject) => {
+    fetch(import.meta.env.VITE_NODE_ROUTE + `/addOperation/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        num1Min: num1Min,
+        num1Max: num1Max,
+        operador: operador,
+        num2Min: num2Min,
+        num2Max: num2Max,
+        idDificultat: idDificultat,
+        nivell: nivell,
+      }),
+    }).then((response) => response.json())
+    .then((data) => {
+      resolve(data.insertId);
+    });
+  });
+}
+
 export function editClasse(classeEditar) {
   return new Promise((resolve, reject) => {
     fetch(import.meta.env.VITE_NODE_ROUTE + `/editarClasse/`, {
