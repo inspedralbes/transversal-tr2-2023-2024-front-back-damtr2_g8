@@ -23,7 +23,9 @@ export default {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
       },
+      incorrectResult: false,
       playing: false,
+      canPlayModal: false,
     };
   },
   mounted() {
@@ -57,21 +59,43 @@ export default {
       });
     },
     solveOperation() {
-      socket.emit("solveOperation", {
-        idPartida: state.partida.idPartida,
-        idJugador: this.idPlayer,
-        idUsuari: this.store.usuari.id,
-        idClasse: state.joinedSala.id_classe,
-        result: this.result,
-      });
-      this.result = "";
+      if (state.joinedSala) {
+        socket.emit("solveOperation", {
+          idPartida: state.partida.idPartida,
+          idJugador: this.idPlayer,
+          idUsuari: this.store.usuari.id,
+          idClasse: state.joinedSala.id_classe,
+          result: this.result,
+        });
+        if (
+          this.result !=
+          eval(
+            state.partida.jugadores[this.idPlayer].operacion[this.dificultad]
+          )
+        ) {
+          this.incorrectResult = true;
+        }
+        setTimeout(() => {
+          this.incorrectResult = false;
+        }, 500);
+        this.result = "";
+      }
+    },
+  },
+  watch: {
+    statusGame: function (nuevoValor, antiguoValor) {
+      if (nuevoValor == null) {
+        this.canPlayModal = true;
+        setTimeout(() => {
+          this.$router.push("/join");
+        }, 2000);
+      }
     },
   },
   computed: {
     setPartida() {
       if (state.partida.status == "error") {
         state.partida.status = "";
-        console.log("se va por error");
         this.$router.push("/sala");
       }
 
@@ -90,10 +114,8 @@ export default {
         (this.playing == true && state.partida.idPartida == 0) ||
         state.partida.status == "finish"
       ) {
-        console.log("partida acabada");
         //setTimeout(() => {
-          console.log("timeout");
-          this.$router.push("/sala");
+        this.$router.push("/sala");
         //}, 2000);
       }
 
@@ -164,6 +186,9 @@ export default {
       }
       return state.partida;
     },
+    statusGame() {
+      return state.joinedSala;
+    },
   },
 };
 </script>
@@ -228,11 +253,32 @@ export default {
           </v-col>
           <v-col cols="6">
             <v-container class="input-container">
-              <v-container class="operation-box">
+              <v-container
+                class="operation-box"
+                :class="
+                  dificultad === 0
+                    ? 'easy-border-color'
+                    : dificultad === 1
+                    ? 'medium-border-color'
+                    : 'hard-border-color'
+                "
+              >
                 <span class="operation-label"
                   ><b>{{
-                    setPartida.jugadores[idPlayer].operacion[dificultad] == ""
-                      ? "Escull una dificultat"
+                    setPartida.jugadores[idPlayer].operacion == ""
+                      ? ""
+                      : setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].includes("Math.sqrt")
+                      ? setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].replace(/Math\.sqrt\((\d+)\)/g, "√$1")
+                      : setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].includes("**")
+                      ? setPartida.jugadores[idPlayer].operacion[
+                          dificultad
+                        ].replace(/\*\*(\d+)/g, "^$1")
                       : setPartida.jugadores[idPlayer].operacion[dificultad]
                   }}</b></span
                 >
@@ -243,6 +289,8 @@ export default {
                   variant="outlined"
                   id="result"
                   type="number"
+                  class="rounded"
+                  :class="{ shake: incorrectResult }"
                   v-model="result"
                 ></v-text-field>
                 <v-btn class="btnSolve" @click="solveOperation()"
@@ -272,32 +320,85 @@ export default {
                 <v-col align="center">
                   <v-btn
                     class="dificulty-option rounded-lg"
+                    :class="dificultad == 0 ? 'focus-border-color' : ''"
                     style="background-color: #7ed776"
                     @click="changeDificulty(0)"
-                    >Fàcil</v-btn
-                  >
+                    >Fàcil
+                    <br />
+                    <v-chip
+                      color="amber-darken-2"
+                      class="mt-2 chip-attack"
+                      variant="elevated"
+                      append-icon="mdi-sword-cross"
+                    >
+                      10
+                    </v-chip>
+                  </v-btn>
                 </v-col>
                 <v-col align="center">
                   <v-btn
                     class="dificulty-option rounded-lg"
+                    :class="dificultad == 1 ? 'focus-border-color' : ''"
                     style="background-color: #768ed7"
                     @click="changeDificulty(1)"
-                    >Mitjà</v-btn
-                  >
+                    >Mitjà
+                    <br />
+                    <v-chip
+                      color="amber-darken-2"
+                      class="mt-2 chip-attack"
+                      variant="elevated"
+                      append-icon="mdi-sword-cross"
+                    >
+                      15
+                    </v-chip>
+                  </v-btn>
                 </v-col>
                 <v-col align="center">
                   <v-btn
                     class="dificulty-option rounded-lg"
+                    :class="dificultad == 2 ? 'focus-border-color' : ''"
                     style="background-color: #d77676"
                     @click="changeDificulty(2)"
-                    >Difícil</v-btn
-                  >
+                    >Difícil
+                    <br />
+                    <v-chip
+                      color="amber-darken-2"
+                      class="mt-5 chip-attack"
+                      variant="elevated"
+                      append-icon="mdi-sword-cross"
+                    >
+                      20
+                    </v-chip>
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-sheet>
           </v-col>
         </v-row>
       </v-container>
+      <v-snackbar
+        v-model="canPlayModal"
+        :timeout="2000"
+        color="error"
+        class="text-center"
+      >
+        <p class="text-center">El profesor ha tancat la sala</p>
+        <template v-slot:actions>
+          <v-btn color="white" variant="text" @click="canPlayModal = false">
+            <svg
+              fill="white"
+              xmlns="http://www.w3.org/2000/svg"
+              height="18"
+              viewBox="0 -960 960 960"
+              width="18"
+            >
+              <path
+                d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+              />
+            </svg>
+          </v-btn>
+        </template>
+      </v-snackbar>
     </div>
   </v-app>
 </template>
@@ -310,15 +411,22 @@ export default {
 .avatar-container#avatar-two {
   margin-left: 20px;
 }
+
 .my-app-background {
   background-color: lightblue;
   overflow: hidden;
 }
+
 .game-container {
   height: 100vh;
 }
+
 .avatar-container {
   display: flex;
+}
+
+.focus-border-color {
+  border: 5px solid #00000057;
 }
 
 .damage-container1 {
@@ -336,6 +444,7 @@ export default {
   margin-left: 20px;
   font-size: 45px;
 }
+
 .input-operation {
   width: 500px;
   margin-top: 20px;
@@ -428,13 +537,15 @@ export default {
 }
 
 .shake {
-  animation: shake 0.12s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: shake 0.12s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
   transform: translate3d(0, 0, 0);
 }
+
 @media only screen and (max-width: 830px) {
   .avatar-container {
     margin: 0;
   }
+
   .avatar-container#avatar-one {
     margin-right: 15px;
   }
@@ -467,10 +578,12 @@ export default {
     width: 200px;
   }
 }
+
 @media only screen and (min-width: 831px) and (max-width: 960px) {
   .avatar-container {
     margin: 0;
   }
+
   .avatar-container#avatar-one {
     margin-right: 15px;
   }
@@ -546,22 +659,27 @@ export default {
 @keyframes shake {
   0% {
     transform: translateX(0);
+    border: 1px solid red;
   }
 
   25% {
     transform: translateX(3px);
+    border: 2px solid red;
   }
 
   50% {
     transform: translateX(-3px);
+    border: 3px solid red;
   }
 
   75% {
     transform: translateX(3px);
+    border: 2px solid red;
   }
 
   100% {
     transform: translateX(0);
+    border: 1px solid red;
   }
 }
 

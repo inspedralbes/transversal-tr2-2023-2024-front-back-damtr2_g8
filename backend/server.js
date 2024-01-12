@@ -13,6 +13,8 @@ const server = http.createServer(app);
 const { sockets } = require("./sockets.js");
 const {
   createClass,
+  addDifficulty,
+  addOperation,
   editClass,
   deleteClass,
   getClassByUserId,
@@ -70,6 +72,28 @@ app.use(bodyParser.json());
 //ruta para crear classes
 app.post("/crearClasse", async (req, res) => {
   await createClass(req.body.nomClasse, req.body.idUsu)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para crear dificultades
+app.post("/addDificultat", async (req, res) => {
+  await addDifficulty(req.body.nomDificultat, req.body.idProfe)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+//ruta para crear operaciones
+app.post("/addOperation", async (req, res) => {
+  await addOperation(req.body.num1Min, req.body.num1Max, req.body.operador, req.body.num2Min, req.body.num2Max, req.body.idDificultat, req.body.nivell)
     .then((data) => {
       res.send(data);
     })
@@ -182,8 +206,7 @@ app.get("/getImatgeEstadistiques/dificultatRespostes/:idClasse", async (req, res
   res.header("Access-Control-Allow-Origin", "*");
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
-      res.sendFile(path.resolve("stats/dificultatRespostes_" + req.params.idClasse + ".png"));
-      console.log(data);
+      res.sendFile(path.resolve("stats/dificultatRespostes.png"));
     })
     .catch((err) => {
       res.send(err);
@@ -196,8 +219,7 @@ app.get("/getImatgeEstadistiques/puntsRespostes/:idClasse", async (req, res) => 
   res.header("Access-Control-Allow-Origin", "*");
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
-      res.sendFile(path.resolve("stats/puntsRespostes_" + req.params.idClasse + ".png"));
-      console.log(data);
+      res.sendFile(path.resolve("stats/puntsRespostes.png"));
     })
     .catch((err) => {
       res.send(err);
@@ -211,7 +233,6 @@ app.get("/getImatgeEstadistiques/", async (req, res) => {
   await ejecutarEstadisticas()
     .then((data) => {
       res.sendFile(path.resolve("stats/numRespostes.png"));
-      console.log(data);
     })
     .catch((err) => {
       res.send(err);
@@ -222,7 +243,6 @@ app.get("/getImatgeEstadistiques/", async (req, res) => {
 //Ruta para obtener las dificultades
 app.get("/getDificultats", async (req, res) => {
   const idProfe = req.query.idProfe;
-  console.log(`idProfe: `,idProfe);
   await getDificultats(idProfe)
     .then((data) => {
       res.send(data);
@@ -256,7 +276,7 @@ function ejecutarEstadisticas(idClasse) {
   createFile("./stats/dificultatRespostes_"+idClasse+".png", "");
   createFile("./stats/puntsRespostes_"+idClasse+".png", "");
 
-  return new Promise( async (resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let arrayUsuarios = [];
     let nomClasse = "";
 

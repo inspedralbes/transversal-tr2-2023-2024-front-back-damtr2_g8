@@ -13,6 +13,59 @@
     display: none !important;
 }
 
+.chip-attack {
+    cursor: pointer;
+}
+
 html {
     overflow: hidden;
+}
+
+.v-chip {
+    display: inline;
+}
+
+.v-chip.v-chip--size-default {
+    margin-top: 100px !important;
+    padding: 5px 15px;
+}
+
+.v-btn__content {
+    display: block;
+    width: 100%;
+}
+
+.v-chip__append {
+    padding-top: 5px;
+}
+
+.v-chip__filter,
+.v-chip__prepend,
+.v-chip__append,
+.v-chip__close {
+    display: inline;
+}
+
+.v-dialog>.v-overlay__content>.v-card,
+.v-dialog>.v-overlay__content>form>.v-card {
+    overflow: hidden;
+}
+
+.easy-border-color {
+    border: 3px solid #7ed776;
+}
+
+.medium-border-color {
+    border: 3px solid #768ed7;
+}
+
+.hard-border-color {
+    border: 3px solid #d77676;
+}
+
+.operation-box {
+    width: 700px;
+    background-color: white;
+    border-radius: 5px;
+    height: 100px;
 }
