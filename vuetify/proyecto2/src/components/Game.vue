@@ -23,6 +23,7 @@ export default {
         vidaAnterior1: 100,
         vidaAnterior2: 100,
       },
+      incorrectResult: false,
       playing: false,
       canPlayModal: false,
     };
@@ -66,6 +67,17 @@ export default {
           idClasse: state.joinedSala.id_classe,
           result: this.result,
         });
+        if (
+          this.result !=
+          eval(
+            state.partida.jugadores[this.idPlayer].operacion[this.dificultad]
+          )
+        ) {
+          this.incorrectResult = true;
+        }
+        setTimeout(() => {
+          this.incorrectResult = false;
+        }, 500);
         this.result = "";
       }
     },
@@ -277,6 +289,8 @@ export default {
                   variant="outlined"
                   id="result"
                   type="number"
+                  class="rounded"
+                  :class="{ shake: incorrectResult }"
                   v-model="result"
                 ></v-text-field>
                 <v-btn class="btnSolve" @click="solveOperation()"
@@ -523,7 +537,7 @@ export default {
 }
 
 .shake {
-  animation: shake 0.12s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: shake 0.12s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
   transform: translate3d(0, 0, 0);
 }
 
@@ -645,22 +659,27 @@ export default {
 @keyframes shake {
   0% {
     transform: translateX(0);
+    border: 1px solid red;
   }
 
   25% {
     transform: translateX(3px);
+    border: 2px solid red;
   }
 
   50% {
     transform: translateX(-3px);
+    border: 3px solid red;
   }
 
   75% {
     transform: translateX(3px);
+    border: 2px solid red;
   }
 
   100% {
     transform: translateX(0);
+    border: 1px solid red;
   }
 }
 

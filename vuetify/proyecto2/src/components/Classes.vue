@@ -310,7 +310,6 @@ import AddDifficulty from "@/components/AddDifficulty.vue";
 
 export default {
   data() {
-    //component addDifficulty
     return {
       idProfe: null,
       classes: [],

@@ -207,7 +207,6 @@ app.get("/getImatgeEstadistiques/dificultatRespostes/:idClasse", async (req, res
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
       res.sendFile(path.resolve("stats/dificultatRespostes.png"));
-      console.log(data);
     })
     .catch((err) => {
       res.send(err);
@@ -221,7 +220,6 @@ app.get("/getImatgeEstadistiques/puntsRespostes/:idClasse", async (req, res) => 
   await ejecutarEstadisticas(req.params.idClasse)
     .then((data) => {
       res.sendFile(path.resolve("stats/puntsRespostes.png"));
-      console.log(data);
     })
     .catch((err) => {
       res.send(err);
@@ -235,7 +233,6 @@ app.get("/getImatgeEstadistiques/", async (req, res) => {
   await ejecutarEstadisticas()
     .then((data) => {
       res.sendFile(path.resolve("stats/numRespostes.png"));
-      console.log(data);
     })
     .catch((err) => {
       res.send(err);
@@ -246,7 +243,6 @@ app.get("/getImatgeEstadistiques/", async (req, res) => {
 //Ruta para obtener las dificultades
 app.get("/getDificultats", async (req, res) => {
   const idProfe = req.query.idProfe;
-  console.log(`idProfe: `, idProfe);
   await getDificultats(idProfe)
     .then((data) => {
       res.send(data);
