@@ -5,4 +5,4 @@
 * Damià Brea Cervino, Oscar Muñoz García, Ivette Sanjurjo Martínez, Martí Sala Vallès. 
 * [Penpot](https://design.penpot.app/#/view/7acb5393-ab48-80f5-8003-7a3655c20444?page-id=7acb5393-ab48-80f5-8003-7a3655c20445&section=interactions&index=6)
 * [Taiga](https://tree.taiga.io/project/marti-sv-damtr1gx/backlog)
-* [Producció](mathbattle.dam.inspedralbes.cat)
+* <a href="http://mathbattle.dam.inspedralbes.cat" target="_blank">Producció</a>
